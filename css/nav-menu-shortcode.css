@@ -1,0 +1,17 @@
+textarea#shortcode-menu-item, .menu-item-shortcode textarea {
+	width: 100%;
+	height: 100px;
+}
+
+.menu-item-shortcode p.description.description-thin {
+	width: 97%;
+	height: auto;
+}
+
+.menu-item-shortcode .field-link-target,
+.menu-item-shortcode .field-css-classes,
+.menu-item-shortcode .field-xfn,
+.menu-item-shortcode .link-to-original,
+.menu-item-shortcode .field-description {
+	display: none !important;
+}

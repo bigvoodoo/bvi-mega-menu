@@ -1,0 +1,21 @@
+.bvi-mega-menu-container, .bvi-mega-menu-custom-mobile-menu{background:#CCC;display:table;margin:0;padding:0;position:relative;width:100%}
+.bvi-mega-menu-custom-mobile-menu{display:none}
+.bvi-mega-menu-container ul, .bvi-mega-menu-container ul li{margin:0;padding:0;list-style:none}
+.bvi-mega-menu-container > .menu-item-depth-0, .bvi-mega-menu-custom-mobile-menu > li{display:table-cell;text-align:center;vertical-align:middle}
+.bvi-mega-menu-container > .menu-item-depth-0 > a, .bvi-mega-menu-custom-mobile-menu > li > a{color:#000;display:block;font-size:14px;font-family:Arial;padding:15px 12px;-webkit-transition:background .2s ease-in;-moz-transition:background .2s ease-in;-o-transition:background .2s ease-in;transition:background .2s ease-in}
+.bvi-mega-menu-container > .menu-item-depth-0:hover > a, .bvi-mega-menu-container > .menu-item-depth-0.active > a, .bvi-mega-menu-custom-mobile-menu > li:hover > a{background:#999;color:#1a1a1a;text-decoration:none}
+.bvi-mega-menu-container > .menu-item-depth-0 > .mega-menu{background:#999;display:none;position:absolute;top:47px;left:0;right:0;padding:15px 0;text-align:left;width:100%;z-index:999}
+.bvi-mega-menu-container .active .menu-item-page:hover > .sub-menu{display:block !important}
+.bvi-mega-menu-container .menu-item-column{float:left;padding:0 3% 25px 1%;width:50%}
+.bvi-mega-menu-container .menu-item-column .sub-menu li{font-family:Arial;font-size:12px;padding:6px 0}
+.bvi-mega-menu-container .menu-item-column .sub-menu li a{display:block;color:#000;padding:0 5px;position:relative}
+.bvi-mega-menu-container .menu-item-column .sub-menu li a:hover, .bvi-mega-menu-container .menu-item-column .sub-menu li.active a{background-color:#999;text-decoration:none}
+.bvi-mega-menu-container .menu-item-column .sub-menu li a:hover:after, .bvi-mega-menu-container .menu-item-column .sub-menu li.active a:after{display:block}
+.bvi-mega-menu-container .menu-item-column .sub-menu .sub-menu li{text-transform:none;padding-left:22px}
+
+@media handheld, screen and (max-width:767px){
+	.mobile-toggle{color:#fff;display:block !important;padding:10px 15px;text-align:right}
+	.bvi-mega-menu-container, .bvi-mega-menu-custom-mobile-menu{display:none}
+	.bvi-mega-menu-container > .menu-item-depth-0, .bvi-mega-menu-custom-mobile-menu > li{border-bottom:2px solid #333;display:block;text-align:left;width:100%}
+	.bvi-mega-menu-container > .menu-item-depth-0 > .mega-menu{display:none !important}
+}
