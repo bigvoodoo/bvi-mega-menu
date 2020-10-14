@@ -167,6 +167,14 @@ You can enable the default CSS in the WordPress Admin under Settings > BVI Mega 
 
 ## Changelog
 
+### 4.0.2
+
+* Bug Fix: AJAX mega menu references to visible updated for latest jQuery
+
+### 4.0.1
+
+* Adds GitHub repository linking
+
 ### 4.0.0
 
 * Adds accessibility functionality to the mega menu in the form of aria labels, flyouts, and more

@@ -1,5 +1,5 @@
 jQuery(function($) {
-	var mobile = $('.mobile-toggle:visible').length == 1;
+	var mobile = $('.mobile-toggle').is(':visible').length == 1;
 	$('.bvi-mega-menu-container').each(function() {
 		var container = $(this),
 			theme_location = container.data('theme_location'),
@@ -7,7 +7,7 @@ jQuery(function($) {
 
 		container.find('.menu-item-depth-0').on('mouseover', function() {
 			clearTimeout(this.timeout);
-			if(!$(this).children('.mega-menu:visible').length) {
+			if(!$(this).children('.mega-menu').is(':visible').length) {
 				$('.menu-item-depth-0').children('.mega-menu').stop(true, true).hide();
 				this.timeout = setTimeout($.proxy(over, this), 0);
 			}
@@ -75,14 +75,14 @@ jQuery(function($) {
 		$('.mobile-toggle').removeClass('open').next('ul').removeAttr('style');
 	});
 
-	var ajax_load_menu = function(theme_location, home) {
+	var ajax_load_menu = function(theme_location, home) {		
 		if(this.find('.mega-menu').is(':empty')) {
 			var id = this.attr('id').replace(/[^0-9]+/, ''),
 				url = '/ajax_mega_menu/' + encodeURIComponent(theme_location) + '/' + id,
 				qs = $.extend({}, this.parents('ul.bvi-mega-menu-container').data());
 
 			$('script[src]').each(function() {
-				var match = $(this).attr('src').match(/mega-menu.js\?([^"']+)=([^"']+)/);
+				var match = $(this).attr('src').match(/mega-menu-ajax.js\?([^"']+)=([^"']+)/);
 				if(match)
 					qs[match[1]] = match[2];
 			});
