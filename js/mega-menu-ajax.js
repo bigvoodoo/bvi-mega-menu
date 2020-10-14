@@ -1,6 +1,6 @@
 jQuery(function($) {
 	var mobile = $('.mobile-toggle:visible').length == 1;
-	$('.mega-menu-container').each(function() {
+	$('.bvi-mega-menu-container').each(function() {
 		var container = $(this),
 			theme_location = container.data('theme_location'),
 			home = container.data('home');
@@ -17,33 +17,31 @@ jQuery(function($) {
 		});
 
 		var over = function() {
-			if(container.siblings('.mobile-toggle').filter(':visible').length) {
+			if(container.siblings('.mobile-toggle').is(':visible').length) {
 				return true;
 			}
+
 			ajax_load_menu.call($(this), theme_location, home);
 
-			if(!$(this).children('.mega-menu:empty').length)
+			if(!$(this).children('.mega-menu:empty').length) {
 				$(this).children('.mega-menu').stop(true, true).slideDown(300);
+			}
 		};
 
 		var out = function() {
-			if(container.siblings('.mobile-toggle').filter(':visible').length) {
+			if(container.siblings('.mobile-toggle').is(':visible').length) {
 				return true;
 			}
-			if(!$(this).children('.mega-menu:empty').length)
+
+			if(!$(this).children('.mega-menu:empty').length) {
 				$(this).children('.mega-menu').stop(true, true).slideUp(300).fadeOut();
+			}
 		};
 
-		container.siblings('.mobile-toggle').on('click', function(e) {
+		container.siblings('.mobile-toggle').click(function(e) {
 			e.preventDefault();
 
-			if(container.is(':visible')) {
-				container.stop(true, true).slideUp();
-				$(this).removeClass('open');
-			} else {
-				container.stop(true, true).slideDown();
-				$(this).addClass('open');
-			}
+			$(this).toggleClass('open').next('ul').slideToggle();
 
 			return false;
 		});
@@ -74,14 +72,14 @@ jQuery(function($) {
 			}
 		}
 
-		$('.mobile-toggle').removeClass('active').next('ul').removeAttr('style');
+		$('.mobile-toggle').removeClass('open').next('ul').removeAttr('style');
 	});
 
 	var ajax_load_menu = function(theme_location, home) {
 		if(this.find('.mega-menu').is(':empty')) {
 			var id = this.attr('id').replace(/[^0-9]+/, ''),
 				url = '/ajax_mega_menu/' + encodeURIComponent(theme_location) + '/' + id,
-				qs = $.extend({}, this.parents('ul.mega-menu-container').data());
+				qs = $.extend({}, this.parents('ul.bvi-mega-menu-container').data());
 
 			$('script[src]').each(function() {
 				var match = $(this).attr('src').match(/mega-menu.js\?([^"']+)=([^"']+)/);
@@ -98,8 +96,6 @@ jQuery(function($) {
 					html = html.replace(url, window.location.pathname + window.location.search);
 					// insert the HTML
 					this.find('.mega-menu').replaceWith($($.parseHTML(html)).find('.mega-menu'));
-					// initialize the CF7 forms
-					this.find('div.wpcf7 > form').wpcf7InitForm();
 				}, this)
 			});
 		}

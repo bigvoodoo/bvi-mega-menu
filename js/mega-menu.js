@@ -26,19 +26,14 @@ jQuery(function($) {
 			}
 		}
 
-		$('.mobile-toggle').removeClass('active').next('ul').removeAttr('style');
+		$('.mobile-toggle').removeClass('open').next('ul').removeAttr('style');
 	});
 
 	// mobile toggle functionality
 	$('.mobile-toggle').click(function(event){
 		event.preventDefault();
-		if($('.bvi-mega-menu-custom-mobile-menu').length === 0) {
-			$(this).toggleClass('active');
-			$('.bvi-mega-menu-container').stop(true, true).slideToggle();
-		} else {
-			$(this).toggleClass('active');
-			$('.bvi-mega-menu-custom-mobile-menu').stop(true, true).slideToggle();
-		}
+		
+		$(this).toggleClass('open').next('ul').slideToggle();
 	});
 
 	$('.menu-item-depth-0').on('mouseover', function() {
