@@ -3,14 +3,14 @@
  * Plugin Name: BVI Mega Menu
  * Plugin URI: https://github.com/bigvoodoo/bvi-mega-menu
  * Description: Enhanced WordPress menu functionality adding the ability to add columns/sections, menus, and shortcodes within a menu itself. Also integrated is a Related Pages shortcode that intelligently determines what links to show based on the relationships set within a menu.
- * Version: 4.0.2
+ * Version: 4.0.3
  * Author: Big Voodoo Interactive
  * Author URI: http://www.bigvoodoo.com
  * License: GPLv2
  * Copyright: Big Voodoo Interactive
  * GitHub Plugin URI: https://github.com/bigvoodoo/bvi-mega-menu
  *
- * @author Joey Line
+ * @author Joey Line <joey@bigvoodoo.com>
  * @author Christina Gleason <tina@bigvoodoo.com>
  */
 
@@ -229,7 +229,7 @@ class Mega_Menu {
 		$menu_items = $this->init_shortcode($atts);
 
 		$args =(object) shortcode_atts(
-			array('theme_location' => '', 'menu' => '', 'before' => '', 'after' => '', 'link_before' => '', 'link_after' => '', 'ajax' => false, 'mobile_toggle' => false),
+			array('theme_location' => '', 'menu' => '', 'before' => '', 'after' => '', 'link_before' => '', 'link_after' => '', 'ajax' => false, 'mobile_toggle' => false, 'aria_button' => false),
 			$atts,
 			'mega_menu'
 		);
@@ -245,7 +245,7 @@ class Mega_Menu {
 
 			if($current->post_id == $post->ID) {
 				$parent_id = $current->parent_id;
-				self::$active_pages[0] = $current->ID;
+				$menu_items[$i]->classes[] = 'active';
 			} else if($current->ID == $parent_id) {
 				if($current->type == 'menu') {
 					self::$active_pages = array();
@@ -253,7 +253,7 @@ class Mega_Menu {
 				}
 
 				$parent_id = $current->parent_id;
-				self::$active_pages[0] = $current->ID;
+				$menu_items[$i]->classes[] = 'active';
 			}
 
 			if($parent_id === 0) {

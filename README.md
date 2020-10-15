@@ -65,6 +65,7 @@ Options:
 * `link_before`: Output text before the link text
 * `link_after`: Output text after the link text
 * `ajax`: Set to "true", it loads the dropdown part of the menu via AJAX. Note, if this is set to false, you need to manually setup JS to get the menu to open/close on hover.
+* `aria_button`: Set to "true", it adds an aria-button button element next to the top level menu items as well as accompanying jQuery to make it work on click only for accessibility purposes
 
 Example using all options:
 ```php
@@ -166,6 +167,12 @@ You can enable the default CSS in the WordPress Admin under Settings > BVI Mega 
 ```
 
 ## Changelog
+
+### 4.0.3
+
+* Adds active class to child page if its the current page as well as the parent
+* Adds optional aria-button for top level menu items for accessibility
+* Bug Fix: Additional jQuery fixes
 
 ### 4.0.2
 

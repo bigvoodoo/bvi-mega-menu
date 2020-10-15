@@ -37,12 +37,6 @@ class Walker_Nav_Mega_Menu extends Walker_Nav_Menu {
 		$classes = empty($item->classes) ? array() : (array) $item->classes;
 		$classes[] = 'menu-item-depth-' . $depth;
 
-		// if this is the currently active page, OR if $depth is 0 and this item is stored as an
-		// active page
-		if($item->post_id == $post->ID || (in_array($item->ID, Mega_Menu::$active_pages) && $depth == 0)) {
-			$classes[] = 'active';
-		}
-
 		$class_names = join(' ', apply_filters('nav_menu_css_class', array_filter($classes), $item, $args));
 		$class_names = $class_names ? ' class="' . esc_attr($class_names) . '"' : '';
 
@@ -65,7 +59,15 @@ class Walker_Nav_Mega_Menu extends Walker_Nav_Menu {
 			$attributes .= ! empty($item->target)      ? ' target="' . esc_attr($item->target   ) .'"' : '';
 			$attributes .= ! empty($item->xfn)         ? ' rel="'    . esc_attr($item->xfn      ) .'"' : '';
 
+			if($depth == 0) {
+				$attributes .= ' aria-haspopup="true" aria-expanded="false"';
+			}
+
 			$item_output = '<a'. $attributes .'>' . $args->link_before . apply_filters('the_title', $item->post_title, $item->ID) . $args->link_after . '</a>';
+
+			if($depth == 0 && $args->aria_button == true) {
+				$item_output .= '<button class="aria-button"><span></span></button>';
+			}
 		} else if ($item->type == 'shortcode') {
 			$item_output = do_shortcode(htmlspecialchars_decode($item->post_title, ENT_QUOTES));
 		} else if (isset($item->post_title)) {

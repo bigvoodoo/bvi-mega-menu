@@ -161,6 +161,12 @@ You can enable the default CSS in the WordPress Admin under Settings > BVI Mega 
 
 == Changelog ==
 
+= 4.0.3 =
+
+* Adds active class to child page if its the current page as well as the parent
+* Adds optional aria-button for top level menu items for accessibility
+* Bug Fix: Additional jQuery fixes
+
 = 4.0.2 =
 
 * Bug Fix: AJAX mega menu references to visible updated for latest jQuery
