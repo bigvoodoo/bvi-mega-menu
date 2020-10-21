@@ -161,6 +161,14 @@ You can enable the default CSS in the WordPress Admin under Settings > BVI Mega 
 
 == Changelog ==
 
+= 4.0.5 =
+
+* Bug fix: Adjusts mega menu mobile-toggle visibility check to use explicit false checks instead of .not() functionality
+
+= 4.0.4 =
+
+* Bug fix: Changes check for mega menu dropdown element to use mouseenter() function
+
 = 4.0.3 =
 
 * Adds active class to child page if its the current page as well as the parent
