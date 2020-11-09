@@ -88,7 +88,7 @@ jQuery(function($) {
 			});
 
 			$.ajax({
-				async: false,
+				async: true,
 				url: home + url + '?' + $.param(qs),
 				dataType: 'html',
 				success: $.proxy(function(html) {
