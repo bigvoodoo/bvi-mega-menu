@@ -168,6 +168,10 @@ You can enable the default CSS in the WordPress Admin under Settings > BVI Mega 
 
 ## Changelog
 
+### 4.0.6
+
+* Bug fix: Switches async to explicit true to avoid blocks on the ajax calls on Chrome only
+
 ### 4.0.5
 
 * Bug fix: Adjusts mega menu mobile-toggle visibility check to use explicit false checks instead of .not() functionality
