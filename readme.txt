@@ -161,6 +161,10 @@ You can enable the default CSS in the WordPress Admin under Settings > BVI Mega 
 
 == Changelog ==
 
+= 4.0.7 =
+
+* Bug fix: Adds additional check to drop the mega menu down after the initial AJAX call is completed when first hovering over a main menu item
+
 = 4.0.6 =
 
 * Bug fix: Switches async to explicit true to avoid blocks on the ajax calls on Chrome only
