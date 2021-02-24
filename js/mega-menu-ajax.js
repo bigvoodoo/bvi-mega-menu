@@ -96,6 +96,11 @@ jQuery(function($) {
 					html = html.replace(url, window.location.pathname + window.location.search);
 					// insert the HTML
 					this.find('.mega-menu').replaceWith($($.parseHTML(html)).find('.mega-menu'));
+					// to prevent it not loading on the first go-around, add an additional check
+					// to load the menu once the ajax is completed
+					if(!this.find('.mega-menu:empty').length) {
+						this.find('.mega-menu').stop(true, true).slideDown(300);
+					}
 				}, this)
 			});
 		}
