@@ -65,7 +65,7 @@ class Walker_Nav_Mega_Menu extends Walker_Nav_Menu {
 
 			$item_output = '<a'. $attributes .'>' . $args->link_before . apply_filters('the_title', $item->post_title, $item->ID) . $args->link_after . '</a>';
 
-			if($depth == 0 && $args->aria_button == true) {
+			if($depth == 0 && !empty($args->aria_button) && $args->aria_button == true) {
 				$item_output .= '<button class="aria-button"><span></span></button>';
 			}
 		} else if ($item->type == 'shortcode') {
