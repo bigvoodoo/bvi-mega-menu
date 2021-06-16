@@ -3,7 +3,7 @@
  * Plugin Name: BVI Mega Menu
  * Plugin URI: https://github.com/bigvoodoo/bvi-mega-menu
  * Description: Enhanced WordPress menu functionality adding the ability to add columns/sections, menus, and shortcodes within a menu itself. Also integrated is a Related Pages shortcode that intelligently determines what links to show based on the relationships set within a menu.
- * Version: 4.0.7
+ * Version: 4.0.8
  * Author: Big Voodoo Interactive
  * Author URI: http://www.bigvoodoo.com
  * License: GPLv2
@@ -239,27 +239,30 @@ class Mega_Menu {
 		$args->menu_type = 'mega';
 
 		// figure out the currently active page & its ancestors
-		$parent_id = null;
-		for($i = count($menu_items) - 1; $i >= 0; $i--) {
-			$current = &$menu_items[$i];
+		if(!empty($post)) {
+			$parent_id = null;
+			for($i = count($menu_items) - 1; $i >= 0; $i--) {
+				$current = &$menu_items[$i];
 
-			if($current->post_id == $post->ID) {
-				$parent_id = $current->parent_id;
-				$menu_items[$i]->classes[] = 'active';
-			} else if($current->ID == $parent_id) {
-				if($current->type == 'menu') {
-					self::$active_pages = array();
-					break;
+				if($current->post_id == $post->ID) {
+					$parent_id = $current->parent_id;
+					$menu_items[$i]->classes[] = 'active';
+				} else if($current->ID == $parent_id) {
+					if($current->type == 'menu') {
+						self::$active_pages = array();
+						break;
+					}
+
+					$parent_id = $current->parent_id;
+					$menu_items[$i]->classes[] = 'active';
 				}
 
-				$parent_id = $current->parent_id;
-				$menu_items[$i]->classes[] = 'active';
-			}
-
-			if($parent_id === 0) {
-				break;
+				if($parent_id === 0) {
+					break;
+				}
 			}
 		}
+
 		// check if ajax has been given as a menu option in the shortcode
 		if($args->ajax === "true") {
 			// only output top-level menu items for AJAX menus
@@ -340,11 +343,13 @@ class Mega_Menu {
 			// we need to use the current Post in here
 			global $post;
 
-			if($menu_item->post_id == $post->ID) {
-				return true;
-			} else {
-				return false;
+			if(!empty($post)) {
+				if($menu_item->post_id == $post->ID) {
+					return true;
+				}
 			}
+
+			return false;
 		});
 
 		foreach($post_menu_items as $menu_item) {

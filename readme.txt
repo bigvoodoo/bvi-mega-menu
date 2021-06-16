@@ -2,7 +2,7 @@
 Contributors: bigvoodoo, firejdl, geekmenina
 Tags: menu, mega menu, admin, shortcode
 Requires at least: 5.0.0
-Tested up to: 5.5.1
+Tested up to: 5.7.2
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -160,6 +160,11 @@ You can enable the default CSS in the WordPress Admin under Settings > BVI Mega 
 }`
 
 == Changelog ==
+
+= 4.0.8 =
+
+* Bug fix: Adds check for empty post IDs on 404 pages to remove PHP Notices
+* Bug fix: Adds check for empty use of aria_button argument to remove PHP Warnings
 
 = 4.0.7 =
 

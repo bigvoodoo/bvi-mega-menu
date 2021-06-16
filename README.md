@@ -1,5 +1,5 @@
 # BVI Mega Menu
-[@bigvoodoo](https://github.com/bigvoodoo), [@firejdl](https://github.com/firejdl), [@thatElectricFeel](https://github.com/thatElectricFeel)
+[@bigvoodoo](https://github.com/bigvoodoo), [@firejdl](https://github.com/firejdl), [@praggmatica](https://github.com/praggmatica)
 
 Enhancements to the wp-admin Menu interface that allow for faster, more robust, and easier to edit menus. Also includes related links functionality per the menu's configuration.
 
@@ -167,6 +167,11 @@ You can enable the default CSS in the WordPress Admin under Settings > BVI Mega 
 ```
 
 ## Changelog
+
+### 4.0.8
+
+* Bug fix: Adds check for empty post IDs on 404 pages to remove PHP Notices
+* Bug fix: Adds check for empty use of aria_button argument to remove PHP Warnings
 
 ### 4.0.7
 
