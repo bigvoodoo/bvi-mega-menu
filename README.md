@@ -168,6 +168,10 @@ You can enable the default CSS in the WordPress Admin under Settings > BVI Mega 
 
 ## Changelog
 
+### 4.0.9
+
+* Added aria-label="Mega Menu" attribute to mobile-toggle button to resolve Lighthouse issue
+
 ### 4.0.8
 
 * Bug fix: Adds check for empty post IDs on 404 pages to remove PHP Notices

@@ -3,7 +3,7 @@
  * Plugin Name: BVI Mega Menu
  * Plugin URI: https://github.com/bigvoodoo/bvi-mega-menu
  * Description: Enhanced WordPress menu functionality adding the ability to add columns/sections, menus, and shortcodes within a menu itself. Also integrated is a Related Pages shortcode that intelligently determines what links to show based on the relationships set within a menu.
- * Version: 4.0.8
+ * Version: 4.0.9
  * Author: Big Voodoo Interactive
  * Author URI: http://www.bigvoodoo.com
  * License: GPLv2
@@ -12,6 +12,7 @@
  *
  * @author Joey Line <joey@bigvoodoo.com>
  * @author Christina Gleason <tina@bigvoodoo.com>
+ * @author Chris Hilliard <christopher@sherloq.app>
  */
 
 if(!function_exists('add_action')) {
@@ -205,7 +206,7 @@ class Mega_Menu {
 		$html = '';
 
 		if(!empty($args->mobile_toggle)) {
-			$html .= '<button class="mobile-toggle">' . $args->mobile_toggle . '</button>';
+			$html .= '<button class="mobile-toggle" aria-label="Main Menu">' . $args->mobile_toggle . '</button>';
 		}
 
 		if(strpos($ul_id, 'related-links') !== FALSE) {
