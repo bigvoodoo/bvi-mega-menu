@@ -54,7 +54,8 @@ class Mega_Menu_Admin_Settings {
 		// guess it gives you the options to separate the sections if you were doing some crazy front-end display
 		$sections = array(
 			'default' => array('bvi_mega_menu_section_default', 'Default Styling', array($this, 'bvi_mega_menu_section_text_default'), 'bvi_mega_menu_settings_admin'),
-			'override' => array('bvi_mega_menu_section_override', 'Override Mobile Menu', array($this, 'bvi_mega_menu_section_text_override'), 'bvi_mega_menu_settings_admin')
+			'override' => array('bvi_mega_menu_section_override', 'Override Mobile Menu', array($this, 'bvi_mega_menu_section_text_override'), 'bvi_mega_menu_settings_admin'),
+			'instant_dropdown' => array('bvi_mega_menu_section_instant_dropdown', 'Instant Mega Menu Dropdown', array($this, 'bvi_mega_menu_section_text_instant_dropdown'), 'bvi_mega_menu_settings_admin')
 		);
 
 		// sets up fields
@@ -67,7 +68,8 @@ class Mega_Menu_Admin_Settings {
 		// 6 => this allows you to set a unique name for the id, name, and value for the input field (in conjunction with the 3th array value)
 		$fields = array(
 			'default_css' => array('bvi_mega_menu_css_input', 'Enable Default CSS?', array(&$this, 'bvi_mega_menu_input_checkbox'), 'bvi_mega_menu_settings_admin', 'bvi_mega_menu_section_default', array('field' => 'bvi_mega_menu_css_val')),
-			'override_mobile' => array('bvi_mega_menu_override_select', 'Override Mobile Menu with Custom Menu', array(&$this, 'bvi_mega_menu_select'), 'bvi_mega_menu_settings_admin', 'bvi_mega_menu_section_override', array('field' => 'bvi_mega_menu_override_val'))
+			'override_mobile' => array('bvi_mega_menu_override_select', 'Override Mobile Menu with Custom Menu', array(&$this, 'bvi_mega_menu_select'), 'bvi_mega_menu_settings_admin', 'bvi_mega_menu_section_override', array('field' => 'bvi_mega_menu_override_val')),
+			'instant_dropdown_field' => array('bvi_mega_menu_instant_dropdown', 'Enable Instant Dropdown?', array(&$this, 'bvi_mega_menu_input_checkbox'), 'bvi_mega_menu_settings_admin', 'bvi_mega_menu_section_instant_dropdown', array('field' => 'bvi_mega_menu_dropdown_val'))
 		);
 
 		// yeah, we're not calling add_settings_section() 5 times over and over -
@@ -96,6 +98,9 @@ class Mega_Menu_Admin_Settings {
 		// when they are submitted blank
 		if(!array_key_exists('bvi_mega_menu_css_val', $input)) {
 			$input['bvi_mega_menu_css_val'] = '0';
+		}
+		if(!array_key_exists('bvi_mega_menu_dropdown_val', $input)) {
+			$input['bvi_mega_menu_dropdown_val'] = '0';
 		}
 
 		if(!empty($input)) {
@@ -153,6 +158,10 @@ class Mega_Menu_Admin_Settings {
 
 	public function bvi_mega_menu_section_text_override() {
 		?><p>If you want a WordPress menu to override the mobile menu that gets created when using the mega menu, select the menu here. This will affect every page that the mega menu is called on mobile. Please note, if you select the same menu being used as the mega menu, nothing will be changed.</p><?php
+	}
+
+	public function bvi_mega_menu_section_text_instant_dropdown() {
+		?><p>Select the Checkbox if you would like the mega menu to dropdown instantly, without a sliding animation. Leave empty if you would like the mega menu dropdown to occur with a sliding animation.</p><?php
 	}
 }
 
