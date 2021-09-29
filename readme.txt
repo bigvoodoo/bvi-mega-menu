@@ -161,6 +161,10 @@ You can enable the default CSS in the WordPress Admin under Settings > BVI Mega 
 
 == Changelog ==
 
+= 4.1.10 =
+
+* Fixed placement of localize_script for instant dropdown
+
 = 4.1.9 =
 
 * Added option in the admin settings to have the mega menu and mobile menu drop down without a sliding animation

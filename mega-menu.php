@@ -3,7 +3,7 @@
  * Plugin Name: BVI Mega Menu
  * Plugin URI: https://github.com/bigvoodoo/bvi-mega-menu
  * Description: Enhanced WordPress menu functionality adding the ability to add columns/sections, menus, and shortcodes within a menu itself. Also integrated is a Related Pages shortcode that intelligently determines what links to show based on the relationships set within a menu.
- * Version: 4.1.9
+ * Version: 4.1.10
  * Author: Big Voodoo Interactive
  * Author URI: http://www.bigvoodoo.com
  * License: GPLv2
@@ -271,6 +271,16 @@ class Mega_Menu {
 			// if this is using AJAX, include the AJAX on hover functionality for the menu
 			wp_register_script('bvi-mega-menu', plugins_url('js/mega-menu-ajax.js', __FILE__), array('jquery'), false, true);
 			wp_enqueue_script('bvi-mega-menu');
+
+			if(get_option('bvi_mega_menu_dropdown_val') == 1) {
+				wp_localize_script('bvi-mega-menu', 'DropdownSpeed', array(
+					'instant_dropdown' => true )
+				);
+			} else {
+				wp_localize_script('bvi-mega-menu', 'DropdownSpeed', array(
+					'instant_dropdown' => false )
+				);
+			}
 		} else if(is_numeric($args->ajax) && $args->ajax !== false) {
 			$current_page = self::filter_menu_items($menu_items, 'ID', $args->ajax);
 			$menu_items = array_merge($current_page, self::filter_menu_items($menu_items, 'parent_id', $args->ajax, true));
@@ -443,20 +453,4 @@ if(get_option('bvi_mega_menu_css_val') == 1) {
 		wp_register_style('bvi-mega-menu-default', plugins_url('bvi-mega-menu/css/mega-menu-default.css'));
 		wp_enqueue_style('bvi-mega-menu-default');
 	});
-}
-
-add_action( 'wp_enqueue_scripts', 'set_dropdown_speed');
-
-function set_dropdown_speed() {
-	if(get_option('bvi_mega_menu_dropdown_val') == 1) {
-		wp_enqueue_script('dropdown_speed_val', './js/mega-menu-ajax.js');
-		wp_localize_script('dropdown_speed_val', 'DropdownSpeed', array(
-			'instant_dropdown' => true )
-		);
-	} else {
-		wp_enqueue_script('dropdown_speed_val', './js/mega-menu-ajax.js');
-		wp_localize_script('dropdown_speed_val', 'DropdownSpeed', array(
-			'instant_dropdown' => false )
-		);
-	}
 }
