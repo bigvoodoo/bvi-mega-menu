@@ -2,7 +2,7 @@
 Contributors: bigvoodoo, firejdl, geekmenina
 Tags: menu, mega menu, admin, shortcode
 Requires at least: 5.0.0
-Tested up to: 5.7.2
+Tested up to: 5.8
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -160,6 +160,10 @@ You can enable the default CSS in the WordPress Admin under Settings > BVI Mega 
 }`
 
 == Changelog ==
+
+= 4.1.9 =
+
+* Added option in the admin settings to have the mega menu and mobile menu drop down without a sliding animation
 
 = 4.0.9 =
 
