@@ -3,7 +3,7 @@
  * Plugin Name: BVI Mega Menu
  * Plugin URI: https://github.com/bigvoodoo/bvi-mega-menu
  * Description: Enhanced WordPress menu functionality adding the ability to add columns/sections, menus, and shortcodes within a menu itself. Also integrated is a Related Pages shortcode that intelligently determines what links to show based on the relationships set within a menu.
- * Version: 4.1.10
+ * Version: 4.2.0
  * Author: Big Voodoo Interactive
  * Author URI: http://www.bigvoodoo.com
  * License: GPLv2
@@ -124,7 +124,8 @@ class Mega_Menu {
 	private function init_shortcode($atts) {
 		$menus = get_nav_menu_locations();
 		// if neither the theme location or the menu id is set, throw an error
-		if(!empty($atts['menu']) && empty($atts['theme_location'])) {
+		// first check if theres a menu id explictly set
+		if((!empty($atts['menu']) && empty($atts['theme_location']))) {
 			if(is_numeric($atts['menu'])) {
 				$menu_id = $atts['menu'];
 				$menu_term = get_term_by('id',$atts['menu'],'nav_menu');
@@ -132,6 +133,16 @@ class Mega_Menu {
 			} else {
 				throw new Exception('Menu ID given not an integer: '.$atts['menu']);
 			}
+		// then check if theres a numeric value given in the theme location (for ajax calls)
+		} else if(!empty($atts['theme_location']) && is_numeric($atts['theme_location'])) {
+			if(is_numeric($atts['theme_location'])) {
+				$menu_id = $atts['theme_location'];
+				$menu_term = get_term_by('id',$atts['theme_location'],'nav_menu');
+				$atts['theme_location'] = $menu_term->slug;
+			} else {
+				throw new Exception('Menu ID given not an integer: '.$atts['theme_location']);
+			}
+		// if neither are set, error out
 		} else if(empty($atts['theme_location']) && empty($atts['menu'])) {
 			throw new Exception('Menu location not configured: '.$atts['theme_location']);
 		// otherwise if the theme location is set

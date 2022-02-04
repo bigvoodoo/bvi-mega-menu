@@ -5,6 +5,10 @@ jQuery(function($) {
 			theme_location = container.data('theme_location'),
 			home = container.data('home');
 
+		if(!theme_location) {
+			theme_location = container.data('menu');
+		}
+
 		container.find('.menu-item-depth-0').mouseenter(function() {
 			clearTimeout(this.timeout);
 			if($(this).children('.mega-menu').is(':visible') == false) {
