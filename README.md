@@ -168,6 +168,10 @@ You can enable the default CSS in the WordPress Admin under Settings > BVI Mega 
 
 ## Changelog
 
+### 4.2.0
+
+* Fixed issue where menus declared by menu ID were not providing the dropdowns while using AJAX
+
 ### 4.1.10
 
 * Fixed placement of localize_script for instant dropdown
