@@ -251,29 +251,7 @@ class Mega_Menu {
 		$args->menu_type = 'mega';
 
 		// figure out the currently active page & its ancestors
-		if(!empty($post)) {
-			$parent_id = null;
-			for($i = count($menu_items) - 1; $i >= 0; $i--) {
-				$current = &$menu_items[$i];
-
-				if($current->post_id == $post->ID) {
-					$parent_id = $current->parent_id;
-					$menu_items[$i]->classes[] = 'active';
-				} else if($current->ID == $parent_id) {
-					if($current->type == 'menu') {
-						self::$active_pages = array();
-						break;
-					}
-
-					$parent_id = $current->parent_id;
-					$menu_items[$i]->classes[] = 'active';
-				}
-
-				if($parent_id === 0) {
-					break;
-				}
-			}
-		}
+		$this->mega_menu_classes_by_context($menu_items);
 
 		// check if ajax has been given as a menu option in the shortcode
 		if($args->ajax === "true") {
@@ -323,6 +301,63 @@ class Mega_Menu {
 		}
 
 		return $menus;
+	}
+
+	/**
+	 * adding class names according to context which is defined
+	 * denoting the currently active element and its parent and his ancestor elements
+	 */
+	private function mega_menu_classes_by_context( &$menu_items ) {
+		global $post;
+
+		if(empty($post)) {
+			return;
+		}
+
+		$maped_items = array();
+		$current_item = null;
+
+		foreach ( (array) $menu_items as $key => $menu_item ) {
+			$maped_items[$menu_item->ID] = $menu_item;
+
+			if ( $menu_item->post_id == $post->ID ) {
+				$menu_items[$key]->classes[] = 'active';
+				$menu_items[$key]->classes[] = 'current-menu-item';
+				$current_item = $menu_item;
+			}
+		}
+
+		// get parent
+		$parent = self::mega_menu_classes_by_context_get_parent($current_item, $maped_items);
+
+		/**
+		 * while is used to ignore parent seek on landing page
+		 */
+		while ($parent != null) {
+			if ($parent->ID == $current_item->parent_id) {
+				$parent->classes[] = 'active';
+				$parent->classes[] = 'current-menu-parent';
+			} else {
+				$parent->classes[] = 'active';
+				$parent->classes[] = 'current-menu-ancestor';
+			}
+
+			$parent = self::mega_menu_classes_by_context_get_parent($parent, $maped_items);
+		}
+	}
+
+	/**
+	 * $current_item is nullable
+	 * 
+	 * $items_map = Map<ID, Object>();
+	 */
+	private static function mega_menu_classes_by_context_get_parent(&$current_item, &$items_map) {
+		if (empty($current_item)) {
+			return null;
+		}
+
+		$PARENT_ID = $items_map[$current_item->ID]->parent_id;
+		return array_key_exists($PARENT_ID, $items_map) ? $items_map[$PARENT_ID] : null;
 	}
 
 	private static function custom_menu_items() {
