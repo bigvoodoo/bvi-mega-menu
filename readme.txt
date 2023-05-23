@@ -161,6 +161,10 @@ You can enable the default CSS in the WordPress Admin under Settings > BVI Mega 
 
 == Changelog ==
 
+= 4.2.1 =
+
+* Fixed issue where instant dropdown value was not being passed
+
 = 4.2.0 =
 
 * Fixed issue where menus declared by menu ID were not providing the dropdowns while using AJAX
