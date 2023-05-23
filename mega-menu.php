@@ -285,11 +285,11 @@ class Mega_Menu {
 
 			if(get_option('bvi_mega_menu_dropdown_val') == 1) {
 				wp_localize_script('bvi-mega-menu', 'DropdownSpeed', array(
-					'instant_dropdown' => true )
+					'instant_dropdown' => 1 )
 				);
 			} else {
 				wp_localize_script('bvi-mega-menu', 'DropdownSpeed', array(
-					'instant_dropdown' => false )
+					'instant_dropdown' => 0 )
 				);
 			}
 		} else if(is_numeric($args->ajax) && $args->ajax !== false) {

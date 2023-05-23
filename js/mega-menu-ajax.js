@@ -28,7 +28,7 @@ jQuery(function($) {
 			ajax_load_menu.call($(this), theme_location, home);
 
 			if(!$(this).children('.mega-menu:empty').length) {
-				if(!DropdownSpeed.instant_dropdown){
+				if(parseInt(DropdownSpeed.instant_dropdown) === 0){
 					$(this).children('.mega-menu').stop(true, true).slideDown(300);
 				} else {
 					$(this).children('.mega-menu').stop(true, true).show();
@@ -42,7 +42,7 @@ jQuery(function($) {
 			}
 
 			if(!$(this).children('.mega-menu:empty').length) {
-				if(!DropdownSpeed.instant_dropdown){
+				if(parseInt(DropdownSpeed.instant_dropdown) === 0){
 					$(this).children('.mega-menu').stop(true, true).slideUp(300).fadeOut();
 				} else {
 					$(this).children('.mega-menu').stop(true, true).hide();
@@ -53,7 +53,7 @@ jQuery(function($) {
 		container.siblings('.mobile-toggle').click(function(e) {
 			e.preventDefault();
 
-			if(!DropdownSpeed.instant_dropdown){
+			if(parseInt(DropdownSpeed.instant_dropdown) === 0){
 				$(this).toggleClass('open').next('ul').slideToggle();
 			} else {
 				$(this).toggleClass('open').next('ul').toggle();
@@ -115,7 +115,7 @@ jQuery(function($) {
 					// to prevent it not loading on the first go-around, add an additional check
 					// to load the menu once the ajax is completed
 					if(!this.find('.mega-menu:empty').length) {
-						if(!DropdownSpeed.instant_dropdown){
+						if(parseInt(DropdownSpeed.instant_dropdown) === 0){
 							this.find('.mega-menu').stop(true, true).slideDown(300);
 						} else {
 							this.find('.mega-menu').stop(true, true).show();
