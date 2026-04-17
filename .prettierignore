@@ -7,3 +7,4 @@ assets/dist/*
 *.css
 templates/**/*.php
 views/**/*.php
+.github/**/*.yml

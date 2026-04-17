@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name:       BVI Mega Menu
- * Plugin URI:        https://github.com/bviigital/bvi-mega-menu
+ * Plugin URI:        https://github.com/bigvoodoo/bvi-mega-menu
  * Author:            Big Voodoo Interactive
  * Author URI:        https://www,bigvoodoo.com
  * Description:       Enhanced WordPress navigation menu with related links, columns, shortcodes, and block editor support.
@@ -12,7 +12,7 @@
  * Requires PHP:      8.2
  * License:           GPLv3
  * License URI:       https://www.gnu.org/licenses/gpl-3.0.html
- * GitHub Update URI: https://github.com/bviigital/bvi-mega-menu
+ * GitHub Update URI: https://github.com/bigvoodoo/bvi-mega-menu
  * Primary Branch:    main
  * Text Domain:       bvi-mega-menu
  */

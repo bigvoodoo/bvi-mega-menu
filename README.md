@@ -4,7 +4,7 @@ Enhanced WordPress navigation menu plugin with mega menu dropdowns, related link
 
 **Author:** [Big Voodoo Interactive](https://www,bigvoodoo.com)
 **License:** GPLv3
-**Repository:** [github.com/bviigital/bvi-mega-menu](https://github.com/bviigital/bvi-mega-menu)
+**Repository:** [github.com/bigvoodoo/bvi-mega-menu](https://github.com/bigvoodoo/bvi-mega-menu)
 
 ## Requirements
 

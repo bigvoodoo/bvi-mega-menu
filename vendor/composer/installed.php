@@ -1,19 +1,19 @@
 <?php return array(
     'root' => array(
-        'name' => 'bviigital/bvi-mega-menu',
+        'name' => 'bigvoodoo/bvi-mega-menu',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '2de4cfff21042f1f799452b04fddb65708e2fb3b',
+        'reference' => 'f35717912b14e492435f42de26ca5bd9daa375ff',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
         'dev' => true,
     ),
     'versions' => array(
-        'bviigital/bvi-mega-menu' => array(
+        'bigvoodoo/bvi-mega-menu' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '2de4cfff21042f1f799452b04fddb65708e2fb3b',
+            'reference' => 'f35717912b14e492435f42de26ca5bd9daa375ff',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
