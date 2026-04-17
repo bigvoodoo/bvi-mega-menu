@@ -7,14 +7,12 @@ on:
     branches: ['*']
 
 jobs:
-  # ─── File Hygiene ───────────────────────────────────────────────────
   file-hygiene:
     name: File Hygiene
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      # no trailing whitespace
       - name: Check trailing whitespace
         run: |
           if grep -rn ' $' --include='*.php' --include='*.js' --include='*.jsx' --include='*.scss' --include='*.css' --include='*.html' --include='*.hbs' --include='*.json' --include='*.yml' --include='*.yaml' --include='*.ts' . --exclude-dir=vendor --exclude-dir=node_modules --exclude-dir='assets/dist' --exclude-dir='.ORIGINAL'; then
@@ -22,7 +20,6 @@ jobs:
             exit 1
           fi
 
-      # unix lf line endings only
       - name: Check for CRLF line endings
         run: |
           if grep -rIl $'\r' --include='*.php' --include='*.js' --include='*.jsx' --include='*.scss' --include='*.css' --include='*.html' --include='*.hbs' --include='*.json' --include='*.yml' --include='*.yaml' --include='*.ts' . --exclude-dir=vendor --exclude-dir=node_modules --exclude-dir='assets/dist' --exclude-dir='.ORIGINAL'; then
@@ -30,7 +27,6 @@ jobs:
             exit 1
           fi
 
-      # no closing ?> tag in php files (wordpress rule)
       - name: Check for closing PHP tags
         run: |
           FAILED=0
@@ -43,7 +39,6 @@ jobs:
           done
           exit $FAILED
 
-      # ensure single trailing newline
       - name: Check final newline
         run: |
           FAILED=0
@@ -57,7 +52,6 @@ jobs:
           done
           exit $FAILED
 
-      # max 120 char line length
       - name: Check max line length (120 chars)
         run: |
           FAILED=0
@@ -71,8 +65,6 @@ jobs:
           done
           exit $FAILED
 
-      # indentation: 2-space for json/yml/yaml/js/jsx/ts, 4-space for
-      # everything else (php/scss/css/html/hbs). Matches .editorconfig.
       - name: Check indentation
         run: |
           FAILED=0
@@ -99,7 +91,6 @@ jobs:
 
           exit $FAILED
 
-  # ─── PHP Syntax Check ──────────────────────────────────────────────
   php-syntax:
     name: PHP Syntax Check
     runs-on: ubuntu-latest
@@ -119,7 +110,6 @@ jobs:
       - name: Check PHP syntax
         run: parallel-lint --exclude vendor --exclude node_modules --exclude .ORIGINAL .
 
-  # ─── PHP Coding Standards (PHPCS) ──────────────────────────────────
   phpcs:
     name: PHP Coding Standards
     runs-on: ubuntu-latest
@@ -161,7 +151,6 @@ jobs:
             --report=full \
             . || true
 
-  # ─── JavaScript Linting (ESLint) ───────────────────────────────────
   eslint:
     name: JavaScript Lint (ESLint)
     runs-on: ubuntu-latest
@@ -188,7 +177,6 @@ jobs:
             npx wp-scripts lint-js 'assets/src/**/*.jsx'
           fi
 
-  # ─── CSS / SCSS Linting (Stylelint) ────────────────────────────────
   stylelint:
     name: CSS/SCSS Lint (Stylelint)
     runs-on: ubuntu-latest
@@ -217,7 +205,6 @@ jobs:
               --ignore-pattern '.ORIGINAL/**'
           fi
 
-  # ─── Prettier Format Check ─────────────────────────────────────────
   prettier:
     name: Prettier Format Check
     runs-on: ubuntu-latest
@@ -238,7 +225,6 @@ jobs:
         run: npx prettier --check '**/*.{js,jsx,json}' --ignore-path .prettierignore
         continue-on-error: true
 
-  # ─── Build Assets ──────────────────────────────────────────────────
   build:
     name: Build Assets
     runs-on: ubuntu-latest
@@ -266,7 +252,6 @@ jobs:
             echo "No blocks directory found, skipping."
           fi
 
-  # ─── Plugin Functionality Checks ───────────────────────────────────
   functionality:
     name: Plugin Functionality Checks
     runs-on: ubuntu-latest
@@ -409,7 +394,6 @@ jobs:
           done
           exit $FAILED
 
-  # ─── Security Checks ───────────────────────────────────────────────
   security:
     name: Security Checks
     runs-on: ubuntu-latest
@@ -470,7 +454,6 @@ jobs:
             echo "  [PASS] Superglobals appear to be used with nonce verification."
           fi
 
-  # ─── Plugin Integrity Tests (PHPUnit) ──────────────────────────────
   test-integrity:
     name: Plugin Integrity Tests
     runs-on: ubuntu-latest
