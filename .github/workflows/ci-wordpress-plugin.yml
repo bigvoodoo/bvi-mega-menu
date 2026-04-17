@@ -9,104 +9,95 @@ on:
 jobs:
   # ─── File Hygiene ───────────────────────────────────────────────────
   file-hygiene:
-    name: File Hygiene
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+  name: File Hygiene
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v4
 
-      # no trailing whitespace
-      - name: Check trailing whitespace
-        run: |
-          if grep -rn ' $' --include='*.php' --include='*.js' --include='*.jsx' --include='*.scss' --include='*.css' --include='*.html' --include='*.hbs' --include='*.json' --include='*.yml' --include='*.yaml' --include='*.ts' . --exclude-dir=vendor --exclude-dir=node_modules --exclude-dir=dist --exclude-dir='.ORIGINAL' --exclude-dir='.claude'; then
-            echo "::error::Trailing whitespace found."
-            exit 1
-          fi
+    # no trailing whitespace
+    - name: Check trailing whitespace
+      run: |
+        if grep -rn ' $' --include='*.php' --include='*.js' --include='*.jsx' --include='*.scss' --include='*.css' --include='*.html' --include='*.hbs' --include='*.json' --include='*.yml' --include='*.yaml' --include='*.ts' . --exclude-dir=vendor --exclude-dir=node_modules --exclude-dir='assets/dist' --exclude-dir='.ORIGINAL'; then
+          echo "::error::Trailing whitespace found."
+          exit 1
+        fi
 
-      # unix lf line endings only
-      - name: Check for CRLF line endings
-        run: |
-          if grep -rIl $'\r' --include='*.php' --include='*.js' --include='*.jsx' --include='*.scss' --include='*.css' --include='*.html' --include='*.hbs' --include='*.json' --include='*.yml' --include='*.yaml' --include='*.ts' . --exclude-dir=vendor --exclude-dir=node_modules --exclude-dir=dist --exclude-dir='.ORIGINAL' --exclude-dir='.claude'; then
-            echo "::error::CRLF line endings found. Use LF only."
-            exit 1
-          fi
+    # unix lf line endings only
+    - name: Check for CRLF line endings
+      run: |
+        if grep -rIl $'\r' --include='*.php' --include='*.js' --include='*.jsx' --include='*.scss' --include='*.css' --include='*.html' --include='*.hbs' --include='*.json' --include='*.yml' --include='*.yaml' --include='*.ts' . --exclude-dir=vendor --exclude-dir=node_modules --exclude-dir='assets/dist' --exclude-dir='.ORIGINAL'; then
+          echo "::error::CRLF line endings found. Use LF only."
+          exit 1
+        fi
 
-      # no closing ?> tag in php files (wordpress rule)
-      - name: Check for closing PHP tags
-        run: |
-          FAILED=0
-          for f in $(find src/ -name '*.php' 2>/dev/null); do
-            LAST_LINE=$(tail -c 10 "$f" | tr -d '[:space:]')
-            if [[ "$LAST_LINE" == *"?>" ]]; then
-              echo "::error file=$f::Closing ?> tag found. Omit in WordPress includes."
-              FAILED=1
-            fi
-          done
-          exit $FAILED
-
-      # ensure single trailing newline
-      - name: Check final newline
-        run: |
-          FAILED=0
-          for f in $(find . \( -name '*.php' -o -name '*.js' -o -name '*.jsx' -o -name '*.scss' -o -name '*.css' -o -name '*.html' -o -name '*.hbs' -o -name '*.json' -o -name '*.yml' -o -name '*.yaml' -o -name '*.ts' \) | grep -v node_modules | grep -v vendor | grep -v 'assets/dist' | grep -v '/\.ORIGINAL/'); do
-            if [ -s "$f" ] && [ -z "$(tail -c 1 "$f")" ]; then
-              :
-            else
-              echo "::error file=$f::Missing final newline."
-              FAILED=1
-            fi
-          done
-          exit $FAILED
-
-      # max 120 char line length
-      - name: Check max line length (120 chars)
-        run: |
-          FAILED=0
-          for f in $(find src/ assets/src/ \( -name '*.php' -o -name '*.js' -o -name '*.jsx' -o -name '*.scss' -o -name '*.css' -o -name '*.html' -o -name '*.hbs' -o -name '*.json' -o -name '*.yml' -o -name '*.yaml' -o -name '*.ts' \) 2>/dev/null | grep -v vendor | grep -v node_modules | grep -v '/\.ORIGINAL/'); do
-            LONG=$(python3 -c "
-import sys
-with open(sys.argv[1], encoding='utf-8', errors='replace') as fh:
-    for i, line in enumerate(fh, 1):
-        n = len(line.rstrip('\n'))
-        if n > 120:
-            print(f'{i}: {n} chars')
-" "$f")
-            if [ -n "$LONG" ]; then
-              echo "::error file=$f::Lines exceeding 120 chars:"
-              echo "$LONG"
-              FAILED=1
-            fi
-          done
-          exit $FAILED
-
-      # indentation: 2-space for json/yml/yaml/js/jsx/ts, 4-space for
-      # everything else (php/scss/css/html/hbs). Matches .editorconfig.
-      - name: Check indentation
-        run: |
-          FAILED=0
-
-          # 2-space files: reject tabs and odd leading-space counts
-          if grep -rPn '^(\t|(  )* (?!\*)\S)' \
-              --include='*.json' --include='*.yml' --include='*.yaml' \
-              --include='*.js' --include='*.jsx' --include='*.ts' \
-              . --exclude-dir=vendor --exclude-dir=node_modules \
-              --exclude-dir=dist --exclude-dir='.ORIGINAL' \
-              --exclude-dir='.claude' --exclude='package-lock.json' 2>/dev/null; then
-            echo "::error::Bad indentation in a 2-space file. Use 2 spaces, no tabs."
+    # no closing ?> tag in php files (wordpress rule)
+    - name: Check for closing PHP tags
+      run: |
+        FAILED=0
+        for f in $(find src/ -name '*.php' 2>/dev/null); do
+          LAST_LINE=$(tail -c 10 "$f" | tr -d '[:space:]')
+          if [[ "$LAST_LINE" == *"?>" ]]; then
+            echo "::error file=$f::Closing ?> tag found. Omit in WordPress includes."
             FAILED=1
           fi
+        done
+        exit $FAILED
 
-          # 4-space files: reject tabs and leading-space counts that aren't a multiple of 4
-          if grep -rPn '^(\t|(    )* {1,3}(?!\*)\S)' \
-              --include='*.php' --include='*.scss' --include='*.css' \
-              --include='*.html' --include='*.hbs' \
-              . --exclude-dir=vendor --exclude-dir=node_modules \
-              --exclude-dir=dist --exclude-dir='.ORIGINAL' \
-              --exclude-dir='.claude' --exclude-dir=templates 2>/dev/null; then
-            echo "::error::Bad indentation in a 4-space file. Use 4 spaces, no tabs."
+    # ensure single trailing newline
+    - name: Check final newline
+      run: |
+        FAILED=0
+        for f in $(find . \( -name '*.php' -o -name '*.js' -o -name '*.jsx' -o -name '*.scss' -o -name '*.css' -o -name '*.html' -o -name '*.hbs' -o -name '*.json' -o -name '*.yml' -o -name '*.yaml' -o -name '*.ts' \) | grep -v node_modules | grep -v vendor | grep -v 'assets/dist' | grep -v '/\.ORIGINAL/'); do
+          if [ -s "$f" ] && [ -z "$(tail -c 1 "$f")" ]; then
+            :
+          else
+            echo "::error file=$f::Missing final newline."
             FAILED=1
           fi
+        done
+        exit $FAILED
 
-          exit $FAILED
+    # max 120 char line length
+    - name: Check max line length (120 chars)
+      run: |
+        FAILED=0
+        for f in $(find src/ assets/src/ \( -name '*.php' -o -name '*.js' -o -name '*.jsx' -o -name '*.scss' -o -name '*.css' -o -name '*.html' -o -name '*.hbs' -o -name '*.json' -o -name '*.yml' -o -name '*.yaml' -o -name '*.ts' \) 2>/dev/null | grep -v vendor | grep -v node_modules | grep -v '/\.ORIGINAL/'); do
+          LONG=$(awk 'length > 120 { print NR": "length" chars" }' "$f")
+          if [ -n "$LONG" ]; then
+            echo "::error file=$f::Lines exceeding 120 chars:"
+            echo "$LONG"
+            FAILED=1
+          fi
+        done
+        exit $FAILED
+
+    # indentation: 2-space for json/yml/yaml/js/jsx/ts, 4-space for
+    # everything else (php/scss/css/html/hbs). Matches .editorconfig.
+    - name: Check indentation
+      run: |
+        FAILED=0
+
+        # 2-space files: reject tabs and odd leading-space counts
+        if grep -rPn '^(\t|(  )* \S)' \
+            --include='*.json' --include='*.yml' --include='*.yaml' \
+            --include='*.js' --include='*.jsx' --include='*.ts' \
+            . --exclude-dir=vendor --exclude-dir=node_modules \
+            --exclude-dir='assets/dist' --exclude-dir='.ORIGINAL' 2>/dev/null; then
+          echo "::error::Bad indentation in a 2-space file. Use 2 spaces, no tabs."
+          FAILED=1
+        fi
+
+        # 4-space files: reject tabs and leading-space counts that aren't a multiple of 4
+        if grep -rPn '^(\t|(    )* {1,3}\S)' \
+            --include='*.php' --include='*.scss' --include='*.css' \
+            --include='*.html' --include='*.hbs' \
+            . --exclude-dir=vendor --exclude-dir=node_modules \
+            --exclude-dir='assets/dist' --exclude-dir='.ORIGINAL' 2>/dev/null; then
+          echo "::error::Bad indentation in a 4-space file. Use 4 spaces, no tabs."
+          FAILED=1
+        fi
+
+        exit $FAILED
 
   # ─── PHP Syntax Check ──────────────────────────────────────────────
   php-syntax:
@@ -365,10 +356,10 @@ with open(sys.argv[1], encoding='utf-8', errors='replace') as fh:
           # verify bvi standards
           echo ""
           echo "=== BVI Header Standards ==="
-          if grep -q 'Author:.*FKW Digital' "$MAIN_FILE"; then
-            echo "  [PASS] Author is FKW Digital"
+          if grep -q 'Author:.*Big Voodoo Interactive' "$MAIN_FILE"; then
+            echo "  [PASS] Author is Big Voodoo Interactive"
           else
-            echo "  [WARN] Author should be 'FKW Digital'"
+            echo "  [WARN] Author should be 'Big Voodoo Interactive'"
           fi
 
           if grep -q 'License:.*GPLv3' "$MAIN_FILE"; then
