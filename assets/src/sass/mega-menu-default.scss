@@ -1,0 +1,194 @@
+// BVI Mega Menu - Default Styles
+// Only loaded when "Enable Default CSS" is checked in settings.
+
+$mega-menu-bg: #ccc;
+$mega-menu-hover-bg: #999;
+$mega-menu-text: #000;
+$mega-menu-hover-text: #1a1a1a;
+$mega-menu-font: arial, sans-serif;
+$mega-menu-font-size: 14px;
+$mega-menu-sub-font-size: 12px;
+$mega-menu-padding: 15px 12px;
+$mega-menu-mobile-breakpoint: 767px;
+
+.bvi-mega-menu-container,
+.bvi-mega-menu-custom-mobile-menu {
+    background: $mega-menu-bg;
+    display: table;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    width: 100%;
+
+    ul,
+    ul li {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    > .menu-item-depth-0 {
+        display: table-cell;
+        text-align: center;
+        vertical-align: middle;
+
+        > a {
+            color: $mega-menu-text;
+            display: block;
+            font-family: $mega-menu-font;
+            font-size: $mega-menu-font-size;
+            padding: $mega-menu-padding;
+            transition: background 0.2s ease-in;
+        }
+
+        &:hover > a,
+        &.active > a {
+            background: $mega-menu-hover-bg;
+            color: $mega-menu-hover-text;
+            text-decoration: none;
+        }
+
+        > .mega-menu {
+            background: $mega-menu-hover-bg;
+            display: none;
+            left: 0;
+            padding: 15px 0;
+            position: absolute;
+            right: 0;
+            text-align: left;
+            top: 47px;
+            width: 100%;
+            z-index: 999;
+        }
+    }
+
+    .active .menu-item-page:hover > .sub-menu {
+        display: block !important;
+    }
+
+    .menu-item-column {
+        float: left;
+        padding: 0 3% 25px 1%;
+        width: 50%;
+
+        .sub-menu {
+
+            li {
+                font-family: $mega-menu-font;
+                font-size: $mega-menu-sub-font-size;
+                padding: 6px 0;
+
+                a {
+                    color: $mega-menu-text;
+                    display: block;
+                    padding: 0 5px;
+                    position: relative;
+
+                    &:hover,
+                    &:hover::after {
+                        background-color: $mega-menu-hover-bg;
+                        display: block;
+                        text-decoration: none;
+                    }
+                }
+
+                &.active a,
+                &.active a::after {
+                    background-color: $mega-menu-hover-bg;
+                    display: block;
+                }
+            }
+
+            .sub-menu li {
+                padding-left: 22px;
+                text-transform: none;
+            }
+        }
+    }
+}
+
+/* stylelint-disable no-descending-specificity */
+.bvi-mega-menu-custom-mobile-menu {
+    display: none;
+
+    > li {
+        display: table-cell;
+        text-align: center;
+        vertical-align: middle;
+
+        > a {
+            color: $mega-menu-text;
+            display: block;
+            font-family: $mega-menu-font;
+            font-size: $mega-menu-font-size;
+            padding: $mega-menu-padding;
+            transition: background 0.2s ease-in;
+        }
+
+        &:hover > a {
+            background: $mega-menu-hover-bg;
+            color: $mega-menu-hover-text;
+            text-decoration: none;
+        }
+    }
+}
+/* stylelint-enable no-descending-specificity */
+
+$mega-menu-tablet-breakpoint: 1024px;
+
+// Responsive visibility classes for bvi/responsive-content block.
+@media handheld, screen and (max-width: $mega-menu-mobile-breakpoint) {
+
+    .bvi-hide-mobile {
+        display: none !important;
+    }
+}
+
+@media screen and (min-width: $mega-menu-mobile-breakpoint + 1) and (max-width: $mega-menu-tablet-breakpoint) {
+
+    .bvi-hide-tablet {
+        display: none !important;
+    }
+}
+
+@media screen and (min-width: $mega-menu-tablet-breakpoint + 1) {
+
+    .bvi-hide-desktop {
+        display: none !important;
+    }
+}
+
+// Mobile responsive
+@media handheld, screen and (max-width: $mega-menu-mobile-breakpoint) {
+
+    .mobile-toggle {
+        color: #fff;
+        display: block !important;
+        padding: 10px 15px;
+        text-align: right;
+    }
+
+    .bvi-mega-menu-container,
+    .bvi-mega-menu-custom-mobile-menu {
+        display: none;
+
+        > .menu-item-depth-0 {
+            border-bottom: 2px solid #333;
+            display: block;
+            text-align: left;
+            width: 100%;
+
+            > .mega-menu {
+                display: none !important;
+            }
+        }
+    }
+
+    .bvi-mega-menu-custom-mobile-menu > li {
+        border-bottom: 2px solid #333;
+        display: block;
+        text-align: left;
+        width: 100%;
+    }
+
+}

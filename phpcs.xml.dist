@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<ruleset name="BVI Mega Menu">
+    <description>PHP CodeSniffer configuration for BVI Mega Menu plugin.</description>
+
+    <!-- Scan source files only -->
+    <file>./src</file>
+    <file>./bvi-mega-menu.php</file>
+
+    <!-- Exclude generated/vendor files -->
+    <exclude-pattern>./vendor/*</exclude-pattern>
+    <exclude-pattern>./node_modules/*</exclude-pattern>
+    <exclude-pattern>./assets/dist/*</exclude-pattern>
+    <exclude-pattern>./blocks/*/build/*</exclude-pattern>
+
+    <!-- PSR-12 as base standard, with WordPress snake_case method naming -->
+    <rule ref="PSR12">
+        <exclude name="PSR1.Methods.CamelCapsMethodName"/>
+        <exclude name="PSR1.Files.SideEffects.FoundWithSymbols"/>
+    </rule>
+
+    <!-- WordPress-specific rules (optional, requires wp-coding-standards/wpcs) -->
+    <!-- <rule ref="WordPress.Security"/> -->
+    <!-- <rule ref="WordPress.DB.PreparedSQL"/> -->
+
+    <!-- Allow short array syntax -->
+    <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
+
+    <!-- Disable line length warnings (WordPress has no strict limit) -->
+    <rule ref="Generic.Files.LineLength">
+        <severity>0</severity>
+    </rule>
+
+    <!-- Show progress and use colors -->
+    <arg value="sp"/>
+    <arg name="colors"/>
+    <arg name="extensions" value="php"/>
+
+    <!-- Tab width for indentation checking -->
+    <arg name="tab-width" value="4"/>
+</ruleset>

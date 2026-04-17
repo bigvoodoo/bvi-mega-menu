@@ -1,0 +1,41 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "bvi/mega-panel",
+	"version": "6.0.0",
+	"title": "Mega Panel",
+	"category": "widgets",
+	"icon": "layout",
+	"description": "The dropdown content for a Menu Item. Add columns, headings, images, buttons — anything you want to show inside the dropdown.",
+	"keywords": ["panel", "dropdown", "mega", "menu"],
+	"parent": ["bvi/menu-item"],
+	"supports": {
+		"html": false,
+		"className": true,
+		"anchor": true,
+		"align": ["wide", "full"],
+		"reusable": false
+	},
+	"textdomain": "bvi-mega-menu",
+	"attributes": {
+		"panelBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"panelPadding": {
+			"type": "string",
+			"default": ""
+		},
+		"panelMaxWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"panelAlign": {
+			"type": "string",
+			"default": "start",
+			"enum": ["start", "center", "end", "stretch"]
+		}
+	},
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css"
+}

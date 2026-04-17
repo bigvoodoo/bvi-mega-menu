@@ -1,0 +1,42 @@
+{
+	"apiVersion": 3,
+	"name": "bvi/related-links",
+	"version": "6.0.0",
+	"title": "Related Links",
+	"category": "widgets",
+	"icon": "editor-ul",
+	"description": "Display related links from a mega menu. Automatically detects a Mega Menu block on the page, or uses the configured default menu.",
+	"keywords": ["links", "related", "sidebar", "navigation"],
+	"supports": {
+		"html": false,
+		"className": true,
+		"color": {
+			"text": true,
+			"background": true,
+			"link": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"fontFamily": true,
+			"fontWeight": true,
+			"fontStyle": true,
+			"textTransform": true,
+			"textDecoration": true,
+			"letterSpacing": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true,
+			"blockGap": true
+		}
+	},
+	"textdomain": "bvi-mega-menu",
+	"attributes": {
+		"menuSlug": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"editorScript": "file:./index.js"
+}
