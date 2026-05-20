@@ -1,8 +1,8 @@
 === BVI Mega Menu ===
 Contributors: geekmenina
 Tags: menu, mega menu, navigation, block editor, fse
-Requires at least: 6.8
-Tested up to: 6.9.4
+Requires at least: 6.9
+Tested up to: 7.0
 Requires PHP: 8.2
 Stable tag: trunk
 License: GPLv3
@@ -117,6 +117,10 @@ Key classes for the block menu:
 All colours are stored as CSS custom properties on `.bvi-mega-menu` (e.g. `--bvi-mm-dropdown-bg`, `--bvi-mm-hamburger-bg-open`) and can be overridden in a child theme stylesheet.
 
 == Changelog ==
+
+= 5.0.1 =
+
+* Tests against WordPress 7.0
 
 = 5.0.0 =
 
