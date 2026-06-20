@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<ruleset name="BVI WordPress Development">
+    <description>
+        PHP Coding Standards for BVI WordPress Development.
+        Uses WordPress-Extra as the base standard with BVI-specific exceptions
+        for indentation, brace style, and modern PHP conventions.
+    </description>
+
+    <!-- Scan these files -->
+    <file>.</file>
+    <arg name="extensions" value="php"/>
+
+    <!-- Exclude paths -->
+    <exclude-pattern>/vendor/*</exclude-pattern>
+    <exclude-pattern>/node_modules/*</exclude-pattern>
+    <exclude-pattern>/assets/dist/*</exclude-pattern>
+
+    <!--
+        ════════════════════════════════════════════════════════════════
+        BASE: WordPress-Extra (includes WordPress-Core + security)
+        ════════════════════════════════════════════════════════════════
+    -->
+    <rule ref="WordPress-Extra">
+
+        <!--
+            BVI Indentation: 4 spaces instead of tabs.
+            WordPress enforces tabs; BVI uses 4-space indentation
+            consistently across all frameworks.
+        -->
+        <exclude name="Generic.WhiteSpace.DisallowSpaceIndent"/>
+
+        <!--
+            BVI Brace Style: Allman / new-line braces for classes and methods.
+            WordPress enforces same-line (K&R) braces; BVI uses new-line
+            braces for class and method declarations for readability.
+            Control structures (if, for, while) keep same-line braces.
+        -->
+        <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie"/>
+        <exclude name="Generic.Classes.OpeningBraceSameLine"/>
+
+        <!--
+            BVI Modernization: short array syntax and PSR-4 file naming.
+            WordPress prefers array() and kebab-case file names; BVI uses
+            modern short array syntax [] and PascalCase class file names
+            following PSR-4 autoloading conventions.
+            Both Generic and Universal sniffs must be excluded — WPCS 3.x
+            moved short-array enforcement to the Universal standard.
+        -->
+        <exclude name="Generic.Arrays.DisallowShortArraySyntax"/>
+        <exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
+        <exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+        <exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
+
+        <!--
+            BVI Style: compact PSR-style formatting.
+            WordPress enforces verbose whitespace inside parentheses (function
+            calls, control structures), aligned array arrows, aligned
+            assignments, Yoda conditions, and strict ===/!== comparisons.
+            BVI follows compact PSR-2/PSR-12 conventions and does not
+            require any of these.
+        -->
+        <exclude name="PEAR.Functions.FunctionCallSignature"/>
+        <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing"/>
+        <exclude name="WordPress.WhiteSpace.ControlStructureSpacing"/>
+        <exclude name="Squiz.WhiteSpace.OperatorSpacing"/>
+        <exclude name="WordPress.Arrays.ArrayKeySpacingRestrictions"/>
+        <exclude name="WordPress.Arrays.MultipleStatementAlignment"/>
+        <exclude name="Generic.Formatting.MultipleStatementAlignment"/>
+        <exclude name="WordPress.PHP.YodaConditions"/>
+        <exclude name="Universal.Operators.StrictComparisons"/>
+        <exclude name="Universal.Operators.DisallowShortTernary"/>
+        <exclude name="Universal.Operators.DisallowStandalonePostIncrementDecrement"/>
+
+        <!--
+            BVI Indentation in PHP/HTML mixed files: Prettier enforces indentation.
+            Generic.WhiteSpace.ScopeIndent counts PHP scope depth without accounting
+            for surrounding HTML nesting, producing false positives in template files.
+        -->
+        <exclude name="Generic.WhiteSpace.ScopeIndent"/>
+
+        <!--
+            BVI Array/Cast/Operator style: compact formatting without extra spaces.
+            WordPress enforces spaces inside single-line array brackets, a space
+            before type cast parentheses, and its own operator-spacing rules for
+            operators like !. BVI uses compact formatting matching PSR-12.
+            WordPress also enforces PHP tag placement and indentation in mixed
+            PHP/HTML contexts using tabs; BVI uses 4-space indentation everywhere.
+        -->
+        <exclude name="WordPress.Arrays.ArrayDeclarationSpacing"/>
+        <exclude name="NormalizedArrays.Arrays.ArrayBraceSpacing"/>
+        <exclude name="WordPress.WhiteSpace.OperatorSpacing"/>
+        <exclude name="WordPress.WhiteSpace.CastStructureSpacing"/>
+        <exclude name="Squiz.PHP.EmbeddedPhp"/>
+
+        <!--
+            BVI i18n: English-only site using a constant for the text domain.
+            WordPress sniffs require string-literal domains and translators
+            comments; neither applies here.
+        -->
+        <exclude name="WordPress.WP.I18n"/>
+
+    </rule>
+
+    <!-- Enforce 4-space indentation (no tabs) -->
+    <rule ref="Generic.WhiteSpace.DisallowTabIndent"/>
+
+    <!-- WordPress security rules -->
+    <rule ref="WordPress.Security"/>
+
+    <!-- PHP compatibility -->
+    <config name="testVersion" value="8.2-"/>
+    <rule ref="PHPCompatibility"/>
+
+    <!-- Additional code quality rules -->
+    <rule ref="Generic.CodeAnalysis.EmptyStatement"/>
+    <rule ref="Generic.CodeAnalysis.UnconditionalIfStatement"/>
+    <rule ref="Generic.PHP.DeprecatedFunctions"/>
+    <rule ref="Generic.PHP.NoSilencedErrors"/>
+
+    <!-- Set minimum WP version for deprecated function checks -->
+    <config name="minimum_supported_wp_version" value="6.4"/>
+
+</ruleset>
