@@ -32,21 +32,21 @@ class Renderer
         // Ensure the menu-item / mega-panel styles and the view script load.
         Frontend::enqueue_menu_assets();
 
-        $mobile_mode = (string) ($args->mobile_mode ?? 'none');
-        $mobile_breakpoint = (int) ($args->mobile_breakpoint ?? 960);
-        $dropdown_trigger = ($args->dropdown_trigger ?? 'hover') === 'click' ? 'click' : 'hover';
-        $close_delay = max(0, (int) ($args->close_delay ?? 300));
+        $mobile_mode = (string) ( $args->mobile_mode ?? 'none' );
+        $mobile_breakpoint = (int) ( $args->mobile_breakpoint ?? 960 );
+        $dropdown_trigger = ( $args->dropdown_trigger ?? 'hover' ) === 'click' ? 'click' : 'hover';
+        $close_delay = max(0, (int) ( $args->close_delay ?? 300 ));
         $instant_dropdown = !empty($args->instant_dropdown);
         $span_parent = !empty($args->dropdown_span_parent);
-        $panel_alignment = (string) ($args->dropdown_panel_alignment ?? 'left');
+        $panel_alignment = (string) ( $args->dropdown_panel_alignment ?? 'left' );
         if (!in_array($panel_alignment, ['left', 'center', 'right'], true)) {
             $panel_alignment = 'left';
         }
-        $mobile_alignment = (string) ($args->mobile_dropdown_alignment ?? 'viewport');
+        $mobile_alignment = (string) ( $args->mobile_dropdown_alignment ?? 'viewport' );
         if (!in_array($mobile_alignment, ['left', 'right', 'viewport'], true)) {
             $mobile_alignment = 'viewport';
         }
-        $mobile_levels = max(0, (int) ($args->mobile_levels ?? 1));
+        $mobile_levels = max(0, (int) ( $args->mobile_levels ?? 1 ));
 
         $classes = [
             'bvi-mega-menu',

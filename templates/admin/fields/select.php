@@ -20,7 +20,7 @@ if (isset($count_key) || $is_template) {
 
     $field_id = $id . '_' . $index . '_' . $field_key;
     $field_name = $page_database_id . '[' . $parent_id . '][' . $id . '][' . $index . '][' . $field_key . ']';
-    $field_value = $is_template ? '' : ($value[$field_key] ?? '');
+    $field_value = $is_template ? '' : ( $value[$field_key] ?? '' );
     $field_class .= ' ' . BVI_PLUGIN_MEGAMENU_NAMESPACE . '-multi-field';
 }
 
@@ -34,17 +34,17 @@ $selected = $field_value[0] ?? '';
 <div class="<?php echo BVI_PLUGIN_MEGAMENU_NAMESPACE; ?>-field <?php echo $field_class; ?>" id="<?php echo BVI_PLUGIN_MEGAMENU_NAMESPACE; ?>_<?php echo $id; ?>">
     <?php if ($is_multi) : ?>
     <div class="multi-field-header">
-        <span class="multi-field-label"><?php echo $label; ?> <?php echo $is_template ? '{LABEL_INDEX}' : ($count_key + 1); ?></span>
+        <span class="multi-field-label"><?php echo $label; ?> <?php echo $is_template ? '{LABEL_INDEX}' : ( $count_key + 1 ); ?></span>
         <button type="button" class="remove-item button">×</button>
     </div>
     <?php endif; ?>
     <select
         name="<?php echo $page_database_id; ?>[<?php echo $id; ?>]" id="<?php echo $id; ?>_id" <?php disabled($disabled); ?><?php if (!empty($args['multiple'])) {
             ?> multiple="multiple"<?php
-              } ?>>
-        <?php include(BVI_PLUGIN_MEGAMENU_DIR_PATH . 'templates/admin/fields/options.php'); ?>
+                } ?>>
+        <?php require BVI_PLUGIN_MEGAMENU_DIR_PATH . 'templates/admin/fields/options.php'; ?>
     </select>
-    <?php include(BVI_PLUGIN_MEGAMENU_DIR_PATH . 'templates/admin/field-footer.php'); ?>
+    <?php require BVI_PLUGIN_MEGAMENU_DIR_PATH . 'templates/admin/field-footer.php'; ?>
 </div>
 <?php if ($is_template) {
     echo '</script>';

@@ -40,12 +40,12 @@ class MenuItem extends AbstractBlock
      */
     public function render(array $attributes, string $content): string
     {
-        $label = (string) ($attributes['label'] ?? '');
-        $url = (string) ($attributes['url'] ?? '');
+        $label = (string) ( $attributes['label'] ?? '' );
+        $url = (string) ( $attributes['url'] ?? '' );
         $target = !empty($attributes['openInNewTab']) ? '_blank' : '';
         $rel = $target === '_blank' ? 'noopener noreferrer' : '';
-        $label_color = (string) ($attributes['labelColor'] ?? '');
-        $panel_width = (string) ($attributes['panelWidth'] ?? '');
+        $label_color = (string) ( $attributes['labelColor'] ?? '' );
+        $panel_width = (string) ( $attributes['panelWidth'] ?? '' );
 
         $has_panel = $this->content_has_panel($content);
 
@@ -112,6 +112,6 @@ class MenuItem extends AbstractBlock
     private function content_has_panel(string $content): bool
     {
         return $content !== '' &&
-            (strpos($content, 'bvi-mega-panel') !== false || strpos($content, 'bvi-menu-item') !== false);
+            ( strpos($content, 'bvi-mega-panel') !== false || strpos($content, 'bvi-menu-item') !== false );
     }
 }

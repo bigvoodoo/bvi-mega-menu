@@ -97,7 +97,7 @@ class Admin
      */
     public function add_plugin_page_action_links($links, $file)
     {
-        if (!is_admin() || (!empty($file) && $file !== BVI_PLUGIN_MEGAMENU_BASENAME)) {
+        if (!is_admin() || ( !empty($file) && $file !== BVI_PLUGIN_MEGAMENU_BASENAME )) {
             return $links;
         }
 

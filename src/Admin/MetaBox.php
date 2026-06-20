@@ -19,9 +19,7 @@ class MetaBox
     /** @var array */
     private $config = [];
 
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function init()
     {
@@ -60,7 +58,7 @@ class MetaBox
         // set the nonce after the prefix has been set
         $this->config['nonce'] = $this->config['prefix'] . '_nonce' ?? '';
 
-        // register the default wordpress actions for meta boxes
+        // register the default WordPress actions for meta boxes
         add_action('add_meta_boxes', [$this, 'register_meta_box']);
         add_action('save_post', [$this, 'save_meta_box'], 10, 2);
     }
@@ -154,7 +152,7 @@ class MetaBox
         try {
             // loop through each field and save as a serialized array
             foreach ($this->config['fields'] as $field) {
-                $field_id = $field['label_for'] ?? ($field['id'] ?? '');
+                $field_id = $field['label_for'] ?? ( $field['id'] ?? '' );
                 $meta_key = $this->config['prefix'] . $field_id;
                 $value = $submitted_data[$field_id] ?? null;
 

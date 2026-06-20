@@ -20,7 +20,7 @@ if (isset($count_key) || $is_template) {
 
     $field_id = $id . '_' . $index . '_' . $field_key;
     $field_name = $page_database_id . '[' . $parent_id . '][' . $id . '][' . $index . '][' . $field_key . ']';
-    $field_value = $is_template ? '' : ($value[$field_key] ?? '');
+    $field_value = $is_template ? '' : ( $value[$field_key] ?? '' );
     $field_class .= ' ' . BVI_PLUGIN_MEGAMENU_NAMESPACE . '-multi-field';
 }
 
@@ -40,10 +40,10 @@ if ($is_template) {
             name="<?php echo $page_database_id; ?>[<?php echo $fields[ 'id' ]; ?>][<?php echo $name; ?>]"
             value="1" <?php if ($value === 1) {
                 ?>checked<?php
-                      } ?> /> <label
+                        } ?> /> <label
             for="<?php echo $page_database_id; ?>[<?php echo $fields[ 'id' ]; ?>][<?php echo $name; ?>]"><?php echo esc_html_e($subfield_label); ?></label>
     </div>
-    <?php include(BVI_PLUGIN_MEGAMENU_DIR_PATH . 'templates/admin/field-footer.php'); ?>
+    <?php require BVI_PLUGIN_MEGAMENU_DIR_PATH . 'templates/admin/field-footer.php'; ?>
 </div>
 <?php if ($is_template) {
     echo '</script>';

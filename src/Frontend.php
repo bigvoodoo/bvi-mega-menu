@@ -23,9 +23,7 @@ class Frontend
      *
      * @return void
      */
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     /**
      * Initializes the frontend class.
@@ -145,11 +143,11 @@ class Frontend
                 continue;
             }
 
-            foreach ((array) ($block_type->style_handles ?? []) as $handle) {
+            foreach ((array) ( $block_type->style_handles ?? [] ) as $handle) {
                 wp_enqueue_style($handle);
             }
 
-            foreach ((array) ($block_type->view_script_handles ?? []) as $handle) {
+            foreach ((array) ( $block_type->view_script_handles ?? [] ) as $handle) {
                 wp_enqueue_script($handle);
             }
         }

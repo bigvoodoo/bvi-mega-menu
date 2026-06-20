@@ -40,10 +40,10 @@ class MegaPanel extends AbstractBlock
             return '';
         }
 
-        $background = (string) ($attributes['panelBackground'] ?? '');
-        $padding = (string) ($attributes['panelPadding'] ?? '');
-        $max_width = (string) ($attributes['panelMaxWidth'] ?? '');
-        $alignment = (string) ($attributes['panelAlign'] ?? 'start');
+        $background = (string) ( $attributes['panelBackground'] ?? '' );
+        $padding = (string) ( $attributes['panelPadding'] ?? '' );
+        $max_width = (string) ( $attributes['panelMaxWidth'] ?? '' );
+        $alignment = (string) ( $attributes['panelAlign'] ?? 'start' );
 
         $classes = ['bvi-mega-panel'];
         $classes[] = 'is-align-' . preg_replace('/[^a-z]/', '', strtolower($alignment) ?: 'start');

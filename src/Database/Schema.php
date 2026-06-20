@@ -11,9 +11,7 @@ class Schema
 {
     use Singleton;
 
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     /**
      * Initializes the class functionality.

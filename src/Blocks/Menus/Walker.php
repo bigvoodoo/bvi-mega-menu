@@ -48,7 +48,7 @@ class Walker extends \Walker_Nav_Menu
         $this->has_children_map = [];
 
         foreach ((array) $elements as $element) {
-            $parent_id = (int) ($element->parent_id ?? 0);
+            $parent_id = (int) ( $element->parent_id ?? 0 );
             if ($parent_id) {
                 $this->has_children_map[$parent_id] = true;
             }
@@ -161,14 +161,14 @@ class Walker extends \Walker_Nav_Menu
         // Shortcode item: render its output verbatim, no link wrapper.
         if (isset($item->type) && $item->type === 'shortcode') {
             $shortcode = do_shortcode(htmlspecialchars_decode($item->post_title, ENT_QUOTES));
-            return ($args->before ?? '') . $shortcode . ($args->after ?? '');
+            return ( $args->before ?? '' ) . $shortcode . ( $args->after ?? '' );
         }
 
         $url = $item->post_id ? get_permalink($item->post_id) : $item->url ?? '';
         $label =
-            ($args->link_before ?? '') .
+            ( $args->link_before ?? '' ) .
             apply_filters('the_title', $item->post_title ?? '', $item->ID) .
-            ($args->link_after ?? '');
+            ( $args->link_after ?? '' );
 
         $attributes = '';
         $attributes .= !empty($item->attr_title) ? ' title="' . esc_attr($item->attr_title) . '"' : '';
@@ -197,6 +197,6 @@ class Walker extends \Walker_Nav_Menu
                 '" aria-expanded="false"><span aria-hidden="true"></span></button>';
         }
 
-        return ($args->before ?? '') . $item_output . ($args->after ?? '');
+        return ( $args->before ?? '' ) . $item_output . ( $args->after ?? '' );
     }
 }

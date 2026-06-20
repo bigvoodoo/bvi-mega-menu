@@ -98,7 +98,7 @@ class RelatedLinks extends AbstractBlock
             return $custom;
         }
 
-        $selection = (string) ($attributes['menuSlug'] ?? '');
+        $selection = (string) ( $attributes['menuSlug'] ?? '' );
 
         // 2. Explicit selection on the block (skip both auto-detect and default sentinels).
         if ($selection !== '' && $selection !== 'autodetect' && $selection !== 'defaultsettings') {
@@ -211,8 +211,8 @@ class RelatedLinks extends AbstractBlock
 
         $lis = '';
         foreach ($items as $item) {
-            $title = (string) ($item['title'] ?? '');
-            $url = (string) ($item['url'] ?? '');
+            $title = (string) ( $item['title'] ?? '' );
+            $url = (string) ( $item['url'] ?? '' );
 
             if ($title === '') {
                 continue;
@@ -222,7 +222,7 @@ class RelatedLinks extends AbstractBlock
             if (!empty($item['current'])) {
                 $classes[] = 'is-current';
             }
-            $classes = array_merge($classes, (array) ($item['classes'] ?? []));
+            $classes = array_merge($classes, (array) ( $item['classes'] ?? [] ));
 
             $class_attr = 'class="' . esc_attr(implode(' ', array_unique($classes))) . '"';
 
@@ -271,10 +271,10 @@ class RelatedLinks extends AbstractBlock
             $items[] = [
                 'id' => 'custom-' . (string) $entry->ID,
                 'parent_id' => '0',
-                'url' => (string) ($entry->url ?? ''),
-                'title' => (string) ($entry->post_title ?? ''),
+                'url' => (string) ( $entry->url ?? '' ),
+                'title' => (string) ( $entry->post_title ?? '' ),
                 'current' => false,
-                'classes' => (array) ($entry->classes ?? []),
+                'classes' => (array) ( $entry->classes ?? [] ),
             ];
         }
 
@@ -364,11 +364,11 @@ class RelatedLinks extends AbstractBlock
 
             $items[] = [
                 'id' => (string) $menu_item->ID,
-                'parent_id' => (string) ($menu_item->menu_item_parent ?? '0'),
-                'url' => (string) ($menu_item->url ?? ''),
-                'title' => (string) ($menu_item->title ?? ''),
+                'parent_id' => (string) ( $menu_item->menu_item_parent ?? '0' ),
+                'url' => (string) ( $menu_item->url ?? '' ),
+                'title' => (string) ( $menu_item->title ?? '' ),
                 'current' => false,
-                'classes' => (array) ($menu_item->classes ?? []),
+                'classes' => (array) ( $menu_item->classes ?? [] ),
             ];
         }
 
@@ -455,18 +455,18 @@ class RelatedLinks extends AbstractBlock
     private function walk_menu_items(array $blocks, string $parent_id, array &$items): void
     {
         foreach ($blocks as $block) {
-            if (($block['blockName'] ?? '') !== 'bvi/menu-item') {
+            if (( $block['blockName'] ?? '' ) !== 'bvi/menu-item') {
                 continue;
             }
 
             $attrs = $block['attrs'] ?? [];
-            $id = $this->synthetic_id($attrs, (string) ($attrs['label'] ?? ''), count($items));
+            $id = $this->synthetic_id($attrs, (string) ( $attrs['label'] ?? '' ), count($items));
 
             $items[] = [
                 'id' => $id,
                 'parent_id' => $parent_id,
-                'url' => (string) ($attrs['url'] ?? ''),
-                'title' => (string) ($attrs['label'] ?? ''),
+                'url' => (string) ( $attrs['url'] ?? '' ),
+                'title' => (string) ( $attrs['label'] ?? '' ),
                 'current' => false,
                 'classes' => [],
             ];
@@ -494,13 +494,13 @@ class RelatedLinks extends AbstractBlock
 
             if ($name === 'core/navigation-link' || $name === 'core/navigation-submenu') {
                 $attrs = $block['attrs'] ?? [];
-                $id = $this->synthetic_id($attrs, (string) ($attrs['label'] ?? ''), count($items));
+                $id = $this->synthetic_id($attrs, (string) ( $attrs['label'] ?? '' ), count($items));
 
                 $items[] = [
                     'id' => $id,
                     'parent_id' => $parent_id,
-                    'url' => (string) ($attrs['url'] ?? ''),
-                    'title' => (string) ($attrs['label'] ?? ''),
+                    'url' => (string) ( $attrs['url'] ?? '' ),
+                    'title' => (string) ( $attrs['label'] ?? '' ),
                     'current' => false,
                     'classes' => [],
                 ];
@@ -556,7 +556,7 @@ class RelatedLinks extends AbstractBlock
         $normalized_current = $this->normalize_url($current_url);
 
         foreach ($items as &$item) {
-            $item_url = $this->normalize_url((string) ($item['url'] ?? ''));
+            $item_url = $this->normalize_url((string) ( $item['url'] ?? '' ));
             if ($item_url !== '' && $item_url === $normalized_current) {
                 $item['current'] = true;
             }
@@ -627,7 +627,7 @@ class RelatedLinks extends AbstractBlock
             return '';
         }
 
-        $default = (string) ($options['default_related_links_menu'] ?? '');
+        $default = (string) ( $options['default_related_links_menu'] ?? '' );
 
         // The setting stores values like `classic:{id}` or `block:{id}`; strip the prefix.
         if (strpos($default, 'classic:') === 0) {

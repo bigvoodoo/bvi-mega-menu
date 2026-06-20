@@ -29,8 +29,6 @@ if (!defined('BVI_PLUGIN_SHERLOQ_ROOT_DIR')) {
 if (!class_exists('WP_List_Table')) {
     class WP_List_Table
     {
-        public function __construct($args = [])
-        {
-        }
+        public function __construct($args = []) {}
     }
 }

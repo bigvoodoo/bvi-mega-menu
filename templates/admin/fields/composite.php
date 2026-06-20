@@ -22,7 +22,7 @@ if ($is_template) {
     <div class="composite-field field-<?php echo $id; ?>">
     <?php if ($is_multi) : ?>
     <div class="multi-field-header">
-        <span class="multi-field-label"><?php echo $label; ?> <?php echo $is_template ? '{LABEL_INDEX}' : ($count_key + 1); ?></span>
+        <span class="multi-field-label"><?php echo $label; ?> <?php echo $is_template ? '{LABEL_INDEX}' : ( $count_key + 1 ); ?></span>
         <button type="button" class="remove-item button">×</button>
     </div>
     <?php endif; ?>
@@ -40,7 +40,7 @@ if ($is_template) {
         $field_options = $field['options'] ?? [];
         $field_id = $id . '_' . $field_key;
         $field_name = $page_database_id . '[' . $parent_id . '][' . $id . '][' . $field_key . ']';
-        $field_value = $is_template ? '' : ($value[$field_key] ?? $field_default);
+        $field_value = $is_template ? '' : ( $value[$field_key] ?? $field_default );
         $field_before = $field_options['before_field'] ?? '';
         $field_after = $field_options['after_field'] ?? '';
 
@@ -99,7 +99,7 @@ if ($is_template) {
                         foreach ($field_options as $option) : ?>
                     <option
                         value="<?php echo esc_attr($option['value']); ?>"
-                            <?php echo ($field_value === $option['value']) ? 'selected' : ''; ?>><?php echo esc_html($option['label']); ?>
+                            <?php echo ( $field_value === $option['value'] ) ? 'selected' : ''; ?>><?php echo esc_html($option['label']); ?>
                     </option>
                         <?php endforeach;
                     endif; ?>
@@ -111,7 +111,7 @@ if ($is_template) {
                     name="<?php echo $field_name; ?>"
                     value="1"
                     class="<?php echo $field_input_type; ?>-field"
-                    <?php echo ($field_value === '1') ? 'checked' : ''; ?>
+                    <?php echo ( $field_value === '1' ) ? 'checked' : ''; ?>
                 /> <label
                     for="<?php echo $id; ?>_<?php echo $field_key; ?>">
                     <?php echo esc_html($field_label); ?>
