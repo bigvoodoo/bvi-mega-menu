@@ -39,12 +39,9 @@ $selected = $field_value[0] ?? '';
     </div>
     <?php endif; ?>
     <select
-        name="<?php echo $page_database_id; ?>[<?php echo $id; ?>]"
-        id="<?php echo $id; ?>_id"
-        <?php disabled($disabled); ?>
-        <?php if (!empty($args['multiple'])) { ?>
-        multiple="multiple" 
-        <?php } ?>>
+        name="<?php echo $page_database_id; ?>[<?php echo $id; ?>]" id="<?php echo $id; ?>_id" <?php disabled($disabled); ?><?php if (!empty($args['multiple'])) {
+            ?> multiple="multiple"<?php
+              } ?>>
         <?php include(BVI_PLUGIN_MEGAMENU_DIR_PATH . 'templates/admin/fields/options.php'); ?>
     </select>
     <?php include(BVI_PLUGIN_MEGAMENU_DIR_PATH . 'templates/admin/field-footer.php'); ?>
