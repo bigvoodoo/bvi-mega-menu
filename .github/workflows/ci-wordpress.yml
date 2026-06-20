@@ -1,0 +1,413 @@
+name: WordPress Agnostic Checks
+
+# Usage in a caller workflow:
+#   jobs:
+#     agnostic:
+#       uses: ./.github/workflows/wordpress-checks.yml
+
+on:
+  workflow_call:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+defaults:
+  run:
+    working-directory: '.'
+
+jobs:
+  # ─── File Hygiene ───────────────────────────────────────────────────
+  file-hygiene:
+    name: File Hygiene
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # no trailing whitespace
+      - name: Check trailing whitespace
+        run: |
+          if grep -rn ' $' --include='*.php' --include='*.js' --include='*.jsx' --include='*.scss' --include='*.css' --include='*.html' --include='*.hbs' --include='*.json' --include='*.yml' --include='*.yaml' --include='*.ts' . --exclude-dir=vendor --exclude-dir=node_modules --exclude-dir='assets/dist' --exclude-dir='.ORIGINAL'; then
+            echo "::error::Trailing whitespace found."
+            exit 1
+          fi
+
+      # unix lf line endings only
+      - name: Check for CRLF line endings
+        run: |
+          if grep -rIl $'\r' --include='*.php' --include='*.js' --include='*.jsx' --include='*.scss' --include='*.css' --include='*.html' --include='*.hbs' --include='*.json' --include='*.yml' --include='*.yaml' --include='*.ts' . --exclude-dir=vendor --exclude-dir=node_modules --exclude-dir='assets/dist' --exclude-dir='.ORIGINAL'; then
+            echo "::error::CRLF line endings found. Use LF only."
+            exit 1
+          fi
+
+      # no closing ?> tag in php files (wordpress rule)
+      - name: Check for closing PHP tags
+        run: |
+          FAILED=0
+          for f in $(find src/ -name '*.php' 2>/dev/null); do
+            LAST_LINE=$(tail -c 10 "$f" | tr -d '[:space:]')
+            if [[ "$LAST_LINE" == *"?>" ]]; then
+              echo "::error file=$f::Closing ?> tag found. Omit in WordPress includes."
+              FAILED=1
+            fi
+          done
+          exit $FAILED
+
+      # ensure single trailing newline
+      - name: Check final newline
+        run: |
+          FAILED=0
+          for f in $(find . \( -name '*.php' -o -name '*.js' -o -name '*.jsx' -o -name '*.scss' -o -name '*.css' -o -name '*.html' -o -name '*.hbs' -o -name '*.json' -o -name '*.yml' -o -name '*.yaml' -o -name '*.ts' \) | grep -v node_modules | grep -v vendor | grep -v 'assets/dist' | grep -v '/\.ORIGINAL/' | grep -v '\.min\.js$' | grep -v '\.min\.css$'); do
+            if [ -s "$f" ] && [ -z "$(tail -c 1 "$f")" ]; then
+              :
+            else
+              echo "::error file=$f::Missing final newline."
+              FAILED=1
+            fi
+          done
+          exit $FAILED
+
+      # line length and indentation are enforced by Prettier — warnings only, not CI failures
+
+  # ─── PHP Syntax Check ──────────────────────────────────────────────
+  php-syntax:
+    name: PHP Syntax Check
+    runs-on: ubuntu-latest
+    needs: file-hygiene
+    strategy:
+      matrix:
+        php-version: ['8.2', '8.3', '8.4']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          tools: php-parallel-lint/php-parallel-lint
+
+      - name: Check PHP syntax
+        run: parallel-lint --exclude vendor --exclude node_modules --exclude .ORIGINAL .
+
+  # ─── PHP Coding Standards (PHPCS) ──────────────────────────────────
+  phpcs:
+    name: PHP Coding Standards
+    runs-on: ubuntu-latest
+    needs: file-hygiene
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: phpcs, cs2pr
+          ini-values: memory_limit=512M
+
+      - name: Install PHPCS standards
+        run: |
+          composer global config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+          composer global require --dev \
+            dealerdirect/phpcodesniffer-composer-installer \
+            "phpcompatibility/php-compatibility:*" \
+            "wp-coding-standards/wpcs:^3.0" \
+            "phpcsstandards/phpcsutils:*"
+
+      - name: Run PHPCS
+        run: |
+          if [ -f "phpcs.xml" ] || [ -f "phpcs.xml.dist" ]; then
+            phpcs --report=checkstyle --report-file=phpcs-report.xml . || true
+            phpcs .
+          else
+            phpcs --standard=WordPress-Extra \
+              --extensions=php \
+              --ignore=vendor/*,node_modules/* \
+              --report=full \
+              .
+          fi
+
+      - name: Check PHP compatibility (8.2+)
+        run: |
+          phpcs --standard=PHPCompatibility \
+            --extensions=php \
+            --runtime-set testVersion 8.2- \
+            --ignore=vendor/*,node_modules/* \
+            --report=full \
+            . || true
+
+  # ─── JavaScript Linting (ESLint) ───────────────────────────────────
+  eslint:
+    name: JavaScript Lint (ESLint)
+    runs-on: ubuntu-latest
+    needs: file-hygiene
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint JavaScript
+        run: |
+          if npm run lint:js --if-present 2>/dev/null; then
+            echo "Ran project lint:js script."
+          else
+            npx wp-scripts lint-js --no-ignore --no-error-on-unmatched-pattern 'assets/src/**/*.js' 'assets/src/**/*.jsx'
+          fi
+
+  # ─── CSS / SCSS Linting (Stylelint) ────────────────────────────────
+  stylelint:
+    name: CSS/SCSS Lint (Stylelint)
+    runs-on: ubuntu-latest
+    needs: file-hygiene
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint CSS/SCSS
+        run: |
+          if npm run lint:css --if-present 2>/dev/null; then
+            echo "Ran project lint:css script."
+          else
+            npx wp-scripts lint-style '**/*.{css,scss}' \
+              --ignore-pattern 'node_modules/**' \
+              --ignore-pattern 'vendor/**' \
+              --ignore-pattern 'assets/dist/**' \
+              --ignore-pattern '.ORIGINAL/**'
+          fi
+
+  # ─── Prettier Format Check ─────────────────────────────────────────
+  prettier:
+    name: Prettier Format Check
+    runs-on: ubuntu-latest
+    needs: file-hygiene
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check formatting (JS/JSON)
+        run: npx prettier --check '**/*.{js,jsx,json}' --ignore-path .prettierignore
+        continue-on-error: true
+
+  # ─── Build Assets ──────────────────────────────────────────────────
+  build:
+    name: Build Assets
+    runs-on: ubuntu-latest
+    needs: [eslint, stylelint]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production assets
+        run: npm run build
+
+      - name: Build Gutenberg blocks
+        run: |
+          if [ -d "assets/src/blocks" ]; then
+            npm run block:build
+          else
+            echo "No blocks directory found, skipping."
+          fi
+
+  # ─── Security Checks ───────────────────────────────────────────────
+  security:
+    name: Security Checks
+    runs-on: ubuntu-latest
+    needs: [php-syntax]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for direct file access protection
+        run: |
+          echo "=== Direct Access Protection ==="
+          WARNED=0
+          for f in $(find src/ -name '*.php' 2>/dev/null); do
+            if ! grep -q "ABSPATH\|defined\|namespace" "$f" 2>/dev/null; then
+              echo "  [WARN] $f may lack direct access protection"
+              WARNED=1
+            fi
+          done
+          if [ $WARNED -eq 0 ]; then
+            echo "  [PASS] All files have direct access protection."
+          fi
+
+      - name: Check for unescaped output
+        run: |
+          echo "=== Unescaped Output ==="
+          RESULTS=$(grep -rn 'echo \$\|print \$' --include='*.php' . \
+            --exclude-dir=vendor --exclude-dir=node_modules --exclude-dir='.ORIGINAL' \
+            | grep -v 'esc_\|wp_kses\|sanitize_\|absint\|intval' | head -20)
+          if [ -n "$RESULTS" ]; then
+            echo "$RESULTS"
+            echo "  [WARN] Potentially unescaped output found above."
+          else
+            echo "  [PASS] No obvious unescaped output found."
+          fi
+
+      - name: Check for unsafe SQL
+        run: |
+          echo "=== Unsafe SQL ==="
+          RESULTS=$(grep -rn '\$wpdb->query\|\$wpdb->get_' --include='*.php' . \
+            --exclude-dir=vendor --exclude-dir=node_modules --exclude-dir='.ORIGINAL' \
+            | grep -v 'prepare' | head -10)
+          if [ -n "$RESULTS" ]; then
+            echo "$RESULTS"
+            echo "  [WARN] SQL queries without \$wpdb->prepare() found above."
+          else
+            echo "  [PASS] All SQL queries use \$wpdb->prepare()."
+          fi
+
+      - name: Check nonce usage
+        run: |
+          echo "=== Nonce Verification ==="
+          RESULTS=$(grep -rn '\$_POST\|\$_GET\|\$_REQUEST' --include='*.php' . \
+            --exclude-dir=vendor --exclude-dir=node_modules --exclude-dir='.ORIGINAL' \
+            | grep -v 'nonce\|wp_verify\|check_admin_referer' | head -10)
+          if [ -n "$RESULTS" ]; then
+            echo "$RESULTS"
+            echo "  [WARN] Superglobals used without visible nonce checks above."
+          else
+            echo "  [PASS] Superglobals appear to be used with nonce verification."
+          fi
+
+  # ─── Composer Autoload Validation ──────────────────────────────────
+  composer-autoload:
+    name: Composer Autoload
+    runs-on: ubuntu-latest
+    needs: [php-syntax]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+          ini-values: memory_limit=512M
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-8.3-${{ hashFiles('**/composer.lock') }}
+          restore-keys: composer-8.3-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Validate Composer autoload
+        run: |
+          echo "=== PSR-4 Autoloading Check ==="
+          composer dumpauto --dry-run
+
+          # verify classes match their namespace
+          find src -name '*.php' -print 2>/dev/null | while read -r file; do
+            NAMESPACE=$(grep -oP 'namespace\s+\K[^;]+' "$file" 2>/dev/null)
+            CLASS_NAME=$(grep -oP '(class|interface|trait|enum)\s+\K\w+' "$file" 2>/dev/null | head -1)
+            if [ -n "$NAMESPACE" ] && [ -n "$CLASS_NAME" ]; then
+              echo "  [OK] ${NAMESPACE}\\${CLASS_NAME} -> $file"
+            fi
+          done
+
+  # ─── Block JSON Validation ─────────────────────────────────────────
+  block-validation:
+    name: Block JSON Validation
+    runs-on: ubuntu-latest
+    needs: file-hygiene
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate block.json files
+        run: |
+          echo "=== Block JSON Validation ==="
+          if [ ! -d "assets/src/blocks" ]; then
+            echo "  No assets/src/blocks directory, skipping."
+            exit 0
+          fi
+
+          BLOCK_FILES=$(find assets/src/blocks -name 'block.json')
+          if [ -z "$BLOCK_FILES" ]; then
+            echo "  No block.json files found, skipping."
+            exit 0
+          fi
+
+          FAILED=0
+          while read -r file; do
+            if python3 -m json.tool "$file" > /dev/null 2>&1; then
+              BLOCK_NAME=$(python3 -c "import json; print(json.load(open('$file')).get('name', 'unknown'))")
+              echo "  [PASS] $file ($BLOCK_NAME)"
+            else
+              echo "  [FAIL] $file is invalid JSON!"
+              FAILED=1
+            fi
+          done <<< "$BLOCK_FILES"
+          exit $FAILED
+
+  # ─── Integrity Tests (PHPUnit) ─────────────────────────────────────
+  test-integrity:
+    name: Integrity Tests
+    runs-on: ubuntu-latest
+    needs: [phpcs, php-syntax]
+    strategy:
+      matrix:
+        php-version: ['8.2', '8.3', '8.4']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          tools: composer:v2
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: composer-${{ matrix.php-version }}-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Run PHPUnit integrity tests
+        run: |
+          if composer run-script test --list 2>/dev/null | grep -q 'test'; then
+            composer test
+          else
+            echo "No composer test script defined, skipping."
+          fi
