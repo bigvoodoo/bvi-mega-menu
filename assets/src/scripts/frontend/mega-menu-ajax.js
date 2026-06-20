@@ -54,7 +54,7 @@ function loadMenuAjax($item, themeLocation, home) {
     async: true,
     url: home + url + '?' + jQuery.param(qs),
     dataType: 'html',
-    success: function (html) {
+    success(html) {
       // make sure CF7 forms have the current URL instead of the AJAX menu url
       html = html.replace(url, window.location.pathname + window.location.search);
       $megaMenu.replaceWith(jQuery(jQuery.parseHTML(html)).find(SELECTORS.megaMenu));

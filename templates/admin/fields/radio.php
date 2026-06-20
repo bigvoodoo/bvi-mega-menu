@@ -24,7 +24,9 @@ if (isset($count_key) || $is_template) {
     $field_class .= ' ' . BVI_PLUGIN_MEGAMENU_NAMESPACE . '-multi-field';
 }
 
-if ($is_template) { echo '<script type="text/template" id="multi-field-template-' . $id . '">'; }
+if ($is_template) {
+    echo '<script type="text/template" id="multi-field-template-' . $id . '">';
+}
 ?>
 
 <div class="<?php echo BVI_PLUGIN_MEGAMENU_NAMESPACE; ?>-field <?php echo $field_class; ?>">
@@ -36,9 +38,13 @@ if ($is_template) { echo '<script type="text/template" id="multi-field-template-
         <?php endif; ?>
         <input type="radio" id="<?php echo $fields[ 'id' ]; ?>_<?php echo $name; ?>_id"
             name="<?php echo $page_database_id; ?>[<?php echo $fields[ 'id' ]; ?>][<?php echo $name; ?>]"
-            value="1" <?php if ($value === 1) { ?>checked<?php } ?> /> <label
-            for="<?php echo $page_database_id; ?>[<?php echo $fields[ 'id' ]; ?>][<?php echo $name; ?>]"><?php echo esc_html_e( $subfield_label ); ?></label>
+            value="1" <?php if ($value === 1) {
+                ?>checked<?php
+                      } ?> /> <label
+            for="<?php echo $page_database_id; ?>[<?php echo $fields[ 'id' ]; ?>][<?php echo $name; ?>]"><?php echo esc_html_e($subfield_label); ?></label>
     </div>
     <?php include(BVI_PLUGIN_MEGAMENU_DIR_PATH . 'templates/admin/field-footer.php'); ?>
 </div>
-<?php if ($is_template) { echo '</script>'; } ?>
+<?php if ($is_template) {
+    echo '</script>';
+} ?>

@@ -21,7 +21,9 @@ class Editor
      */
     private array $pending_items = [];
 
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     /**
      * Initialize the admin menu editor.

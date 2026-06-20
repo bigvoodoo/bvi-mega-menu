@@ -23,7 +23,9 @@ class Frontend
      *
      * @return void
      */
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     /**
      * Initializes the frontend class.
@@ -112,6 +114,45 @@ class Frontend
         wp_localize_script(BVI_PLUGIN_MEGAMENU_NAMESPACE . '-ajax', 'DropdownSpeed', [
             'instant_dropdown' => !empty($options['dropdown_val']),
         ]);
+    }
+
+    /**
+     * Enqueue the structural block assets needed by a classic-menu render.
+     *
+     * The mega-menu block's own style + view script are enqueued automatically
+     * when the block is on the page, but the `bvi/menu-item` and
+     * `bvi/mega-panel` stylesheets only load when those inner blocks are
+     * present. A menu rendered from a classic slug or the `[mega_menu]`
+     * shortcode has no inner blocks, so their styles (and, for shortcodes, the
+     * view script) must be enqueued explicitly. Handles come straight from the
+     * block registry so nothing is loaded twice.
+     *
+     * @since 5.0.0
+     *
+     * @return void
+     */
+    public static function enqueue_menu_assets()
+    {
+        if (!class_exists('WP_Block_Type_Registry')) {
+            return;
+        }
+
+        $registry = \WP_Block_Type_Registry::get_instance();
+
+        foreach (['bvi/mega-menu', 'bvi/menu-item', 'bvi/mega-panel'] as $block_name) {
+            $block_type = $registry->get_registered($block_name);
+            if (!$block_type) {
+                continue;
+            }
+
+            foreach ((array) ($block_type->style_handles ?? []) as $handle) {
+                wp_enqueue_style($handle);
+            }
+
+            foreach ((array) ($block_type->view_script_handles ?? []) as $handle) {
+                wp_enqueue_script($handle);
+            }
+        }
     }
 
     /**

@@ -12,9 +12,12 @@ use Bvi\Plugin\MegaMenu\Blocks\Menus\Renderer;
  * `menuSlug` attribute.
  *
  * Accepted attributes:
- *   menu           — classic menu slug or numeric id (required).
- *   mobile_toggle  — label text for an optional mobile-only toggle button.
- *   aria_button    — 'true' to add aria-haspopup buttons on top-level items.
+ *   menu                       — classic menu slug or numeric id (required).
+ *   mobile_mode                — 'none', 'dropdown', or 'popup'.
+ *   mobile_breakpoint          — px width below which the mobile menu engages.
+ *   dropdown_trigger           — 'hover' or 'click'.
+ *   dropdown_panel_alignment   — 'left', 'center', or 'right'.
+ *   mobile_dropdown_alignment  — 'left', 'right', or 'viewport'.
  *
  * @package bvi-mega-menu
  */
@@ -42,8 +45,14 @@ class MegaMenuShortcode
                 'after' => '',
                 'link_before' => '',
                 'link_after' => '',
-                'mobile_toggle' => '',
-                'aria_button' => 'false',
+                'mobile_mode' => 'none',
+                'mobile_breakpoint' => 960,
+                'dropdown_trigger' => 'hover',
+                'close_delay' => 300,
+                'dropdown_span_parent' => false,
+                'dropdown_panel_alignment' => 'left',
+                'mobile_dropdown_alignment' => 'viewport',
+                'mobile_levels' => 1,
             ],
             $atts,
             'mega_menu',
@@ -77,12 +86,13 @@ class MegaMenuShortcode
 
         $id_name = 'mega-menu-' . sanitize_key($menu_slug) . '-' . wp_rand(1, 10000);
 
-        $html = Renderer::render($id_name, $menu_items, -1, $args);
-
-        // Optional mobile override from settings.
+        // Plugin settings drive the instant-dropdown behaviour.
         $options = defined('BVI_PLUGIN_MEGAMENU_NAMESPACE')
             ? (array) get_option(BVI_PLUGIN_MEGAMENU_NAMESPACE . '_general_database_settings', [])
             : [];
+        $args->instant_dropdown = !empty($options['dropdown_val']);
+
+        $html = Renderer::render($id_name, $menu_items, 0, $args);
         $mobile_override = (string) ($options['mobile_override_val'] ?? '');
 
         if ($mobile_override !== '' && $mobile_override !== '1') {

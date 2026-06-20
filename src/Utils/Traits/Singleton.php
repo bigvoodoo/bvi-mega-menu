@@ -40,15 +40,21 @@ trait Singleton
     /**
      * Prevent direct instantiation
      */
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     /**
      * Prevent cloning
      */
-    public function __clone() {}
+    public function __clone()
+    {
+    }
 
     /**
      * Prevent unserialization
      */
-    public function __wakeup() {}
+    public function __wakeup()
+    {
+    }
 }

@@ -414,3 +414,38 @@ nav.bvi-mega-menu,
         width: var(--bvi-mm-span-width, max-content);
     }
 }
+
+/*
+ * Classic-menu submenu list.
+ *
+ * The Walker wraps each submenu in `.bvi-mega-panel > ul.bvi-mega-menu-sub-list`.
+ * Reset the list and stack items vertically so classic dropdowns match the
+ * block-composed menu without any per-item markup.
+ */
+.bvi-mega-menu .bvi-mega-panel > .bvi-mega-menu-sub-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--bvi-mm-dropdown-item-gap);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/*
+ * Dropdown-panel link colors.
+ *
+ * The base `.bvi-menu-item-link` rule (in menu-item/style.scss) wires the
+ * generic item/link vars, and a theme's `styles.elements.link.color` from
+ * theme.json applies to bare `<a>` links. Both must lose inside a panel so the
+ * block's Dropdown Colors (text, text hover, background hover) take effect.
+ * Three classes give 0,3,0 specificity, beating theme.json's `:root :where(a)`.
+ */
+.bvi-mega-menu .bvi-mega-panel .bvi-menu-item-link {
+    color: var(--bvi-mm-dropdown-color, inherit);
+
+    &:hover,
+    &:focus-visible {
+        background-color: var(--bvi-mm-dropdown-bg-hover, var(--bvi-mm-link-bg-hover, transparent));
+        color: var(--bvi-mm-dropdown-color-hover, inherit);
+    }
+}

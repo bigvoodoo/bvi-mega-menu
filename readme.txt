@@ -118,12 +118,9 @@ All colours are stored as CSS custom properties on `.bvi-mega-menu` (e.g. `--bvi
 
 == Changelog ==
 
-= 5.0.1 =
-
-* Tests against WordPress 7.0
-
 = 5.0.0 =
 
+* Tests against WordPress 7.0
 * Full plugin rewrite with modern PHP architecture (PSR-4, namespaces, traits)
 * Added block editor support with four custom blocks: Mega Menu, Menu Item, Related Links, Responsive Content
 * Block and admin feature auto-discovery via `Utils\Discovery`

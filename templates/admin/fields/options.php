@@ -11,7 +11,7 @@ foreach ($options as $key => $option) :
         $option_value = $key;
         $option_label = $option;
     }
-?>
+    ?>
 <option value="<?php echo esc_attr($option_value); ?>" <?php selected($selected, $option_value); ?>>
     <?php echo esc_html($option_label); ?>
 </option>

@@ -19,7 +19,9 @@ class MetaBox
     /** @var array */
     private $config = [];
 
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     public function init()
     {

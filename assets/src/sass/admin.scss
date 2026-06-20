@@ -1,6 +1,7 @@
 // prevent inspector controls from overflowing the sidebar panel in the block editor
 .interface-complementary-area {
 
+    /* stylelint-disable selector-class-pattern */
     .components-panel__body,
     .components-panel__body-contents {
         box-sizing: border-box;
@@ -14,13 +15,13 @@
     }
 }
 
-// Nav menu action buttons
+// nav menu action buttons
 .menu-item-actions input {
     float: right !important;
     margin-left: 10px !important;
 }
 
-// Shortcode/HTML item styling
+// shortcode/html item styling
 textarea#shortcode-menu-item,
 .menu-item-shortcode textarea {
     height: 100px;
@@ -43,7 +44,7 @@ textarea#shortcode-menu-item,
     }
 }
 
-// Menu select metabox styling
+// menu select metabox styling
 .postbox .howto select,
 .accordion-container .howto select {
     float: right;
@@ -54,7 +55,7 @@ textarea#shortcode-menu-item,
     overflow: auto;
 }
 
-// Collapse/expand button
+// collapse/expand button
 .collapse-expand {
     color: #999;
     font-size: 18px;

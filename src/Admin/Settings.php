@@ -37,7 +37,9 @@ class Settings
      * @var Sanitizer $sanitizer The object that sanitizes the fields.
      * @return void
      */
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     public function init()
     {

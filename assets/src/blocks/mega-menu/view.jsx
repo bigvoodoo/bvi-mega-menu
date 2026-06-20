@@ -119,7 +119,7 @@
      *
      * @since 5.0.0
      *
-     * @return {boolean}
+     * @return {boolean} True when mobile mode is active and the breakpoint matches.
      */
     isMobile() {
       return this.mobileMode !== 'none' && this.mql.matches;
@@ -193,7 +193,7 @@
      * @since 5.0.0
      *
      * @param {HTMLElement} item Menu item element.
-     * @return {boolean}
+     * @return {boolean} True when the item may expand its panel in mobile mode.
      */
     canExpandInMobile(item) {
       if (this.mobileLevels === 0) {
@@ -621,8 +621,6 @@
    * Discovers all mega menu blocks on the page and initialises each one.
    */
   class MegaMenuView {
-    constructor() {}
-
     /**
      * Find all mega menu block elements and initialise a controller for each.
      *

@@ -23,7 +23,9 @@ class Main
      *
      * @return void
      */
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     /**
      * Activate the plugin. Placeholder for future use.
@@ -32,7 +34,9 @@ class Main
      *
      * @return void
      */
-    public static function activate() {}
+    public static function activate()
+    {
+    }
 
     /**
      * Deactivates the plugin. Placeholder for future use.
@@ -41,7 +45,9 @@ class Main
      *
      * @return void
      */
-    public static function deactivate() {}
+    public static function deactivate()
+    {
+    }
 
     /**
      * Initialize the plugin. Placeholder for future use.

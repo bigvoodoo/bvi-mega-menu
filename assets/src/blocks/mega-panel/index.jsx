@@ -9,7 +9,12 @@ import {
   InspectorControls,
   PanelColorSettings,
 } from '@wordpress/block-editor';
-import { PanelBody, SelectControl, __experimentalUnitControl as UnitControl } from '@wordpress/components';
+import {
+  PanelBody,
+  SelectControl,
+  // eslint-disable-next-line @wordpress/no-unsafe-wp-apis
+  __experimentalUnitControl as UnitControl,
+} from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
 const UNITS_SPACING = [

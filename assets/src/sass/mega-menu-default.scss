@@ -1,6 +1,10 @@
-// BVI Mega Menu - Default Styles
-// Only loaded when "Enable Default CSS" is checked in settings.
+// loaded when "Enable Default CSS" is checked in settings.
 
+@use "sass:map";
+@use "configs/var" as *;
+@use "configs/mixin" as *;
+
+// Mega-menu style tokens (local to this component).
 $mega-menu-bg: #ccc;
 $mega-menu-hover-bg: #999;
 $mega-menu-text: #000;
@@ -9,12 +13,20 @@ $mega-menu-font: arial, sans-serif;
 $mega-menu-font-size: 14px;
 $mega-menu-sub-font-size: 12px;
 $mega-menu-padding: 15px 12px;
-$mega-menu-mobile-breakpoint: 767px;
+$mega-menu-mobile-max: map.get($breakpoints, tablet) - 1px;
+$mega-menu-tablet-max: 1024px;
+
+.mobile-toggle {
+    color: #fff;
+    display: block !important;
+    padding: 10px 15px;
+    text-align: right;
+}
 
 .bvi-mega-menu-container,
 .bvi-mega-menu-custom-mobile-menu {
     background: $mega-menu-bg;
-    display: table;
+    display: none;
     margin: 0;
     padding: 0;
     position: relative;
@@ -28,9 +40,10 @@ $mega-menu-mobile-breakpoint: 767px;
     }
 
     > .menu-item-depth-0 {
-        display: table-cell;
-        text-align: center;
-        vertical-align: middle;
+        border-bottom: 2px solid #333;
+        display: block;
+        text-align: left;
+        width: 100%;
 
         > a {
             color: $mega-menu-text;
@@ -49,16 +62,7 @@ $mega-menu-mobile-breakpoint: 767px;
         }
 
         > .mega-menu {
-            background: $mega-menu-hover-bg;
             display: none;
-            left: 0;
-            padding: 15px 0;
-            position: absolute;
-            right: 0;
-            text-align: left;
-            top: 47px;
-            width: 100%;
-            z-index: 999;
         }
     }
 
@@ -109,12 +113,12 @@ $mega-menu-mobile-breakpoint: 767px;
 
 /* stylelint-disable no-descending-specificity */
 .bvi-mega-menu-custom-mobile-menu {
-    display: none;
 
     > li {
-        display: table-cell;
-        text-align: center;
-        vertical-align: middle;
+        border-bottom: 2px solid #333;
+        display: block;
+        text-align: left;
+        width: 100%;
 
         > a {
             color: $mega-menu-text;
@@ -134,61 +138,70 @@ $mega-menu-mobile-breakpoint: 767px;
 }
 /* stylelint-enable no-descending-specificity */
 
-$mega-menu-tablet-breakpoint: 1024px;
+@media (max-width: $mega-menu-mobile-max) {
 
-// Responsive visibility classes for bvi/responsive-content block.
-@media handheld, screen and (max-width: $mega-menu-mobile-breakpoint) {
+    .bvi-mega-menu-container > .menu-item-depth-0 > .mega-menu,
+    .bvi-mega-menu-custom-mobile-menu > .menu-item-depth-0 > .mega-menu {
+        display: none !important;
+    }
+}
+
+@include bp(tablet) {
+
+    .mobile-toggle {
+        display: none !important;
+    }
+
+    .bvi-mega-menu-container {
+        display: table;
+
+        > .menu-item-depth-0 {
+            border-bottom: 0;
+            display: table-cell;
+            text-align: center;
+            vertical-align: middle;
+            width: auto;
+
+            > .mega-menu {
+                background: $mega-menu-hover-bg;
+                left: 0;
+                padding: 15px 0;
+                position: absolute;
+                right: 0;
+                text-align: left;
+                top: 47px;
+                width: 100%;
+                z-index: 999;
+            }
+        }
+    }
+
+    .bvi-mega-menu-custom-mobile-menu > li {
+        border-bottom: 0;
+        display: table-cell;
+        text-align: center;
+        vertical-align: middle;
+        width: auto;
+    }
+}
+
+@media (max-width: $mega-menu-mobile-max) {
 
     .bvi-hide-mobile {
         display: none !important;
     }
 }
 
-@media screen and (min-width: $mega-menu-mobile-breakpoint + 1) and (max-width: $mega-menu-tablet-breakpoint) {
+@media (min-width: map.get($breakpoints, tablet)) and (max-width: $mega-menu-tablet-max) {
 
     .bvi-hide-tablet {
         display: none !important;
     }
 }
 
-@media screen and (min-width: $mega-menu-tablet-breakpoint + 1) {
+@include bp($mega-menu-tablet-max + 1px) {
 
     .bvi-hide-desktop {
         display: none !important;
     }
-}
-
-// Mobile responsive
-@media handheld, screen and (max-width: $mega-menu-mobile-breakpoint) {
-
-    .mobile-toggle {
-        color: #fff;
-        display: block !important;
-        padding: 10px 15px;
-        text-align: right;
-    }
-
-    .bvi-mega-menu-container,
-    .bvi-mega-menu-custom-mobile-menu {
-        display: none;
-
-        > .menu-item-depth-0 {
-            border-bottom: 2px solid #333;
-            display: block;
-            text-align: left;
-            width: 100%;
-
-            > .mega-menu {
-                display: none !important;
-            }
-        }
-    }
-
-    .bvi-mega-menu-custom-mobile-menu > li {
-        border-bottom: 2px solid #333;
-        display: block;
-        text-align: left;
-        width: 100%;
-    }
-
 }

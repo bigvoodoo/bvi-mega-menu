@@ -19,8 +19,8 @@ const ALLOWED_BLOCKS = ['bvi/mega-panel', 'bvi/menu-item'];
 const TEMPLATE = [];
 
 /**
- * @param  val
- * @return {boolean}
+ * @param {string} val Candidate link value.
+ * @return {boolean} True when the value looks like an absolute or root-relative URL.
  */
 const looksLikeUrl = (val) => /^https?:\/\//i.test(val) || val.startsWith('/');
 
@@ -43,7 +43,7 @@ const decodeEntities = (str) => {
  * @param {boolean}  props.openInNewTab
  * @param {Function} props.onChange
  * @param {Function} props.onRemove
- * @return {JSX.Element}
+ * @return {Element} The rendered link picker control.
  */
 function LinkPicker({ url, title, id, kind, type, openInNewTab, onChange, onRemove }) {
   const [isEditing, setIsEditing] = useState(!url);

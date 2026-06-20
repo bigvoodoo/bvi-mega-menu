@@ -21,7 +21,9 @@ class Helper
     /** @var bool Whether REST routes have been registered. */
     private static $routes_registered = false;
 
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     /**
      * Exposes block nav menus to the REST API for the editor's menu picker.

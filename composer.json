@@ -1,14 +1,21 @@
 {
-  "name": "bigvoodoo/bvi-mega-menu",
-  "description": "Enhanced WordPress navigation menu with mega menu, related links, columns, shortcodes, and block editor support.",
+  "name": "bvi/megamenu",
+  "description": "WordPress Plugin Build - BVI Mega Menu.",
+  "version": "1.0.0",
   "type": "wordpress-plugin",
   "license": "GPLv3",
   "require": {
-    "php": ">=8.2"
+    "php": ">=8.2",
+    "vlucas/phpdotenv": "^5.5"
   },
   "require-dev": {
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+    "phpcompatibility/php-compatibility": "*",
+    "phpcsstandards/phpcsutils": "*",
     "phpunit/phpunit": "^9.6",
-    "squizlabs/php_codesniffer": "^3.11"
+    "squizlabs/php_codesniffer": "^3.11",
+    "wp-coding-standards/wpcs": "^3.0",
+    "vlucas/phpdotenv": "^5.5"
   },
   "autoload": {
     "psr-4": {
@@ -16,16 +23,20 @@
     }
   },
   "scripts": {
-    "lint": "phpcs",
+    "lint": "phpcs -n",
     "lint:fix": "phpcbf",
-    "test": "phpunit",
+    "test": "phpunit -c .github/phpunit.xml",
     "check": [
       "@lint",
       "@test"
     ]
   },
   "config": {
+    "optimize-autoloader": true,
     "sort-packages": true,
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    },
     "platform": {
       "php": "8.2.99"
     }
@@ -33,7 +44,7 @@
   "authors": [
     {
       "name": "Christina Gleason",
-      "email": "chris@bigvoodoo.com"
+      "email": "tina@bigvoodoo.com"
     }
   ]
 }

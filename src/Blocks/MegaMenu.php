@@ -118,6 +118,9 @@ class MegaMenu extends AbstractBlock
         if ($menu_slug !== '') {
             $classic_html = $this->render_from_menu_slug($menu_slug);
             if ($classic_html !== '') {
+                // Classic markup has no inner blocks, so the menu-item / mega-panel
+                // stylesheets won't auto-enqueue. Pull them in explicitly.
+                \Bvi\Plugin\MegaMenu\Frontend::enqueue_menu_assets();
                 $nav_items = $classic_html;
             } else {
                 $nav_items = trim($content) !== '' ? '<ul class="bvi-mega-menu-list">' . $content . '</ul>' : '';
@@ -191,11 +194,10 @@ class MegaMenu extends AbstractBlock
             'after' => '',
             'link_before' => '',
             'link_after' => '',
-            'aria_button' => 'true',
         ];
 
         $walker = new Walker();
-        $output = $walker->walk($menu_items, -1, $args);
+        $output = $walker->walk($menu_items, 0, $args);
 
         if (!is_string($output) || $output === '') {
             return '';
@@ -354,7 +356,7 @@ class MegaMenu extends AbstractBlock
         ];
 
         $walker = new Walker();
-        $output = $walker->walk($menu_items, -1, $args);
+        $output = $walker->walk($menu_items, 0, $args);
 
         if (!is_string($output) || $output === '') {
             return '';
@@ -440,7 +442,11 @@ class MegaMenu extends AbstractBlock
             $parts[] = $var . ': ' . $value;
         }
 
-        return implode(';', $parts);
+        // Trailing semicolon is required: get_block_wrapper_attributes() merges
+        // core-generated styles (typography, spacing) onto this string with a
+        // bare space, so without it the last declaration swallows them
+        // (e.g. `--bvi-mm-item-gap: 1rem letter-spacing: 2px`).
+        return implode(';', $parts) . ';';
     }
 
     /**

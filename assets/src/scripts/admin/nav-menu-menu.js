@@ -73,7 +73,7 @@
   // click handler for "Add to Menu" button
   $('#menu-settings-column').on('click', function (e) {
     if ($(e.target).hasClass('submit-add-menu-to-menu')) {
-      if ($('#menu-menu-item-menu option:selected').val() == 0) {
+      if ($('#menu-menu-item-menu option:selected').val() === '0') {
         return false;
       }
 

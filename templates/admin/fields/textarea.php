@@ -24,10 +24,12 @@ if (isset($count_key) || $is_template) {
     $field_class .= ' ' . BVI_PLUGIN_MEGAMENU_NAMESPACE . '-multi-field';
 }
 
-if ($is_template) { echo '<script type="text/template" id="multi-field-template-' . $id . '">'; }
+if ($is_template) {
+    echo '<script type="text/template" id="multi-field-template-' . $id . '">';
+}
 ?>
 <div class="<?php echo BVI_PLUGIN_MEGAMENU_NAMESPACE; ?>-field <?php echo $field_class; ?>" id="<?php echo BVI_PLUGIN_MEGAMENU_NAMESPACE; ?>_<?php echo $id; ?>">
-    <?php if ($is_multi): ?>
+    <?php if ($is_multi) : ?>
     <div class="multi-field-header">
         <span class="multi-field-label"><?php echo $label; ?> <?php echo $is_template ? '{LABEL_INDEX}' : ($count_key + 1); ?></span>
         <button type="button" class="remove-item button">×</button>
@@ -36,4 +38,6 @@ if ($is_template) { echo '<script type="text/template" id="multi-field-template-
     <textarea id="<?php echo $id; ?>_id" name="<?php echo $page_database_id; ?>[<?php echo $id; ?>]"><?php echo $value; ?></textarea>
     <?php include(BVI_PLUGIN_MEGAMENU_DIR_PATH . 'templates/admin/field-footer.php'); ?>
 </div>
-<?php if ($is_template) { echo '</script>'; } ?>
+<?php if ($is_template) {
+    echo '</script>';
+} ?>
