@@ -5,10 +5,9 @@ namespace Bvi\Plugin\MegaMenu\Blocks\Menus;
 use Bvi\Plugin\MegaMenu\Utils\Traits\Singleton;
 
 /**
- * Customizes the WordPress nav-menus.php admin page.
+ * Class Editor
  *
- * Adds metaboxes for special item types (Shortcode, Column, Menu)
- * and handles saving menu data to the custom table.
+ * @package bvi-mega-menu
  */
 class Editor
 {
@@ -21,6 +20,12 @@ class Editor
      */
     private array $pending_items = [];
 
+    /**
+     * Constructor.
+     *
+     * @since 5.0.0
+     * @return void
+     */
     public function __construct() {}
 
     /**
@@ -45,6 +50,9 @@ class Editor
 
     /**
      * Set up the nav-menus page: enqueue assets, add metaboxes.
+     *
+     * @since 5.0.0
+     * @return void
      */
     public function setup_menu_page(): void
     {
@@ -71,6 +79,9 @@ class Editor
 
     /**
      * Render the Shortcode/HTML metabox.
+     *
+     * @since 5.0.0
+     * @return void
      */
     public function render_shortcode_metabox(): void
     {
@@ -83,6 +94,9 @@ class Editor
 
     /**
      * Render the Column/Section metabox.
+     *
+     * @since 5.0.0
+     * @return void
      */
     public function render_column_metabox(): void
     {
@@ -95,6 +109,9 @@ class Editor
 
     /**
      * Render the Menu metabox.
+     *
+     * @since 5.0.0
+     * @return void
      */
     public function render_menu_metabox(): void
     {
@@ -107,16 +124,18 @@ class Editor
 
     /**
      * Enqueue admin scripts and styles for the nav-menus page.
+     *
+     * @since 5.0.0
+     * @return void
      */
     private function enqueue_admin_assets(): void
     {
         $scripts = [
-            BVI_PLUGIN_MEGAMENU_NAMESPACE . '-nav-menu-column' => 'assets/dist/scripts/admin/nav-menu-column.min.js',
-            BVI_PLUGIN_MEGAMENU_NAMESPACE . '-nav-menu-menu' => 'assets/dist/scripts/admin/nav-menu-menu.min.js',
+            BVI_PLUGIN_MEGAMENU_NAMESPACE . '-nav-menu-column' => 'assets/dist/scripts/nav-menu-column.min.js',
+            BVI_PLUGIN_MEGAMENU_NAMESPACE . '-nav-menu-menu' => 'assets/dist/scripts/nav-menu-menu.min.js',
+            BVI_PLUGIN_MEGAMENU_NAMESPACE . '-nav-menu-shortcode' => 'assets/dist/scripts/nav-menu-shortcode.min.js',
             BVI_PLUGIN_MEGAMENU_NAMESPACE .
-            '-nav-menu-shortcode' => 'assets/dist/scripts/admin/nav-menu-shortcode.min.js',
-            BVI_PLUGIN_MEGAMENU_NAMESPACE .
-            '-nav-menu-collapsing' => 'assets/dist/scripts/admin/nav-menu-collapsing-items.min.js',
+            '-nav-menu-collapsing' => 'assets/dist/scripts/nav-menu-collapsing-items.min.js',
         ];
 
         foreach ($scripts as $handle => $path) {
@@ -132,6 +151,9 @@ class Editor
 
     /**
      * AJAX: Add all descendants of a post to the menu.
+     *
+     * @since 5.0.0
+     * @return void
      */
     public function ajax_get_post_descendants(): void
     {
@@ -192,6 +214,9 @@ class Editor
 
     /**
      * AJAX: Duplicate a menu item.
+     *
+     * @since 5.0.0
+     * @return void
      */
     public function ajax_duplicate_item(): void
     {
@@ -236,10 +261,11 @@ class Editor
     /**
      * Save the full menu structure to the custom table.
      *
-     * This fires after all individual items have been processed.
+     * @since 5.0.0
      *
-     * @param int $menu_id
+     * @param int   $menu_id   Menu term ID being saved.
      * @param mixed $menu_data Non-null means WordPress is updating menu settings, not items.
+     * @return void
      */
     public function on_menu_save(int $menu_id, $menu_data = null): void
     {
@@ -262,9 +288,12 @@ class Editor
     /**
      * Collect a single menu item's data during the save process.
      *
-     * @param int   $menu_id
-     * @param int   $menu_item_db_id
-     * @param array $menu_item_data
+     * @since 5.0.0
+     *
+     * @param int   $menu_id         Menu term ID being saved.
+     * @param int   $menu_item_db_id Saved menu item post ID.
+     * @param array $menu_item_data  Submitted menu item data.
+     * @return void
      */
     public function on_menu_item_save(int $menu_id, int $menu_item_db_id, array $menu_item_data): void
     {
@@ -301,7 +330,12 @@ class Editor
     /**
      * Output walker markup for AJAX responses (descendants, duplicates).
      *
-     * @param object[] $menu_items
+     * @since 5.0.0
+     *
+     * @param object[] $menu_items   Menu item objects to render.
+     * @param int      $menu_id      Menu term ID for walker filtering.
+     * @param int      $depth_offset Amount to shift depth classes by.
+     * @return void
      */
     private function output_walker_markup(array $menu_items, int $menu_id, int $depth_offset): void
     {

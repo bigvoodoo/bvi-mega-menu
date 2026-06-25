@@ -6,23 +6,7 @@ use Bvi\Plugin\MegaMenu\Blocks\Menus\Helper;
 use Bvi\Plugin\MegaMenu\Service\Shortcode\RelatedLinksShortcode;
 
 /**
- * Gutenberg block: Related Links.
- *
- * Renders a contextual list of related links. The item source is resolved in
- * this order:
- *
- *   1. Per-page override (Related Links metabox on the current post).
- *   2. The menu explicitly selected in the block's settings.
- *   3. Auto-detection: scan the current post, current block template, and
- *      active template parts for `bvi/mega-menu` blocks, flatten their
- *      `bvi/menu-item` descendants, and match the current URL against them.
- *   4. The default related links menu configured in plugin settings.
- *
- * Once a flat list of items is built, the display follows the classic logic:
- *   - Children of the current item (if any), else
- *   - Siblings of the current item (if any), else
- *   - The current item's parent plus the parent's siblings, else
- *   - Top-level items of the resolved menu.
+ * Class RelatedLinks
  *
  * @package bvi-mega-menu
  */
@@ -30,6 +14,9 @@ class RelatedLinks extends AbstractBlock
 {
     /**
      * Constructor.
+     *
+     * @since 5.0.0
+     * @return void
      */
     public function __construct()
     {
@@ -39,8 +26,7 @@ class RelatedLinks extends AbstractBlock
     /**
      * Register the block type.
      *
-     * @since 0.1.0
-     *
+     * @since 5.0.0
      * @return void
      */
     public function register(): void
@@ -56,6 +42,8 @@ class RelatedLinks extends AbstractBlock
 
     /**
      * Server-side render callback.
+     *
+     * @since 5.0.0
      *
      * @param array  $attributes Block attributes.
      * @param string $content    Block inner content (unused).
@@ -83,16 +71,14 @@ class RelatedLinks extends AbstractBlock
     /**
      * Build the flat item list from whichever source wins.
      *
-     * Each returned item is an associative array with the shape:
-     *   id (string), parent_id (string), url (string), title (string),
-     *   current (bool), classes (array).
+     * @since 5.0.0
      *
      * @param array $attributes Block attributes.
-     * @return array<int, array<string, mixed>>
+     * @return array
      */
     private function resolve_items(array $attributes): array
     {
-        // 1. Per-page override (custom pairs on the current post).
+        // first, check for per-page overrides (custom pairs on the current post)
         $custom = $this->get_custom_override_items();
         if (!empty($custom)) {
             return $custom;
@@ -100,7 +86,7 @@ class RelatedLinks extends AbstractBlock
 
         $selection = (string) ( $attributes['menuSlug'] ?? '' );
 
-        // 2. Explicit selection on the block (skip both auto-detect and default sentinels).
+        // next, check for explicit selections on the block (skip both auto-detect and default sentinels)
         if ($selection !== '' && $selection !== 'autodetect' && $selection !== 'defaultsettings') {
             $items = $this->items_from_classic_menu($selection);
             if (!empty($items)) {
@@ -108,7 +94,7 @@ class RelatedLinks extends AbstractBlock
             }
         }
 
-        // 3. Auto-detect a Mega Menu block on the page or active templates.
+        // next, auto-detect a mega menu block on the page or active templates
         if ($selection === '' || $selection === 'autodetect') {
             $items = $this->items_from_mega_menu_blocks();
             if (!empty($items)) {
@@ -116,7 +102,7 @@ class RelatedLinks extends AbstractBlock
             }
         }
 
-        // 4. Fall back to the default related-links menu from plugin settings.
+        // otherwise, fall back to the default related-links menu from plugin settings
         $default = $this->get_default_menu_slug();
         if ($default !== '') {
             $items = $this->items_from_classic_menu($default);
@@ -129,10 +115,12 @@ class RelatedLinks extends AbstractBlock
     }
 
     /**
-     * Children → siblings → parent + parent-siblings → top-level fallback.
+     * Select the contextual items to display for the current page.
      *
-     * @param array<int, array<string, mixed>> $items Flat item list.
-     * @return array<int, array<string, mixed>>
+     * @since 5.0.0
+     *
+     * @param array $items Flat item list.
+     * @return array
      */
     private function select_contextual_items(array $items): array
     {
@@ -144,24 +132,24 @@ class RelatedLinks extends AbstractBlock
             }
         }
 
-        // Current page isn't in the menu — show top-level items.
+        // current page isn't in the menu, show top-level items
         if ($current === null) {
             return $this->children_of($items, '0');
         }
 
-        // 1. Children of the current item.
+        // first, check for children of the current item
         $children = $this->children_of($items, (string) $current['id']);
         if (!empty($children)) {
             return $children;
         }
 
-        // 2. Siblings of the current item.
+        // if no children, check for siblings of the current item
         $siblings = $this->children_of($items, (string) $current['parent_id']);
         if (!empty($siblings) && count($siblings) > 1) {
             return $siblings;
         }
 
-        // 3. Parent + parent's siblings.
+        // if no children or siblings, check for direct parent and it's siblings
         if ((string) $current['parent_id'] !== '0') {
             $parent = null;
             foreach ($items as $item) {
@@ -178,16 +166,18 @@ class RelatedLinks extends AbstractBlock
             }
         }
 
-        // 4. Top-level fallback.
+        // otherwise, fallback to display the top level of the mega menu
         return $this->children_of($items, '0');
     }
 
     /**
-     * Return items whose parent_id matches $parent_id.
+     * Return items whose parent_id matches the given parent.
      *
-     * @param array<int, array<string, mixed>> $items
-     * @param string $parent_id
-     * @return array<int, array<string, mixed>>
+     * @since 5.0.0
+     *
+     * @param array  $items     Flat item list.
+     * @param string $parent_id Parent id to match against.
+     * @return array
      */
     private function children_of(array $items, string $parent_id): array
     {
@@ -201,7 +191,9 @@ class RelatedLinks extends AbstractBlock
     /**
      * Render the final `<ul>` list from the selected items.
      *
-     * @param array<int, array<string, mixed>> $items
+     * @since 5.0.0
+     *
+     * @param array $items      Items to render.
      * @param array $attributes Block attributes (for wrapper attrs).
      * @return string
      */
@@ -244,14 +236,12 @@ class RelatedLinks extends AbstractBlock
         return sprintf('<div %s><ul class="bvi-related-links__list">%s</ul></div>', $wrapper_attrs, $lis);
     }
 
-    // ---------------------------------------------------------------------
-    // Item sources
-    // ---------------------------------------------------------------------
-
     /**
      * Build items from the per-page Related Links metabox (if set).
      *
-     * @return array<int, array<string, mixed>>
+     * @since 5.0.0
+     *
+     * @return array
      */
     private function get_custom_override_items(): array
     {
@@ -278,17 +268,18 @@ class RelatedLinks extends AbstractBlock
             ];
         }
 
-        // Flag current page by URL match.
+        // mark this as the current page
         $this->mark_current($items);
 
         return $items;
     }
 
     /**
-     * Build items by walking `bvi/mega-menu` → `bvi/menu-item` blocks found
-     * in the current post's content and the active block template / template parts.
+     * Build items by walking `bvi/mega-menu` and `bvi/menu-item` blocks.
      *
-     * @return array<int, array<string, mixed>>
+     * @since 5.0.0
+     *
+     * @return array
      */
     private function items_from_mega_menu_blocks(): array
     {
@@ -312,10 +303,10 @@ class RelatedLinks extends AbstractBlock
     /**
      * Parse a classic menu (or a wp_navigation post) into the flat item shape.
      *
-     * Accepts either a classic nav menu slug/id or the Helper-style `wp_navigation:{id}`.
+     * @since 5.0.0
      *
-     * @param string $menu_source
-     * @return array<int, array<string, mixed>>
+     * @param string $menu_source Classic menu slug/id or `wp_navigation:{id}` identifier.
+     * @return array
      */
     private function items_from_classic_menu(string $menu_source): array
     {
@@ -337,7 +328,7 @@ class RelatedLinks extends AbstractBlock
             return $items;
         }
 
-        // Classic menu by slug or numeric id.
+        // classic menu by slug or id
         $menu_object = null;
         if (ctype_digit($menu_source)) {
             $menu_object = wp_get_nav_menu_object((int) $menu_source);
@@ -356,7 +347,7 @@ class RelatedLinks extends AbstractBlock
 
         $items = [];
         foreach ($menu_items as $menu_item) {
-            // Skip non-navigable custom item types added by the plugin (columns, shortcodes, menus).
+            // skip non-navigable custom item types added by the plugin (columns, shortcodes, menus)
             $type = isset($menu_item->type) ? (string) $menu_item->type : '';
             if (in_array($type, ['column', 'shortcode', 'menu'], true)) {
                 continue;
@@ -377,14 +368,12 @@ class RelatedLinks extends AbstractBlock
         return $items;
     }
 
-    // ---------------------------------------------------------------------
-    // Block-tree walking helpers
-    // ---------------------------------------------------------------------
-
     /**
      * Gather parsed block trees from the current post and its template / template parts.
      *
-     * @return array<int, array>
+     * @since 5.0.0
+     *
+     * @return array
      */
     private function collect_page_blocks(): array
     {
@@ -395,7 +384,7 @@ class RelatedLinks extends AbstractBlock
             $all[] = parse_blocks($post->post_content);
         }
 
-        // Active block template (header/footer etc are usually template parts inside it).
+        // active block template (header/footer etc are usually template parts inside it)
         if (function_exists('get_block_template')) {
             $template = null;
             if (function_exists('get_the_block_template_html') && !empty($GLOBALS['_wp_current_template_content'])) {
@@ -411,7 +400,7 @@ class RelatedLinks extends AbstractBlock
             }
         }
 
-        // Flatten one level so callers can recurse cleanly.
+        // flatten one level so callers can recurse cleanly
         $merged = [];
         foreach ($all as $tree) {
             foreach ((array) $tree as $block) {
@@ -423,11 +412,13 @@ class RelatedLinks extends AbstractBlock
     }
 
     /**
-     * Find `bvi/mega-menu` blocks anywhere in $blocks and flatten their
-     * `bvi/menu-item` descendants into the $items list.
+     * Find `bvi/mega-menu` blocks anywhere in the tree and flatten their descendants.
      *
-     * @param array $blocks
-     * @param array<int, array<string, mixed>> $items Passed by reference.
+     * @since 5.0.0
+     *
+     * @param array $blocks Parsed block array to scan.
+     * @param array $items  Accumulator, passed by reference.
+     * @return void
      */
     private function walk_blocks_for_mega_menu(array $blocks, array &$items): void
     {
@@ -448,9 +439,12 @@ class RelatedLinks extends AbstractBlock
     /**
      * Flatten `bvi/menu-item` children (and nested children) under the given parent.
      *
-     * @param array $blocks
-     * @param string $parent_id
-     * @param array<int, array<string, mixed>> $items Passed by reference.
+     * @since 5.0.0
+     *
+     * @param array  $blocks    Parsed block array to scan.
+     * @param string $parent_id Parent item id for nesting.
+     * @param array  $items     Accumulator, passed by reference.
+     * @return void
      */
     private function walk_menu_items(array $blocks, string $parent_id, array &$items): void
     {
@@ -478,14 +472,14 @@ class RelatedLinks extends AbstractBlock
     }
 
     /**
-     * Walk a core/navigation block tree (used when the selection is a
-     * wp_navigation post). Only `core/navigation-link` and
-     * `core/navigation-submenu` contribute items; links within submenus
-     * become children of the submenu item.
+     * Walk a core/navigation block tree, contributing link and submenu items.
      *
-     * @param array $blocks
-     * @param string $parent_id
-     * @param array<int, array<string, mixed>> $items Passed by reference.
+     * @since 5.0.0
+     *
+     * @param array  $blocks    Parsed block array to scan.
+     * @param string $parent_id Parent item id for nesting.
+     * @param array  $items     Accumulator, passed by reference.
+     * @return void
      */
     private function walk_navigation_blocks(array $blocks, string $parent_id, array &$items): void
     {
@@ -512,7 +506,8 @@ class RelatedLinks extends AbstractBlock
                 continue;
             }
 
-            // core/navigation itself, or nested groups — recurse without adding an item.
+            // core/navigation itself, or nested groups
+            // recurse without adding an item.
             if (!empty($block['innerBlocks'])) {
                 $this->walk_navigation_blocks($block['innerBlocks'], $parent_id, $items);
             }
@@ -522,9 +517,11 @@ class RelatedLinks extends AbstractBlock
     /**
      * Build a stable synthetic id for a block-sourced item.
      *
-     * @param array $attrs
-     * @param string $label
-     * @param int $fallback_index
+     * @since 5.0.0
+     *
+     * @param array  $attrs          Block attributes.
+     * @param string $label          Item label.
+     * @param int    $fallback_index Index used when no id/url/label is available.
      * @return string
      */
     private function synthetic_id(array $attrs, string $label, int $fallback_index): string
@@ -544,7 +541,10 @@ class RelatedLinks extends AbstractBlock
     /**
      * Flag the item whose URL matches the current request.
      *
-     * @param array<int, array<string, mixed>> $items Passed by reference.
+     * @since 5.0.0
+     *
+     * @param array $items Flat item list, passed by reference.
+     * @return void
      */
     private function mark_current(array &$items): void
     {
@@ -566,6 +566,8 @@ class RelatedLinks extends AbstractBlock
 
     /**
      * Best-effort current URL for comparison.
+     *
+     * @since 5.0.0
      *
      * @return string
      */
@@ -595,7 +597,9 @@ class RelatedLinks extends AbstractBlock
     /**
      * Strip scheme/host/trailing slashes so host-relative and absolute URLs compare equal.
      *
-     * @param string $url
+     * @since 5.0.0
+     *
+     * @param string $url URL to normalize.
      * @return string
      */
     private function normalize_url(string $url): string
@@ -618,6 +622,8 @@ class RelatedLinks extends AbstractBlock
     /**
      * Default related links menu slug (from the plugin's General settings).
      *
+     * @since 5.0.0
+     *
      * @return string
      */
     private function get_default_menu_slug(): string
@@ -629,7 +635,7 @@ class RelatedLinks extends AbstractBlock
 
         $default = (string) ( $options['default_related_links_menu'] ?? '' );
 
-        // The setting stores values like `classic:{id}` or `block:{id}`; strip the prefix.
+        // if setting stores values like `classic:{id}` or `block:{id}`, strip the prefix
         if (strpos($default, 'classic:') === 0) {
             return (string) substr($default, strlen('classic:'));
         }

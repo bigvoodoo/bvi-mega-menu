@@ -8,15 +8,6 @@ use Bvi\Plugin\MegaMenu\Utils\Traits\Singleton;
 /**
  * Class Blocks
  *
- * Discovers and registers all custom block classes found in src/Blocks/.
- *
- * To add a new block:
- *   1. Create a source directory in assets/src/blocks/<slug>/
- *      with block.json, index.js, and optionally view.js + style.scss
- *   2. Create a PHP class in src/Blocks/ that extends AbstractBlock
- *      and implements the register() method
- *   3. Run `npm run block:build` to compile the block assets
- *
  * @package bvi-mega-menu
  */
 class Blocks
@@ -29,8 +20,6 @@ class Blocks
     /**
      * Initializes block discovery on the init hook.
      *
-     * Called automatically by the Singleton trait after construction.
-     *
      * @since 0.1.0
      *
      * @return void
@@ -42,10 +31,6 @@ class Blocks
 
     /**
      * Discovers all block classes in src/Blocks/ and registers them.
-     *
-     * Each block class must implement the Block interface. Discovery
-     * instantiates valid classes, then this method explicitly calls
-     * register() on each one.
      *
      * @since 0.1.0
      *

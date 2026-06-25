@@ -6,9 +6,8 @@ use Bvi\Plugin\MegaMenu\Blocks\Menus\Helper;
 use Bvi\Plugin\MegaMenu\Blocks\Menus\Walker;
 
 /**
- * Gutenberg block: Mega Menu.
+ * Class MegaMenu
  *
- * @since 5.0.0
  * @package bvi-mega-menu
  */
 class MegaMenu extends AbstractBlock
@@ -113,13 +112,10 @@ class MegaMenu extends AbstractBlock
 
         $hamburger_html = $has_mobile ? $this->render_hamburger($hamburger_style, $hamburger_svg_id) : '';
 
-        // Classic menu path: render via the Walker. Falls back to InnerBlocks
-        // content if the slug doesn't resolve to a menu.
+        // backwards compatibility for classic menus being rendered
         if ($menu_slug !== '') {
             $classic_html = $this->render_from_menu_slug($menu_slug);
             if ($classic_html !== '') {
-                // Classic markup has no inner blocks, so the menu-item / mega-panel
-                // stylesheets won't auto-enqueue. Pull them in explicitly.
                 \Bvi\Plugin\MegaMenu\Frontend::enqueue_menu_assets();
                 $nav_items = $classic_html;
             } else {
@@ -129,7 +125,7 @@ class MegaMenu extends AbstractBlock
             $nav_items = trim($content) !== '' ? '<ul class="bvi-mega-menu-list">' . $content . '</ul>' : '';
         }
 
-        // Optional mobile override menu (classic behavior from the BVI plugin).
+        // optional mobile override for backwards compatibility
         $mobile_override_html = '';
         if ($has_mobile && !empty($settings['mobile_override_val'])) {
             $mobile_override_html = $this->render_mobile_override((string) $settings['mobile_override_val']);
@@ -157,7 +153,6 @@ class MegaMenu extends AbstractBlock
      */
     private function render_from_menu_slug(string $menu_slug): string
     {
-        // Block-theme navigation post: convert to menu items on the fly.
         if (strpos($menu_slug, 'wp_navigation:') === 0) {
             $nav_post_id = (int) substr($menu_slug, strlen('wp_navigation:'));
             $menu_items = $this->navigation_post_to_menu_items($nav_post_id);
@@ -172,8 +167,6 @@ class MegaMenu extends AbstractBlock
                 return '';
             }
 
-            // Normalize classic menu items to the shape our Walker expects.
-            // The Walker reads `parent_id` (not `menu_item_parent`) and `post_id`.
             foreach ($menu_items as $menu_item) {
                 $menu_item->parent_id = (int) ( $menu_item->menu_item_parent ?? 0 );
                 $is_post_object =
@@ -265,7 +258,7 @@ class MegaMenu extends AbstractBlock
                     'type' => 'post_type',
                 ];
 
-                // If it has no post_id, the walker will use the url instead.
+                // if it has no post_id, the walker will use the url instead.
                 if (!$item->post_id && $item->url === '') {
                     $item->url = '#';
                 }
@@ -278,7 +271,7 @@ class MegaMenu extends AbstractBlock
                 continue;
             }
 
-            // Recurse through containers without adding an item.
+            // recurse through containers without adding an item.
             if (!empty($block['innerBlocks'])) {
                 $this->walk_navigation_blocks($block['innerBlocks'], $parent_id, $items, $next_id);
             }
@@ -305,7 +298,7 @@ class MegaMenu extends AbstractBlock
             return '<div class="bvi-mega-menu-mobile-override">' . $html . '</div>';
         }
 
-        // Strip the `classic:` prefix if present; leave anything else alone.
+        // strip the `classic:` prefix if present; leave anything else alone.
         $menu =
             strpos($menu_identifier, 'classic:') === 0
                 ? substr($menu_identifier, strlen('classic:'))
@@ -315,7 +308,7 @@ class MegaMenu extends AbstractBlock
             return '';
         }
 
-        // Confirm the menu actually exists before asking wp_nav_menu to render it.
+        // confirm the menu actually exists before asking wp_nav_menu to render it.
         $resolved = ctype_digit($menu) ? wp_get_nav_menu_object((int) $menu) : wp_get_nav_menu_object($menu);
         if (empty($resolved) || is_wp_error($resolved)) {
             return '';
@@ -442,10 +435,18 @@ class MegaMenu extends AbstractBlock
             $parts[] = $var . ': ' . $value;
         }
 
-        // Trailing semicolon is required: get_block_wrapper_attributes() merges
-        // core-generated styles (typography, spacing) onto this string with a
-        // bare space, so without it the last declaration swallows them
-        // (e.g. `--bvi-mm-item-gap: 1rem letter-spacing: 2px`).
+        $text_decoration = (string) ( $attributes['style']['typography']['textDecoration'] ?? '' );
+        if (in_array($text_decoration, ['none', 'underline', 'overline', 'line-through'], true)) {
+            $parts[] = '--bvi-mm-text-decoration: ' . $text_decoration;
+        }
+
+        /**
+         * Do not remove the extra semi-colon! Please!
+         *
+         * get_block_wrapper_attributes() merges core-generated styles (typography, spacing)
+         * onto this string with a bare space, so without it the last declaration swallows them
+         * (e.g. `--bvi-mm-item-gap: 1rem letter-spacing: 2px`).
+         */
         return implode(';', $parts) . ';';
     }
 
@@ -471,7 +472,7 @@ class MegaMenu extends AbstractBlock
                 );
             }
         } elseif ($style === 'custom') {
-            // Let child themes filter in their own markup.
+            // child themes can override and filter their own markup
             $custom = apply_filters('bvi_nav_hamburger_open_icon', '');
             if (is_string($custom) && $custom !== '') {
                 $inner = $custom;
@@ -479,7 +480,7 @@ class MegaMenu extends AbstractBlock
         }
 
         if ($inner === '') {
-            // Default three-bar hamburger; pure-CSS transform to X via `.is-open`.
+            // defaults to three lines transform to X
             $inner =
                 '<span class="bvi-mega-menu-hamburger-bar" aria-hidden="true"></span>' .
                 '<span class="bvi-mega-menu-hamburger-bar" aria-hidden="true"></span>' .

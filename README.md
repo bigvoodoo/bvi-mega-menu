@@ -338,8 +338,6 @@ add_filter( 'bvi_nav_hamburger_open_icon', function() {
 - Block menu: dropdown panels slide open/closed via CSS `clip-path` animation when instant dropdown is off; instant mode retains `display` toggling
 - AJAX menu: removed redundant `.fadeOut()` chained after `.slideUp()` in the hide handler
 - Block editor: split "Navigation Colors" into five grouped colour panels — Link Colors, Dropdown Colors, Submenu Colors, Hamburger Colors, Mobile Colors
-- Fixed: `hamburgerBackgroundColorOpen` was never written to `--bvi-mm-hamburger-bg-open` in the editor `styleVars`
-- Fixed: bare `requestAnimationFrame` in `view.jsx` changed to `window.requestAnimationFrame`
 
 ### 4.2.0
 

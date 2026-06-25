@@ -19,6 +19,10 @@ const ALLOWED_BLOCKS = ['bvi/mega-panel', 'bvi/menu-item'];
 const TEMPLATE = [];
 
 /**
+ * Check whether a value looks like an absolute or root-relative URL.
+ *
+ * @since 5.0.0
+ *
  * @param {string} val Candidate link value.
  * @return {boolean} True when the value looks like an absolute or root-relative URL.
  */
@@ -34,9 +38,11 @@ const decodeEntities = (str) => {
 /**
  * Custom link picker: searches pages with top-level indicator, falls back to raw URL entry.
  *
+ * @since 5.0.0
+ *
  * @param {Object}   props
  * @param {string}   props.url
- * @param {string}   props.title        Display title for the preview (the block label).
+ * @param {string}   props.title
  * @param {number}   props.id
  * @param {string}   props.kind
  * @param {string}   props.type

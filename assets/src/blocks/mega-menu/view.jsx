@@ -1,15 +1,3 @@
-/**
- * BVI Mega Menu - Frontend behavior.
- *
- * Manages open/close state for:
- * - hamburger mobile menu (adds `.is-open` on the wrapper)
- * - per-item dropdown panels (adds `.is-open` on the menu item)
- *
- * Dropdown open behavior is driven by the block's configured trigger
- * (`data-dropdown-trigger`: 'hover' | 'click') and auto-closes after
- * `data-close-delay` milliseconds. Mobile always uses tap-to-expand
- * regardless of the desktop trigger.
- */
 (function () {
   'use strict';
 
@@ -30,9 +18,6 @@
     bodyLock: 'bvi-mega-menu-body-lock',
   };
 
-  /**
-   * Controls a single mega-menu block element.
-   */
   class MegaMenuBlock {
     /** @type {HTMLElement} */
     nav;
@@ -91,8 +76,6 @@
       this.mobileDropdownAlignment = this.nav.dataset.mobileDropdownAlignment || 'viewport';
       this.mql = window.matchMedia(`(max-width: ${this.breakpoint - 1}px)`);
 
-      // Defer the initial measurement so getBoundingClientRect() reflects
-      // true rendered geometry. The load listener catches font/image reflows.
       window.requestAnimationFrame(() => this.updatePositionVars());
       window.addEventListener('load', () => this.updatePositionVars());
       window.addEventListener('resize', () => this.updatePositionVars());
@@ -199,8 +182,7 @@
       if (this.mobileLevels === 0) {
         return true;
       }
-      // mobileLevels = 1 → show 1 level (top links only, no panels expand)
-      // mobileLevels = 2 → top links + their children can expand
+
       return this.getItemDepth(item) < this.mobileLevels - 1;
     }
 
@@ -235,8 +217,6 @@
     openWithTimer(item) {
       MegaMenuBlock.openItem(item);
 
-      // in click mode, always start the auto-close countdown.
-      // in hover mode, we only start it on mouseleave.
       if (this.trigger === 'click' && !this.isMobile()) {
         this.scheduleClose(item);
       } else {
@@ -318,7 +298,6 @@
           }
         });
 
-        // keyboard focus: open on focusin, schedule close on focusout (hover mode only).
         item.addEventListener('focusin', () => {
           if (this.isMobile() || this.trigger !== 'hover') {
             return;
@@ -332,7 +311,6 @@
             return;
           }
 
-          // only schedule close if focus actually left the item subtree.
           if (item.contains(event.relatedTarget)) {
             return;
           }
@@ -378,8 +356,6 @@
           return;
         }
 
-        // button-style (no href) link always acts as a toggle
-        // (unless mobile level limit prevents expansion).
         if (link.tagName === 'BUTTON') {
           if (this.isMobile() && !this.canExpandInMobile(item)) {
             return;
@@ -394,15 +370,12 @@
           return;
         }
 
-        // on mobile, links with panels open the panel instead of navigating
-        // (unless the item is beyond the configured mobile depth limit).
         if (this.isMobile() && !item.classList.contains(CLASSES.itemOpen) && this.canExpandInMobile(item)) {
           event.preventDefault();
           MegaMenuBlock.openItem(item);
           return;
         }
 
-        // desktop click mode: first click opens the panel, second click navigates.
         if (this.trigger === 'click' && !this.isMobile()) {
           if (!item.classList.contains(CLASSES.itemOpen)) {
             event.preventDefault();
@@ -471,7 +444,6 @@
       const mobile = this.isMobile();
       this.nav.classList.toggle(CLASSES.mobile, mobile);
 
-      // show/hide toggle buttons based on mobileLevels.
       this.nav.querySelectorAll(SELECTORS.itemHasPanel).forEach((item) => {
         const toggle = item.querySelector(':scope > ' + SELECTORS.itemToggle);
         if (!toggle) {
@@ -489,7 +461,6 @@
         MegaMenuBlock.closeAllItems(this.nav);
       }
 
-      // clear any pending close timers when crossing the breakpoint.
       this.closeTimers.forEach((id) => clearTimeout(id));
       this.closeTimers.clear();
     }
@@ -617,29 +588,16 @@
     }
   }
 
-  /**
-   * Discovers all mega menu blocks on the page and initialises each one.
-   */
-  class MegaMenuView {
-    /**
-     * Find all mega menu block elements and initialise a controller for each.
-     *
-     * @since 5.0.0
-     *
-     * @return {void}
-     */
-    init() {
-      document.querySelectorAll(SELECTORS.block).forEach((nav) => {
-        const block = new MegaMenuBlock(nav);
-        block.init();
-      });
-    }
+  // find all potential mega menus and activate their functionality
+  function initMegaMenus() {
+    document.querySelectorAll(SELECTORS.block).forEach((nav) => {
+      new MegaMenuBlock(nav).init();
+    });
   }
 
-  const view = new MegaMenuView();
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => view.init());
+    document.addEventListener('DOMContentLoaded', initMegaMenus);
   } else {
-    view.init();
+    initMegaMenus();
   }
 })();

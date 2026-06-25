@@ -3,25 +3,29 @@
 namespace Bvi\Plugin\MegaMenu\Blocks;
 
 /**
- * Gutenberg block: Menu Item.
- *
- * Top-level and nested menu items inside a `bvi/mega-menu` block. Each
- * item renders as a `<li>` containing a link (or a plain label if no URL is
- * set) and any InnerBlocks content (typically a `bvi/mega-panel` or nested
- * `bvi/menu-item` blocks).
- *
- * All styling is driven by parent mega-menu block CSS custom properties so
- * no custom CSS is required to get a working menu.
+ * Class MenuItem
  *
  * @package bvi-mega-menu
  */
 class MenuItem extends AbstractBlock
 {
+    /**
+     * Constructor.
+     *
+     * @since 5.0.0
+     * @return void
+     */
     public function __construct()
     {
         parent::__construct('bvi/menu-item');
     }
 
+    /**
+     * Register the block type.
+     *
+     * @since 5.0.0
+     * @return void
+     */
     public function register(): void
     {
         if (file_exists($this->get_path() . '/block.json')) {
@@ -33,6 +37,8 @@ class MenuItem extends AbstractBlock
 
     /**
      * Server-side render callback.
+     *
+     * @since 5.0.0
      *
      * @param array  $attributes Block attributes.
      * @param string $content    Rendered InnerBlocks content.
@@ -103,10 +109,11 @@ class MenuItem extends AbstractBlock
     }
 
     /**
-     * Detect whether the rendered InnerBlocks content already contains a panel
-     * (either a bvi/mega-panel output or nested menu items).
+     * Detect whether the rendered InnerBlocks content already contains a panel.
      *
-     * @param string $content
+     * @since 5.0.0
+     *
+     * @param string $content Rendered InnerBlocks content.
      * @return bool
      */
     private function content_has_panel(string $content): bool

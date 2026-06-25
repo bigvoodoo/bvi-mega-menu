@@ -16,7 +16,6 @@
 Thumbs.db
 logs
 node_modules
-scripts/
 
 # large/disallowed file types
 # a CDN should be used for these

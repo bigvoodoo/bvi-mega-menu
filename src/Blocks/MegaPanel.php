@@ -3,21 +3,29 @@
 namespace Bvi\Plugin\MegaMenu\Blocks;
 
 /**
- * Gutenberg block: Mega Panel.
- *
- * The dropdown content region for a `bvi/menu-item`. Accepts arbitrary core
- * blocks so users can compose columns, headings, buttons, images, etc.
- * inside the panel.
+ * Class MegaPanel
  *
  * @package bvi-mega-menu
  */
 class MegaPanel extends AbstractBlock
 {
+    /**
+     * Constructor.
+     *
+     * @since 5.0.0
+     * @return void
+     */
     public function __construct()
     {
         parent::__construct('bvi/mega-panel');
     }
 
+    /**
+     * Register the block type.
+     *
+     * @since 5.0.0
+     * @return void
+     */
     public function register(): void
     {
         if (file_exists($this->get_path() . '/block.json')) {
@@ -29,6 +37,8 @@ class MegaPanel extends AbstractBlock
 
     /**
      * Server-side render callback.
+     *
+     * @since 5.0.0
      *
      * @param array  $attributes Block attributes.
      * @param string $content    Rendered InnerBlocks content.

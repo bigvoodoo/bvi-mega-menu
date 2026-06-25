@@ -10,7 +10,7 @@ use Bvi\Plugin\MegaMenu\Utils\Traits\Singleton;
 /**
  * Class Frontend
  *
- * @package bvimegamenu/src
+ * @package bvi-mega-menu
  */
 class Frontend
 {
@@ -91,39 +91,7 @@ class Frontend
     }
 
     /**
-     * Enqueue the AJAX-based front-end script.
-     *
-     * @since 5.0.0
-     *
-     * @return void
-     */
-    public static function enqueue_ajax_script()
-    {
-        wp_enqueue_script(
-            BVI_PLUGIN_MEGAMENU_NAMESPACE . '-ajax',
-            BVI_PLUGIN_MEGAMENU_DIR_URL . 'assets/dist/scripts/frontend/mega-menu-ajax.min.js',
-            ['jquery'],
-            BVI_PLUGIN_MEGAMENU_VERSION,
-            true,
-        );
-
-        $options = get_option(BVI_PLUGIN_MEGAMENU_NAMESPACE . '_general_database_settings', []);
-
-        wp_localize_script(BVI_PLUGIN_MEGAMENU_NAMESPACE . '-ajax', 'DropdownSpeed', [
-            'instant_dropdown' => !empty($options['dropdown_val']),
-        ]);
-    }
-
-    /**
      * Enqueue the structural block assets needed by a classic-menu render.
-     *
-     * The mega-menu block's own style + view script are enqueued automatically
-     * when the block is on the page, but the `bvi/menu-item` and
-     * `bvi/mega-panel` stylesheets only load when those inner blocks are
-     * present. A menu rendered from a classic slug or the `[mega_menu]`
-     * shortcode has no inner blocks, so their styles (and, for shortcodes, the
-     * view script) must be enqueued explicitly. Handles come straight from the
-     * block registry so nothing is loaded twice.
      *
      * @since 5.0.0
      *
@@ -131,42 +99,67 @@ class Frontend
      */
     public static function enqueue_menu_assets()
     {
-        if (!class_exists('WP_Block_Type_Registry')) {
-            return;
-        }
+        // Each menu block and whether it ships a view script. Style is implicit
+        // for all three.
+        $blocks = [
+            'mega-menu' => true,
+            'menu-item' => false,
+            'mega-panel' => false,
+        ];
 
-        $registry = \WP_Block_Type_Registry::get_instance();
+        $registry = class_exists('WP_Block_Type_Registry') ? \WP_Block_Type_Registry::get_instance() : null;
 
-        foreach (['bvi/mega-menu', 'bvi/menu-item', 'bvi/mega-panel'] as $block_name) {
-            $block_type = $registry->get_registered($block_name);
-            if (!$block_type) {
+        foreach ($blocks as $slug => $has_view) {
+            $block_type = $registry ? $registry->get_registered('bvi/' . $slug) : null;
+
+            // if blocks can be registered, proceed as normal with asset loading
+            if ($block_type) {
+                foreach ((array) ( $block_type->style_handles ?? [] ) as $handle) {
+                    wp_enqueue_style($handle);
+                }
+
+                foreach ((array) ( $block_type->view_script_handles ?? [] ) as $handle) {
+                    wp_enqueue_script($handle);
+                }
+
                 continue;
             }
 
-            foreach ((array) ( $block_type->style_handles ?? [] ) as $handle) {
-                wp_enqueue_style($handle);
-            }
-
-            foreach ((array) ( $block_type->view_script_handles ?? [] ) as $handle) {
-                wp_enqueue_script($handle);
-            }
+            // backwards compatibility for themes with disabled block functionality
+            self::enqueue_block_asset_fallback($slug, $has_view);
         }
     }
 
     /**
-     * Enqueue the non-AJAX front-end script.
+     * Enqueue a block's compiled style/script when block registration is not available.
      *
      * @since 5.0.0
      *
+     * @param string $slug     Block slug under assets/dist/blocks/ (e.g. 'mega-menu').
+     * @param bool   $has_view Whether the block ships a view.js script.
      * @return void
      */
-    public static function enqueue_standard_script()
+    private static function enqueue_block_asset_fallback(string $slug, bool $has_view)
     {
+        $base_url = BVI_PLUGIN_MEGAMENU_DIR_URL . 'assets/dist/blocks/' . $slug . '/';
+        $base_path = BVI_PLUGIN_MEGAMENU_DIR_PATH . 'assets/dist/blocks/' . $slug . '/';
+        $handle = BVI_PLUGIN_MEGAMENU_NAMESPACE . '-block-' . $slug;
+
+        if (file_exists($base_path . 'style-index.css')) {
+            wp_enqueue_style($handle, $base_url . 'style-index.css', [], BVI_PLUGIN_MEGAMENU_VERSION);
+        }
+
+        if (!$has_view || !file_exists($base_path . 'view.js')) {
+            return;
+        }
+
+        $asset = file_exists($base_path . 'view.asset.php') ? (array) require $base_path . 'view.asset.php' : [];
+
         wp_enqueue_script(
-            BVI_PLUGIN_MEGAMENU_NAMESPACE . '-frontend',
-            BVI_PLUGIN_MEGAMENU_DIR_URL . 'assets/dist/scripts/frontend/mega-menu.min.js',
-            ['jquery'],
-            BVI_PLUGIN_MEGAMENU_VERSION,
+            $handle . '-view',
+            $base_url . 'view.js',
+            (array) ( $asset['dependencies'] ?? [] ),
+            (string) ( $asset['version'] ?? BVI_PLUGIN_MEGAMENU_VERSION ),
             true,
         );
     }

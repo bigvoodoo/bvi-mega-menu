@@ -2,7 +2,7 @@
 const templatePath = '.';
 
 // should match the namespace/prefix you are utilizing through your project
-const projectNamespace = 'bvimegamenu';
+const projectNamespace = 'bvi-mega-menu';
 
 // list of vendor script dependencies from NPM you want to include in your projects runtime
 const vendorScripts = [];

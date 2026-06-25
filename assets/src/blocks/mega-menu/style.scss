@@ -1,15 +1,4 @@
-/*
- * Mega Menu block — editor + frontend styles.
- *
- * All visual configuration is driven by CSS custom properties set inline
- * on the .bvi-mega-menu wrapper from block attributes. The `.is-mobile`
- * class is toggled by view.js when the configured mobile breakpoint is
- * active so no static @media queries are needed here.
- */
-
 /* stylelint-disable no-descending-specificity */
-
-/* defeat any theme nav/block border rules */
 nav.bvi-mega-menu,
 .bvi-mega-menu.wp-block-bvi-mega-menu {
     border: none;
@@ -48,11 +37,6 @@ nav.bvi-mega-menu,
         padding: 0;
     }
 
-    /*
-     * Hamburger toggle — hidden by default (desktop), shown in mobile mode.
-     * Uses pure-CSS transform to animate the three bars into an X when
-     * `.is-open` is applied by the view script.
-     */
     .bvi-mega-menu-hamburger {
         align-items: center;
         appearance: none;
@@ -96,7 +80,6 @@ nav.bvi-mega-menu,
         width: auto;
     }
 
-    /* Overlay used when mobileMode = popup. */
     .bvi-mega-menu-overlay {
         background: var(--bvi-mm-overlay-bg, rgba(0, 0, 0, 0.5));
         display: none;
@@ -105,10 +88,6 @@ nav.bvi-mega-menu,
         z-index: 9998;
     }
 
-    /*
-     * Mobile mode — driven by JS-applied `.is-mobile` class that reflects
-     * the block's configurable breakpoint.
-     */
     &.is-mobile {
 
         .bvi-mega-menu-hamburger {
@@ -124,7 +103,6 @@ nav.bvi-mega-menu,
         }
     }
 
-    /* Dropdown mobile mode — nav drops below the hamburger. */
     &.bvi-mega-menu-mobile-dropdown.is-mobile.is-open {
 
         .bvi-mega-menu-nav {
@@ -147,7 +125,6 @@ nav.bvi-mega-menu,
         }
     }
 
-    /* Popup mobile mode — full-screen overlay menu. */
     &.bvi-mega-menu-mobile-popup.is-mobile.is-open {
 
         .bvi-mega-menu-overlay {
@@ -173,14 +150,12 @@ nav.bvi-mega-menu,
         }
     }
 
-    /* Hamburger background while the mobile menu is open. */
     &.is-open .bvi-mega-menu-hamburger {
         background: var(--bvi-mm-hamburger-bg-open, var(--bvi-mm-hamburger-bg, transparent));
         border: none;
         box-shadow: none;
     }
 
-    /* Hamburger open → X transform (three-bar variant). */
     &.is-open .bvi-mega-menu-hamburger-bar:nth-child(1) {
         transform: translateY(6px) rotate(45deg);
     }
@@ -193,13 +168,11 @@ nav.bvi-mega-menu,
         transform: translateY(-6px) rotate(-45deg);
     }
 
-    /* SVG / custom icon open-state rotation (gives a subtle X feel). */
     &.is-open .bvi-mega-menu-hamburger-svg {
         transform: rotate(90deg);
         transition: transform 0.25s ease;
     }
 
-    /* Mobile link styling (overrides desktop link colors). */
     &.is-mobile.is-open .bvi-menu-item-link {
         background: var(--bvi-mm-mobile-link-bg, transparent);
         color: var(--bvi-mm-mobile-color, inherit);
@@ -222,12 +195,6 @@ nav.bvi-mega-menu,
         }
     }
 
-    /*
-     * Mobile item borders — border-bottom on each link, suppressed on the
-     * last item so borders appear only between elements.
-     * Defaults (width: 0, color: transparent) make this invisible until the
-     * user configures a border via the block settings.
-     */
     &.is-mobile.is-open .bvi-menu-item > .bvi-menu-item-link {
         border-bottom-color: var(--bvi-mm-mobile-border-color, transparent);
         border-bottom-style: var(--bvi-mm-mobile-border-style, solid);
@@ -238,22 +205,12 @@ nav.bvi-mega-menu,
         border-bottom: none;
     }
 
-    /* Editor preview: always show the hamburger preview non-interactively. */
     &.is-editor .bvi-mega-menu-hamburger.is-editor-preview {
         display: inline-flex;
         opacity: 0.6;
         pointer-events: none;
     }
 
-    /*
-     * Mobile dropdown alignment variants.
-     *
-     * These override the base `left: 0; right: 0` rule on `.bvi-mega-menu-nav`.
-     * The viewport variant is the default — it spans 100vw and uses a JS-set
-     * CSS var to counteract the block's horizontal offset from the viewport edge.
-     */
-
-    /* Full viewport width — aligns with viewport left edge. */
     &.bvi-mega-menu-mobile-dropdown.bvi-mm-mobile-align-viewport.is-mobile.is-open {
 
         .bvi-mega-menu-nav {
@@ -263,7 +220,6 @@ nav.bvi-mega-menu,
         }
     }
 
-    /* Left-anchored to the menu block's left edge. */
     &.bvi-mega-menu-mobile-dropdown.bvi-mm-mobile-align-left.is-mobile.is-open {
 
         .bvi-mega-menu-nav {
@@ -274,7 +230,6 @@ nav.bvi-mega-menu,
         }
     }
 
-    /* Right-anchored to the menu block's right edge. */
     &.bvi-mega-menu-mobile-dropdown.bvi-mm-mobile-align-right.is-mobile.is-open {
 
         .bvi-mega-menu-nav {
@@ -286,21 +241,10 @@ nav.bvi-mega-menu,
     }
 }
 
-/* Body scroll-lock toggled by view.js when a popup-mode menu opens. */
 .bvi-mega-menu-body-lock {
     overflow: hidden;
 }
 
-/*
- * Menu item dropdown / panel positioning.
- *
- * Desktop (default): panels absolutely positioned beneath the item.
- * Mobile: panels flow inline inside the collapsed list.
- *
- * Open state is driven entirely by the `.is-open` class, which view.js
- * manages based on the configured trigger mode (hover/click) and the
- * auto-close delay.
- */
 .bvi-menu-item {
 
     &.has-panel {
@@ -325,19 +269,16 @@ nav.bvi-mega-menu,
         }
     }
 
-    /* Nested submenu (menu-item inside menu-item): positioned to the side. */
     .bvi-menu-item.has-panel > .bvi-mega-panel {
         left: 100%;
         top: 0;
     }
 }
 
-/* Admin toggle: hide the dropdown arrow indicator when disabled. */
 .bvi-mega-menu.hide-dropdown-arrow .bvi-menu-item-toggle {
     display: none;
 }
 
-/* Instant dropdown: snap open/close without animation. */
 .bvi-mega-menu.is-instant-dropdown .bvi-menu-item.has-panel {
 
     > .bvi-mega-panel {
@@ -352,7 +293,6 @@ nav.bvi-mega-menu,
     }
 }
 
-/* Mobile: panels become inline expandable regions. */
 .bvi-mega-menu.is-mobile.is-open .bvi-menu-item.has-panel {
 
     > .bvi-mega-panel {
@@ -372,14 +312,6 @@ nav.bvi-mega-menu,
     }
 }
 
-/*
- * Desktop panel alignment.
- *
- * Targets only top-level panels (direct children of the menu list), so
- * nested submenu panels (which use `left: 100%; top: 0`) are unaffected.
- * The `.bvi-mm-panel-align-left` case is the default (left: 0) and needs
- * no override rule.
- */
 .bvi-mega-menu.bvi-mm-panel-align-center {
 
     .bvi-mega-menu-list > .bvi-menu-item.has-panel > .bvi-mega-panel {
@@ -397,14 +329,6 @@ nav.bvi-mega-menu,
     }
 }
 
-/*
- * Desktop — span parent width.
- *
- * JS sets `--bvi-mm-span-left` (negative offset from parent left) and
- * `--bvi-mm-span-width` on the nav wrapper. This rule applies them to
- * top-level panels only and takes precedence over panel alignment rules
- * (higher specificity via the attribute selector).
- */
 .bvi-mega-menu[data-dropdown-span-parent="true"] {
 
     .bvi-mega-menu-list > .bvi-menu-item.has-panel > .bvi-mega-panel {
@@ -415,13 +339,6 @@ nav.bvi-mega-menu,
     }
 }
 
-/*
- * Classic-menu submenu list.
- *
- * The Walker wraps each submenu in `.bvi-mega-panel > ul.bvi-mega-menu-sub-list`.
- * Reset the list and stack items vertically so classic dropdowns match the
- * block-composed menu without any per-item markup.
- */
 .bvi-mega-menu .bvi-mega-panel > .bvi-mega-menu-sub-list {
     display: flex;
     flex-direction: column;
@@ -431,15 +348,6 @@ nav.bvi-mega-menu,
     padding: 0;
 }
 
-/*
- * Dropdown-panel link colors.
- *
- * The base `.bvi-menu-item-link` rule (in menu-item/style.scss) wires the
- * generic item/link vars, and a theme's `styles.elements.link.color` from
- * theme.json applies to bare `<a>` links. Both must lose inside a panel so the
- * block's Dropdown Colors (text, text hover, background hover) take effect.
- * Three classes give 0,3,0 specificity, beating theme.json's `:root :where(a)`.
- */
 .bvi-mega-menu .bvi-mega-panel .bvi-menu-item-link {
     color: var(--bvi-mm-dropdown-color, inherit);
 

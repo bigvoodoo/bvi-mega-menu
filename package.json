@@ -4,7 +4,7 @@
   "private": true,
   "description": "BVI Mega Menu - WordPress plugin with block editor support.",
   "author": "Big Voodoo Interactive",
-  "license": "GPL-3.0-or-later",
+  "license": "GPLv3",
   "main": "build/index.js",
   "engines": {
     "node": ">=20",

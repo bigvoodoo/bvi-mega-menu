@@ -43,7 +43,7 @@ const TEMPLATE = [
   ['bvi/menu-item', { label: 'About' }],
 ];
 
-// Unit sets reused across UnitControl instances.
+// unit sets reused across UnitControl instances.
 const UNITS_SPACING = [
   { value: 'px', label: 'px', default: 0 },
   { value: 'rem', label: 'rem', default: 0 },
@@ -126,7 +126,7 @@ registerBlockType(metadata.name, {
     const hasMobile = mobileMode !== 'none';
     const hasMobilePopup = mobileMode === 'popup';
 
-    // Fetch available menus (classic + wp_navigation) for the menu picker.
+    // fetch available menus (classic + wp_navigation) for the menu picker.
     const [menus, setMenus] = useState([]);
     const [isLoadingMenus, setIsLoadingMenus] = useState(true);
     useEffect(() => {
@@ -195,6 +195,10 @@ registerBlockType(metadata.name, {
       '--bvi-mm-mobile-border-style': mobileBorderStyle || undefined,
       '--bvi-mm-mobile-border-color': mobileBorderColor || undefined,
       '--bvi-mm-mobile-nav-padding': mobileNavPadding || undefined,
+      // relay the core Typography panel's text-decoration so the editor preview
+      // matches the front end (the link is an atomic inline-flex box, so the
+      // wrapper value cannot reach it by inheritance).
+      '--bvi-mm-text-decoration': attributes.style?.typography?.textDecoration || undefined,
     };
 
     const blockProps = useBlockProps({
@@ -220,7 +224,7 @@ registerBlockType(metadata.name, {
       }
     );
 
-    // SVG media lookup (only when needed).
+    // svg media lookup (only when needed).
     const svgMedia = useSelect(
       (select) => (hamburgerSvgId ? select('core').getMedia(hamburgerSvgId) : null),
       [hamburgerSvgId]
