@@ -13,6 +13,7 @@ class MegaPanel extends AbstractBlock
      * Constructor.
      *
      * @since 5.0.0
+     *
      * @return void
      */
     public function __construct()
@@ -24,6 +25,7 @@ class MegaPanel extends AbstractBlock
      * Register the block type.
      *
      * @since 5.0.0
+     *
      * @return void
      */
     public function register(): void

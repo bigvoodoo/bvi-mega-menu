@@ -25,12 +25,12 @@ if (!defined('ABSPATH')) {
                 <option value="0" selected="selected">
                     <?php esc_html_e('-- Select --', 'bvi-mega-menu'); ?>
                 </option>
-                <?php foreach ((array) $nav_menus as $navMenu) : ?>
-                    <?php if ((int) $navMenu->term_id === (int) $nav_menu_selected_id) {
+                <?php foreach ((array) $nav_menus as $nav_menu) : ?>
+                    <?php if ((int) $nav_menu->term_id === (int) $nav_menu_selected_id) {
                         continue;
                     } ?>
-                    <option value="<?php echo esc_attr((string) $navMenu->term_id); ?>">
-                        <?php echo esc_html($navMenu->truncated_name); ?>
+                    <option value="<?php echo esc_attr((string) $nav_menu->term_id); ?>">
+                        <?php echo esc_html($nav_menu->truncated_name); ?>
                     </option>
                 <?php endforeach; ?>
             </select>

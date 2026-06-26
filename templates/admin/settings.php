@@ -3,27 +3,30 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
+// admin notices are surfaced via a redirect query arg; no state change occurs here, so no nonce is required.
+// phpcs:disable WordPress.Security.NonceVerification.Recommended
 if (isset($_GET['notice_message']) && isset($_GET['notice_type'])) {
-    $message = sanitize_text_field($_GET['notice_message']);
-    $type = sanitize_text_field($_GET['notice_type']);
+    $notice_message = sanitize_text_field(wp_unslash($_GET['notice_message']));
+    $notice_type = sanitize_text_field(wp_unslash($_GET['notice_type']));
 
     add_settings_error(
         BVI_PLUGIN_MEGAMENU_NAMESPACE . '_settings_messages',
         'ajax_notice',
-        $message,
-        $type
+        $notice_message,
+        $notice_type
     );
 }
+// phpcs:enable WordPress.Security.NonceVerification.Recommended
 ?>
 <div
-    class="<?php echo BVI_PLUGIN_MEGAMENU_NAMESPACE; ?>-settings-<?php echo $page_id; ?>-form wrap">
+    class="<?php echo esc_attr(BVI_PLUGIN_MEGAMENU_NAMESPACE); ?>-settings-<?php echo esc_attr($page_id); ?>-form wrap">
     <h1><?php echo esc_html($page_options['page_title']); ?>
     </h1>
     <div class="notices">
         <?php settings_errors(); ?>
     </div>
-    <div class="<?php echo BVI_PLUGIN_MEGAMENU_NAMESPACE; ?>">
-        <form method="post" action="options.php" id="<?php echo BVI_PLUGIN_MEGAMENU_NAMESPACE; ?>_settings_form" class="<?php echo BVI_PLUGIN_MEGAMENU_NAMESPACE; ?>-form-fields" onkeydown="return event.key != 'Enter';">
+    <div class="<?php echo esc_attr(BVI_PLUGIN_MEGAMENU_NAMESPACE); ?>">
+        <form method="post" action="options.php" id="<?php echo esc_attr(BVI_PLUGIN_MEGAMENU_NAMESPACE); ?>_settings_form" class="<?php echo esc_attr(BVI_PLUGIN_MEGAMENU_NAMESPACE); ?>-form-fields" onkeydown="return event.key != 'Enter';">
             <?php
             // access all potential existing form values
             settings_fields($page_id);

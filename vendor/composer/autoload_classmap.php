@@ -8,7 +8,6 @@ $baseDir = dirname($vendorDir);
 return array(
     'Attribute' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
     'Bvi\\Plugin\\MegaMenu\\Admin' => $baseDir . '/src/Admin.php',
-    'Bvi\\Plugin\\MegaMenu\\Admin\\BaseSanitizer' => $baseDir . '/src/Admin/BaseSanitizer.php',
     'Bvi\\Plugin\\MegaMenu\\Admin\\Features\\General' => $baseDir . '/src/Admin/Features/General.php',
     'Bvi\\Plugin\\MegaMenu\\Admin\\MetaBox' => $baseDir . '/src/Admin/MetaBox.php',
     'Bvi\\Plugin\\MegaMenu\\Admin\\MetaBox\\Renderer' => $baseDir . '/src/Admin/MetaBox/Renderer.php',

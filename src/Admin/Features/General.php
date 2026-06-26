@@ -173,7 +173,7 @@ class General implements FeatureInterface
                     'title' => 'Default Related Links Menu',
                     'type' => 'select',
                     'description' =>
-                        'Fallback menu for the Related Links block when no Mega Menu block is found' . ' on the page.',
+                        'Fallback menu for the Related Links block when no Mega Menu block is found on the page.',
                     'options' => $menu_options,
                 ],
             ];

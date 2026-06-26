@@ -14,9 +14,7 @@ trait Security
     /**
      * Validates the nonce value for a given post request.
      *
-     * This function checks the nonce value from the post data against the expected
-     * nonce for the plugin namespace. If the nonce verification fails, a JSON
-     * error response is sent indicating a security check failure.
+     * @since 5.0.0
      *
      * @param array $post The post data containing the nonce.
      * @return bool True if the nonce is valid, otherwise a JSON error is sent.
@@ -28,8 +26,6 @@ trait Security
 
         // validate nonce value for our own namespace handlers only
         if (empty($post[$nonce]) || !wp_verify_nonce($post[$nonce], $nonce_action)) {
-            error_log('bvimegamenu::Security::validate_nonce: security check failed');
-
             return false;
         }
 

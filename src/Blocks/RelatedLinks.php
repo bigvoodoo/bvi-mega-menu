@@ -16,6 +16,7 @@ class RelatedLinks extends AbstractBlock
      * Constructor.
      *
      * @since 5.0.0
+     *
      * @return void
      */
     public function __construct()
@@ -27,6 +28,7 @@ class RelatedLinks extends AbstractBlock
      * Register the block type.
      *
      * @since 5.0.0
+     *
      * @return void
      */
     public function register(): void

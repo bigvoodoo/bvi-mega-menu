@@ -8,10 +8,6 @@ use Bvi\Plugin\MegaMenu\Frontend;
 /**
  * Renders a complete `.bvi-mega-menu` nav from an array of menu item objects.
  *
- * Used by the classic `[mega_menu]` shortcode. Emits the same wrapper markup
- * and data attributes as the `bvi/mega-menu` block so the shared view script
- * and stylesheets drive the menu identically.
- *
  * @package bvi-mega-menu
  */
 class Renderer
@@ -29,7 +25,7 @@ class Renderer
      */
     public static function render(string $ul_id, array $menu_items, int $depth, object $args): string
     {
-        // Ensure the menu-item / mega-panel styles and the view script load.
+        // enqueue menu required assets like scripts
         Frontend::enqueue_menu_assets();
 
         $mobile_mode = (string) ( $args->mobile_mode ?? 'none' );

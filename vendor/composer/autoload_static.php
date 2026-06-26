@@ -93,7 +93,6 @@ class ComposerStaticInitd3c7c5dea05a033dbd8efac50df443e0
     public static $classMap = array (
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
         'Bvi\\Plugin\\MegaMenu\\Admin' => __DIR__ . '/../..' . '/src/Admin.php',
-        'Bvi\\Plugin\\MegaMenu\\Admin\\BaseSanitizer' => __DIR__ . '/../..' . '/src/Admin/BaseSanitizer.php',
         'Bvi\\Plugin\\MegaMenu\\Admin\\Features\\General' => __DIR__ . '/../..' . '/src/Admin/Features/General.php',
         'Bvi\\Plugin\\MegaMenu\\Admin\\MetaBox' => __DIR__ . '/../..' . '/src/Admin/MetaBox.php',
         'Bvi\\Plugin\\MegaMenu\\Admin\\MetaBox\\Renderer' => __DIR__ . '/../..' . '/src/Admin/MetaBox/Renderer.php',

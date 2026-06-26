@@ -70,6 +70,8 @@ class Ajax
             'ajax' => $query['parent'],
         ]);
 
+        // render() returns the plugin's own menu markup, escaped as it is built.
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted plugin-generated markup
         echo $shortcode->render($atts);
 
         die();

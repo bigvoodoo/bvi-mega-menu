@@ -8,7 +8,6 @@ use Bvi\Plugin\MegaMenu\Utils\Traits\Singleton;
 class MetaBox
 {
     use Security;
-    use Singleton;
 
     /** @var Renderer */
     private $renderer;
@@ -19,9 +18,7 @@ class MetaBox
     /** @var array */
     private $config = [];
 
-    public function __construct() {}
-
-    public function init()
+    public function __construct()
     {
         $this->renderer = new MetaBox\Renderer();
         $this->sanitizer = new MetaBox\Sanitizer();
@@ -109,12 +106,14 @@ class MetaBox
             return false;
         }
 
-        // if our nonce field isn't present, this save isn't from our meta box — bail silently
+        // if our nonce field isn't present, this save isn't from our meta box: bail silently
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified via validate_nonce() immediately below
         if (empty($_POST[$this->config['nonce']])) {
             return false;
         }
 
-        // validate incoming nonce
+        // validate incoming nonce (validate_nonce() wraps wp_verify_nonce())
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- this is the nonce verification
         if (!$this->validate_nonce($_POST, $this->config['nonce'], $this->config['nonce'] . '_action')) {
             return false;
         }
@@ -134,8 +133,9 @@ class MetaBox
             return false;
         }
 
-        // get submitted data for our prefix
-        $submitted_data = $_POST[$this->config['prefix']] ?? [];
+        // get submitted data for our prefix; each field is sanitized by the sanitizer below
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce verified above; per-field sanitization runs in the loop
+        $submitted_data = isset($_POST[$this->config['prefix']]) ? wp_unslash($_POST[$this->config['prefix']]) : [];
 
         if (empty($submitted_data)) {
             return false;

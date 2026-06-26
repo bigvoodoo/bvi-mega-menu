@@ -39,11 +39,7 @@ class Editor
     {
         add_action('admin_head-nav-menus.php', [$this, 'setup_menu_page']);
 
-        // AJAX handlers.
-        add_action('wp_ajax_nav_menu_get_post_descendants', [$this, 'ajax_get_post_descendants']);
-        add_action('wp_ajax_nav_menu_duplicate_item', [$this, 'ajax_duplicate_item']);
-
-        // Save hooks.
+        // menu save hooks
         add_action('wp_update_nav_menu', [$this, 'on_menu_save'], 1, 2);
         add_action('wp_update_nav_menu_item', [$this, 'on_menu_item_save'], 1, 3);
     }
@@ -85,11 +81,7 @@ class Editor
      */
     public function render_shortcode_metabox(): void
     {
-        global $_nav_menu_placeholder, $nav_menu_selected_id;
-        $_nav_menu_placeholder = 0 > $_nav_menu_placeholder ? $_nav_menu_placeholder - 1 : -1;
-        $placeholder = $_nav_menu_placeholder;
-
-        include BVI_PLUGIN_MEGAMENU_DIR_PATH . 'templates/admin/metabox-shortcode.php';
+        $this->render_add_items_box('templates/admin/metabox-shortcode.php');
     }
 
     /**
@@ -100,11 +92,7 @@ class Editor
      */
     public function render_column_metabox(): void
     {
-        global $_nav_menu_placeholder, $nav_menu_selected_id;
-        $_nav_menu_placeholder = 0 > $_nav_menu_placeholder ? $_nav_menu_placeholder - 1 : -1;
-        $placeholder = $_nav_menu_placeholder;
-
-        include BVI_PLUGIN_MEGAMENU_DIR_PATH . 'templates/admin/metabox-column.php';
+        $this->render_add_items_box('templates/admin/metabox-column.php');
     }
 
     /**
@@ -115,11 +103,43 @@ class Editor
      */
     public function render_menu_metabox(): void
     {
-        global $_nav_menu_placeholder, $nav_menu_selected_id, $nav_menus;
-        $_nav_menu_placeholder = 0 > $_nav_menu_placeholder ? $_nav_menu_placeholder - 1 : -1;
-        $placeholder = $_nav_menu_placeholder;
+        $this->render_add_items_box('templates/admin/metabox-menu.php');
+    }
 
-        include BVI_PLUGIN_MEGAMENU_DIR_PATH . 'templates/admin/metabox-menu.php';
+    /**
+     * Render a nav-menu "Add items" box template in an isolated scope.
+     *
+     * @since 5.0.0
+     *
+     * @param string $template Template path relative to the plugin directory.
+     * @return void
+     */
+    private function render_add_items_box(string $template): void
+    {
+        global $nav_menu_selected_id, $nav_menus;
+
+        $placeholder = $this->next_placeholder();
+
+        include BVI_PLUGIN_MEGAMENU_DIR_PATH . $template;
+    }
+
+    /**
+     * Decrement and return WordPress's nav-menu item placeholder index.
+     *
+     * @since 5.0.0
+     *
+     * @return int Next placeholder index (always negative).
+     */
+    private function next_placeholder(): int
+    {
+        global $_nav_menu_placeholder;
+
+        $current = (int) $_nav_menu_placeholder;
+
+        // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- core's documented nav-menu placeholder mechanism for unique new-item IDs
+        $_nav_menu_placeholder = 0 > $current ? $current - 1 : -1;
+
+        return $_nav_menu_placeholder;
     }
 
     /**
@@ -147,115 +167,6 @@ class Editor
                 true,
             );
         }
-    }
-
-    /**
-     * AJAX: Add all descendants of a post to the menu.
-     *
-     * @since 5.0.0
-     * @return void
-     */
-    public function ajax_get_post_descendants(): void
-    {
-        check_ajax_referer('add-menu_item', 'menu-settings-column-nonce');
-
-        if (!current_user_can('edit_theme_options')) {
-            wp_die(-1);
-        }
-
-        require_once ABSPATH . 'wp-admin/includes/nav-menu.php';
-
-        $post_id = isset($_GET['post_id']) ? absint($_GET['post_id']) : 0;
-        $db_id = isset($_GET['db_id']) ? absint($_GET['db_id']) : 0;
-        $menu_id = isset($_GET['menu']) ? absint($_GET['menu']) : 0;
-        $depth = isset($_GET['depth']) ? absint($_GET['depth']) : 0;
-
-        $descendants = get_pages(['child_of' => $post_id, 'sort_column' => 'menu_order']);
-
-        if (empty($descendants)) {
-            wp_die(0);
-        }
-
-        $object_to_menu_map = [];
-        $menu_items = [];
-
-        foreach ($descendants as $descendant) {
-            $parent_menu_id =
-                (int) $descendant->post_parent === $post_id
-                    ? $db_id
-                    : $object_to_menu_map[$descendant->post_parent] ?? $db_id;
-
-            $menu_item = [
-                'menu-item-object' => $descendant->post_type,
-                'menu-item-object-id' => $descendant->ID,
-                'menu-item-parent-id' => $parent_menu_id,
-                'menu-item-type' => 'post_type',
-                'menu-item-title' => $descendant->post_title,
-                'menu-item-url' => get_permalink($descendant->ID),
-            ];
-
-            $item_ids = wp_save_nav_menu_items($menu_id, [$menu_item]);
-            if (is_wp_error($item_ids)) {
-                wp_die(0);
-            }
-
-            $object_to_menu_map[$descendant->ID] = $item_ids[0];
-
-            $menu_obj = get_post($item_ids[0]);
-            if (!empty($menu_obj->ID)) {
-                $menu_obj = wp_setup_nav_menu_item($menu_obj);
-                $menu_obj->label = $menu_obj->title;
-                $menu_items[] = $menu_obj;
-            }
-        }
-
-        $this->output_walker_markup($menu_items, $menu_id, $depth + 1);
-    }
-
-    /**
-     * AJAX: Duplicate a menu item.
-     *
-     * @since 5.0.0
-     * @return void
-     */
-    public function ajax_duplicate_item(): void
-    {
-        check_ajax_referer('add-menu_item', 'menu-settings-column-nonce');
-
-        if (!current_user_can('edit_theme_options')) {
-            wp_die(-1);
-        }
-
-        require_once ABSPATH . 'wp-admin/includes/nav-menu.php';
-
-        $db_id = isset($_GET['db_id']) ? absint($_GET['db_id']) : 0;
-        $menu_id = isset($_GET['menu']) ? absint($_GET['menu']) : 0;
-
-        $item = wp_setup_nav_menu_item(clone get_post($db_id));
-
-        $menu_item = [
-            'menu-item-object' => $item->object,
-            'menu-item-object-id' => $item->object_id,
-            'menu-item-parent-id' => isset($_GET['parent_id']) ? absint($_GET['parent_id']) : $item->menu_item_parent,
-            'menu-item-type' => $item->type,
-            'menu-item-title' => $item->title,
-            'menu-item-url' => $item->url,
-        ];
-
-        $item_ids = wp_save_nav_menu_items($menu_id, [$menu_item]);
-        if (is_wp_error($item_ids)) {
-            wp_die(0);
-        }
-
-        $menu_items = [];
-        $menu_obj = get_post($item_ids[0]);
-        if (!empty($menu_obj->ID)) {
-            $menu_obj = wp_setup_nav_menu_item($menu_obj);
-            $menu_obj->label = $menu_obj->title;
-            $menu_items[] = $menu_obj;
-        }
-
-        $this->output_walker_markup($menu_items, $menu_id, 1);
     }
 
     /**
@@ -314,7 +225,7 @@ class Editor
             $item['post_id'] = (int) ( $menu_item_data['menu-item-object-id'] ?? 0 );
         }
 
-        // Parse JSON-encoded title for special types (column, menu).
+        // parse json-encoded title for special types (column, menu)
         $title = stripcslashes($menu_item_data['menu-item-title'] ?? '');
         $decoded = json_decode($title);
         if (is_object($decoded)) {
@@ -325,48 +236,5 @@ class Editor
 
         $item['data'] = wp_json_encode($menu_item_data);
         $this->pending_items[] = $item;
-    }
-
-    /**
-     * Output walker markup for AJAX responses (descendants, duplicates).
-     *
-     * @since 5.0.0
-     *
-     * @param object[] $menu_items   Menu item objects to render.
-     * @param int      $menu_id      Menu term ID for walker filtering.
-     * @param int      $depth_offset Amount to shift depth classes by.
-     * @return void
-     */
-    private function output_walker_markup(array $menu_items, int $menu_id, int $depth_offset): void
-    {
-        $walker_class = apply_filters('wp_edit_nav_menu_walker', 'Walker_Nav_Menu_Edit', $menu_id);
-
-        if (!class_exists($walker_class)) {
-            wp_die(0);
-        }
-
-        if (empty($menu_items)) {
-            wp_die(0);
-        }
-
-        $args = (object) [
-            'after' => '',
-            'before' => '',
-            'link_after' => '',
-            'link_before' => '',
-            'walker' => new $walker_class(),
-        ];
-
-        $output = walk_nav_menu_tree($menu_items, 0, $args);
-
-        // Adjust depth classes.
-        $output = preg_replace_callback(
-            '/(menu-item-depth-)([0-9]+)/',
-            fn($matches) => $matches[1] . ( (int) $matches[2] + $depth_offset ),
-            $output,
-        );
-
-        echo $output;
-        wp_die();
     }
 }

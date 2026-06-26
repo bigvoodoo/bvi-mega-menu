@@ -59,6 +59,7 @@ class Renderer
         ];
 
         // convert the array into variables
+        // phpcs:ignore WordPress.PHP.DontExtract.extract_extract -- intentional exposure of field vars to the field template
         extract($field_vars);
 
         // if we are missing the bare minimum, skip
@@ -168,7 +169,8 @@ class Renderer
         }
 
         // check if template override is requested
-        $template_override_id = sanitize_file_name($_GET['template'] ?? '');
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only template selection, no state change
+        $template_override_id = sanitize_file_name(wp_unslash($_GET['template'] ?? ''));
 
         if ($template_override_id) {
             $template_file = $template_path . $template_override_id . '.php';
@@ -243,8 +245,10 @@ class Renderer
         $is_composite = $field_type === 'composite';
 
         if ($is_composite && !empty($min_items) && $min_items > 0 && count($value) < $min_items) {
-            while (count($value) < $min_items) {
+            $value_count = count($value);
+            while ($value_count < $min_items) {
                 $value[] = [];
+                $value_count++;
             }
         }
 

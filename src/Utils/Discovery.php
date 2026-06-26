@@ -12,46 +12,54 @@ class Discovery
     /**
      * Discovers classes within the specified directory that implement a given interface.
      *
-     * Scans PHP files in the directory, builds fully qualified class names using
-     * the provided namespace segments, and returns instances of all non-abstract
-     * classes that implement the specified interface.
-     *
      * @since 0.1.0
      *
-     * @param string $directory        Absolute path to the directory to scan.
+     * @param string $directory Absolute path to the directory to scan.
      * @param string $primary_namespace The root namespace prefix (e.g. 'Bvi\Theme\Minimal\').
-     * @param string $class_namespace   The sub-namespace relative to root (e.g. 'Admin\Features\').
-     * @param string $interface         Fully qualified interface name to filter by.
+     * @param string $class_namespace The sub-namespace relative to root (e.g. 'Admin\Features\').
+     * @param string $interface_path Fully qualified interface name to filter by.
      *
      * @return array Array of instantiated class objects.
      */
-    public static function discover($directory, $primary_namespace, $class_namespace, $interface)
+    public static function discover($directory, $primary_namespace, $class_namespace, $interface_path)
     {
-        $instances = [];
+        $discovered = [];
 
-        // create the full namespace
+        if (!is_dir($directory)) {
+            return $discovered;
+        }
+
+        // build the full interface FQCN
+        $interface_fqcn = rtrim($interface_path, '\\');
+
+        if (!interface_exists($interface_fqcn)) {
+            return $discovered;
+        }
+
+        // create the full namespace for discovered classes
         $namespace = $primary_namespace . $class_namespace;
 
         foreach (glob($directory . '/*.php') as $file) {
             $class_name = $namespace . basename($file, '.php');
 
-            // if the class doesnt exist, skip
             if (!class_exists($class_name)) {
                 continue;
             }
 
-            // if the class is abstract or an interface, skip
             $ref = new \ReflectionClass($class_name);
+
+            // skip abstract classes and interfaces
             if ($ref->isAbstract() || $ref->isInterface()) {
                 continue;
             }
 
-            // if the class implements the required interface, instantiate it
-            if ($ref->implementsInterface($interface)) {
-                $instances[] = $ref->newInstance();
+            if (!$ref->implementsInterface($interface_fqcn)) {
+                continue;
             }
+
+            $discovered[] = $ref->newInstance();
         }
 
-        return $instances;
+        return $discovered;
     }
 }

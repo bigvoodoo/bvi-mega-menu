@@ -51,9 +51,9 @@ if (version_compare($current_php_version, BVI_PLUGIN_MEGAMENU_PHP_VERSION, '<'))
         echo '<div class="error"><p>';
         printf(
             '%s requires PHP %s or higher. You are running PHP %s. Please upgrade PHP to use this plugin.',
-            BVI_PLUGIN_MEGAMENU_NAME,
-            BVI_PLUGIN_MEGAMENU_PHP_VERSION,
-            $current_php_version,
+            esc_html(BVI_PLUGIN_MEGAMENU_NAME),
+            esc_html(BVI_PLUGIN_MEGAMENU_PHP_VERSION),
+            esc_html($current_php_version),
         );
         echo '</p></div>';
     });
@@ -71,9 +71,9 @@ if (version_compare($current_wp_version, BVI_PLUGIN_MEGAMENU_WP_VERSION, '<')) {
         echo '<div class="error"><p>';
         printf(
             '%s requires WordPress %s or higher. You are running WordPress %s. Please upgrade WordPress to use this plugin.',
-            BVI_PLUGIN_MEGAMENU_NAME,
-            BVI_PLUGIN_MEGAMENU_WP_VERSION,
-            $current_wp_version,
+            esc_html(BVI_PLUGIN_MEGAMENU_NAME),
+            esc_html(BVI_PLUGIN_MEGAMENU_WP_VERSION),
+            esc_html($current_wp_version),
         );
         echo '</p></div>';
     });
@@ -119,8 +119,7 @@ if (file_exists($bvimm_plugin_loader)) {
         echo '<div class="error"><p>';
         printf(
             '%s has had a critical issue. Please contact <a href="mailto:support@bigvoodoo.com">the plugin author</a> to resolve this issue.',
-            'bvi-megamenu',
-            BVI_PLUGIN_MEGAMENU_NAME,
+            esc_html(BVI_PLUGIN_MEGAMENU_NAME),
         );
         echo '</p></div>';
     });

@@ -16,6 +16,7 @@ class MegaMenu extends AbstractBlock
      * Constructor.
      *
      * @since 5.0.0
+     *
      * @return void
      */
     public function __construct()
@@ -27,6 +28,7 @@ class MegaMenu extends AbstractBlock
      * Register the block type and REST routes.
      *
      * @since 5.0.0
+     *
      * @return void
      */
     public function register(): void
@@ -169,6 +171,8 @@ class MegaMenu extends AbstractBlock
 
             foreach ($menu_items as $menu_item) {
                 $menu_item->parent_id = (int) ( $menu_item->menu_item_parent ?? 0 );
+                // wp_setup_nav_menu_item() resolves the label into ->title; the Walker reads ->post_title.
+                $menu_item->post_title = $menu_item->title ?? ( $menu_item->post_title ?? '' );
                 $is_post_object =
                     isset($menu_item->object_id) && in_array($menu_item->object ?? '', ['page', 'post'], true);
                 $menu_item->post_id = $is_post_object ? (int) $menu_item->object_id : 0;

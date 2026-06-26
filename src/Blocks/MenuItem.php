@@ -13,6 +13,7 @@ class MenuItem extends AbstractBlock
      * Constructor.
      *
      * @since 5.0.0
+     *
      * @return void
      */
     public function __construct()
@@ -24,6 +25,7 @@ class MenuItem extends AbstractBlock
      * Register the block type.
      *
      * @since 5.0.0
+     *
      * @return void
      */
     public function register(): void

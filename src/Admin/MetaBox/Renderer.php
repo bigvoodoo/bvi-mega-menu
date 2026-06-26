@@ -7,7 +7,7 @@ use Bvi\Plugin\MegaMenu\Utils\Traits\Strings;
 /**
  * Class Renderer
  *
- * @package bvimegamenu/src
+ * @package Bvi\Plugin\MegaMenu\src
  */
 class Renderer
 {
@@ -15,10 +15,6 @@ class Renderer
 
     /**
      * Renders the after section content with sanitization.
-     *
-     * This method accepts a string of text to be rendered when called.
-     * If the string is empty, the method returns without doing anything. Otherwise, it outputs
-     * the content with sanitization using wp_kses_post().
      *
      * @since 0.1.0
      *
@@ -38,11 +34,6 @@ class Renderer
     /**
      * Renders a collection of fields based on provided configuration.
      *
-     * This function accepts an array of configuration for the fields, which
-     * contains an array of field definitions. It iterates over the array
-     * of field definitions and calls the render_field() method for each
-     * field, rendering the field and its associated label and description.
-     *
      * @since 0.1.0
      *
      * @param array $config An array of configuration for the fields, which
@@ -55,25 +46,40 @@ class Renderer
             return '';
         }
 
+        echo '<table class="form-table" role="presentation"><tbody>';
+
         foreach ($config['fields'] as $field) {
             $field_id = $field['label_for'] ?? ( $field['id'] ?? '' );
             $field['prefix'] = $config['prefix'];
             $field['value'] = $values[$field_id] ?? ( $field['default'] ?? '' );
 
+            $label = $field['title'] ?? '';
+            $type = $field['type'] ?? 'text';
+            $for = $field_id . '_id'; // matches the id used inside each field template
+
+            echo '<tr>';
+            echo '<th scope="row">';
+
+            if ($type === 'checkbox') {
+                // checkboxes label themselves inline; the th label would
+                // duplicate the field's own label
+                echo esc_html($label);
+            } else {
+                echo '<label for="' . esc_attr($for) . '">' . esc_html($label) . '</label>';
+            }
+
+            echo '</th>';
+            echo '<td>';
             $this->render_field($field);
+            echo '</td>';
+            echo '</tr>';
         }
+
+        echo '</tbody></table>';
     }
 
     /**
      * Renders a field based on provided arguments and type.
-     *
-     * This function accepts an array of arguments that define the field's
-     * properties, such as id, label, description, type, default value, and
-     * database ID. It fetches the current value of the field from the database
-     * if a database ID is provided. Depending on the field type (text, checkbox,
-     * radio, select), it includes the appropriate template for rendering the field.
-     * It also handles the rendering of field descriptions and wraps the field in
-     * a styled div for consistent presentation.
      *
      * @since 0.1.0
      *
@@ -109,6 +115,7 @@ class Renderer
         ];
 
         // convert the array into variables
+        // phpcs:ignore WordPress.PHP.DontExtract.extract_extract -- intentional exposure of field vars to the field template
         extract($field_vars);
 
         // if we are missing the bare minimum, skip
@@ -201,6 +208,7 @@ class Renderer
         $values = $this->get_meta_values($post->ID, $config);
 
         // extract configuration variables for use in template
+        // phpcs:ignore WordPress.PHP.DontExtract.extract_extract -- intentional exposure of config to the metabox template
         extract($config);
 
         $template_path = BVI_PLUGIN_MEGAMENU_DIR_PATH . 'templates/admin/';
@@ -216,7 +224,8 @@ class Renderer
         }
 
         // check if template override is requested
-        $template_override_id = sanitize_file_name($_GET['template'] ?? '');
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only template selection, no state change
+        $template_override_id = sanitize_file_name(wp_unslash($_GET['template'] ?? ''));
 
         if ($template_override_id) {
             $template_file = $template_path . $template_override_id . '.php';
@@ -233,22 +242,6 @@ class Renderer
 
     /**
      * Renders a multi-subfield field.
-     *
-     * This method takes an associative array $field, which contains the following keys:
-     * - field_type: The type of the field. One of 'text', 'composite', or 'select'.
-     * - field_label: The label of the field.
-     * - max_items: The maximum number of items allowed in the field.
-     * - min_items: The minimum number of items required in the field.
-     * - options: An associative array of options for the field, where the key is the option
-     *   value and the value is the option label.
-     * - fields: An associative array of fields for composite type fields.
-     * - disabled: A boolean indicating whether the field should be disabled.
-     *
-     * The method also takes an associative array $value, which contains the values of the
-     * multi-subfield, and an associative array $args, which contains the following keys:
-     * - page_id: The ID of the page being rendered.
-     * - parent_page_id: The ID of the parent page of the page being rendered.
-     * - db_id: The database ID of the page being rendered.
      *
      * @since 0.1.0
      *
@@ -268,8 +261,10 @@ class Renderer
         $is_composite = $field_type === 'composite';
 
         if ($is_composite && !empty($min_items) && $min_items > 0 && count($value) < $min_items) {
-            while (count($value) < $min_items) {
+            $value_count = count($value);
+            while ($value_count < $min_items) {
                 $value[] = [];
+                $value_count++;
             }
         }
 

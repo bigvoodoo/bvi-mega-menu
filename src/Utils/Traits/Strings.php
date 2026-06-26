@@ -54,7 +54,7 @@ trait Strings
      *
      * Returns false if the value fails validation (length, type).
      *
-     * @param string $string The string to clean.
+     * @param string $string_to_clean The string to clean.
      * @param array  $options Validation/formatting options:
      *   - type: alpha|alphanumeric|email|url|attribute|html|date|query_param
      *   - length, min_length, max_length: int constraints
@@ -64,38 +64,38 @@ trait Strings
      *   - convert_returns: 'strip'|'windows'|'spaces'
      * @return string|false Cleaned string or false on validation failure.
      */
-    public function clean_string($string, array $options = [])
+    public function clean_string($string_to_clean, array $options = [])
     {
-        $string = (string) $string;
+        $string_to_clean = (string) $string_to_clean;
 
-        if ($string === '') {
+        if ($string_to_clean === '') {
             return false;
         }
 
-        $string = $this->apply_formatting($string, $options);
+        $string_to_clean = $this->apply_formatting($string_to_clean, $options);
 
-        if (!$this->validate_length($string, $options)) {
+        if (!$this->validate_length($string_to_clean, $options)) {
             return false;
         }
 
-        if (!$this->validate_type($string, $options)) {
+        if (!$this->validate_type($string_to_clean, $options)) {
             return false;
         }
 
-        $string = $this->process_returns($string, $options);
+        $string_to_clean = $this->process_returns($string_to_clean, $options);
 
         if (isset($options['remove_quotes']) && $options['remove_quotes'] === false) {
-            $string = str_replace(['"', '"'], '', $string);
+            $string_to_clean = str_replace(['"', '"'], '', $string_to_clean);
         }
 
         if (!empty($options['convert_spaces']) && is_string($options['convert_spaces'])) {
-            $string =
+            $string_to_clean =
                 $options['convert_spaces'] === 'strip'
-                    ? str_replace(' ', '', $string)
-                    : str_replace(' ', $options['convert_spaces'], $string);
+                    ? str_replace(' ', '', $string_to_clean)
+                    : str_replace(' ', $options['convert_spaces'], $string_to_clean);
         }
 
-        return $string;
+        return $string_to_clean;
     }
 
     /**
@@ -204,46 +204,54 @@ trait Strings
      * Apply trim, case, and tag-stripping formatting.
      * Shared by clean_string() and convert_to_string().
      */
-    private function apply_formatting(string $string, array $options): string
+    private function apply_formatting(string $string_to_clean, array $options): string
     {
         if (!empty($options['trim'])) {
-            $string = trim($string);
+            $string_to_clean = trim($string_to_clean);
         }
 
         if (!empty($options['lowercase'])) {
-            $string = strtolower($string);
+            $string_to_clean = strtolower($string_to_clean);
         }
 
         if (!empty($options['uppercase'])) {
-            $string = strtoupper($string);
+            $string_to_clean = strtoupper($string_to_clean);
         }
 
         if (!empty($options['strip_tags'])) {
             if (is_bool($options['strip_tags'])) {
-                $string = wp_strip_all_tags($string);
+                $string_to_clean = wp_strip_all_tags($string_to_clean);
             } elseif (is_array($options['strip_tags'])) {
-                $string = wp_kses($string, $options['strip_tags']);
+                $string_to_clean = wp_kses($string_to_clean, $options['strip_tags']);
             }
         }
 
-        return $string;
+        return $string_to_clean;
     }
 
     /**
      * Validate string length. Returns false if length constraints fail.
      * Used by clean_string() for strict validation.
      */
-    private function validate_length(string $string, array $options): bool
+    private function validate_length(string $string_to_clean, array $options): bool
     {
-        if (isset($options['length']) && $options['length'] > 0 && strlen($string) > $options['length']) {
+        if (isset($options['length']) && $options['length'] > 0 && strlen($string_to_clean) > $options['length']) {
             return false;
         }
 
-        if (isset($options['min_length']) && $options['min_length'] > 0 && strlen($string) < $options['min_length']) {
+        if (
+            isset($options['min_length']) &&
+            $options['min_length'] > 0 &&
+            strlen($string_to_clean) < $options['min_length']
+        ) {
             return false;
         }
 
-        if (isset($options['max_length']) && $options['max_length'] > 0 && strlen($string) > $options['max_length']) {
+        if (
+            isset($options['max_length']) &&
+            $options['max_length'] > 0 &&
+            strlen($string_to_clean) > $options['max_length']
+        ) {
             return false;
         }
 
@@ -254,29 +262,37 @@ trait Strings
      * Apply length constraints by truncating or padding.
      * Used by convert_to_string() for coercion.
      */
-    private function apply_length_constraints(string $string, array $options): string
+    private function apply_length_constraints(string $string_to_clean, array $options): string
     {
         $pad_char = $options['pad_char'] ?? ' ';
 
         if (isset($options['length']) && $options['length'] > 0) {
-            if (strlen($string) > $options['length']) {
-                return substr($string, 0, $options['length']);
+            if (strlen($string_to_clean) > $options['length']) {
+                return substr($string_to_clean, 0, $options['length']);
             }
-            if (strlen($string) < $options['length']) {
-                return str_pad($string, $options['length'], $pad_char);
+            if (strlen($string_to_clean) < $options['length']) {
+                return str_pad($string_to_clean, $options['length'], $pad_char);
             }
-            return $string;
+            return $string_to_clean;
         }
 
-        if (isset($options['min_length']) && $options['min_length'] > 0 && strlen($string) < $options['min_length']) {
-            $string = str_pad($string, $options['min_length'], $pad_char);
+        if (
+            isset($options['min_length']) &&
+            $options['min_length'] > 0 &&
+            strlen($string_to_clean) < $options['min_length']
+        ) {
+            $string_to_clean = str_pad($string_to_clean, $options['min_length'], $pad_char);
         }
 
-        if (isset($options['max_length']) && $options['max_length'] > 0 && strlen($string) > $options['max_length']) {
-            $string = substr($string, 0, $options['max_length']);
+        if (
+            isset($options['max_length']) &&
+            $options['max_length'] > 0 &&
+            strlen($string_to_clean) > $options['max_length']
+        ) {
+            $string_to_clean = substr($string_to_clean, 0, $options['max_length']);
         }
 
-        return $string;
+        return $string_to_clean;
     }
 
     /**
@@ -285,93 +301,93 @@ trait Strings
      *
      * @return string|false
      */
-    private function validate_type(string $string, array $options)
+    private function validate_type(string $string_to_clean, array $options)
     {
         $type = $options['type'] ?? null;
 
         if (empty($type)) {
-            return sanitize_text_field($string);
+            return sanitize_text_field($string_to_clean);
         }
 
         switch ($type) {
             case 'alpha':
-                if (!preg_match('/^[a-zA-Z-]+$/i', $string)) {
+                if (!preg_match('/^[a-zA-Z-]+$/i', $string_to_clean)) {
                     return false;
                 }
                 break;
 
             case 'alphanumeric':
-                if (!preg_match('/^[a-zA-Z0-9-]+$/i', $string)) {
+                if (!preg_match('/^[a-zA-Z0-9-]+$/i', $string_to_clean)) {
                     return false;
                 }
                 break;
 
             case 'email':
-                if (!filter_var($string, FILTER_VALIDATE_EMAIL)) {
+                if (!filter_var($string_to_clean, FILTER_VALIDATE_EMAIL)) {
                     return false;
                 }
                 break;
 
             case 'url':
-                if (!filter_var($string, FILTER_VALIDATE_URL)) {
+                if (!filter_var($string_to_clean, FILTER_VALIDATE_URL)) {
                     return false;
                 }
-                $string = esc_url($string);
+                $string_to_clean = esc_url($string_to_clean);
                 break;
 
             case 'query_param':
-                if (!preg_match('/^[a-zA-Z0-9_-]+$/', $string)) {
+                if (!preg_match('/^[a-zA-Z0-9_-]+$/', $string_to_clean)) {
                     return false;
                 }
-                $string = sanitize_key($string);
+                $string_to_clean = sanitize_key($string_to_clean);
                 break;
 
             case 'attribute':
-                $string = esc_attr($string);
+                $string_to_clean = esc_attr($string_to_clean);
                 break;
 
             case 'html':
-                $string = esc_html($string);
+                $string_to_clean = esc_html($string_to_clean);
                 break;
 
             case 'date':
-                $string = date_i18n('Y-m-d H:i:s', strtotime($string));
+                $string_to_clean = date_i18n('Y-m-d H:i:s', strtotime($string_to_clean));
                 break;
 
             default:
-                $string = sanitize_text_field($string);
+                $string_to_clean = sanitize_text_field($string_to_clean);
                 break;
         }
 
-        return $string;
+        return $string_to_clean;
     }
 
     /**
      * Sanitize string by type, coercing rather than rejecting.
      * Used by convert_to_string().
      */
-    private function convert_type(string $string, array $options): string
+    private function convert_type(string $string_to_clean, array $options): string
     {
         $type = $options['type'] ?? null;
 
         if (empty($type)) {
-            return sanitize_text_field($string);
+            return sanitize_text_field($string_to_clean);
         }
 
         return match ($type) {
-            'alpha' => sanitize_text_field(preg_replace('/[^a-zA-Z]/i', '', $string)),
-            'alphanumeric' => sanitize_text_field(preg_replace('/[^a-zA-Z0-9]/i', '', $string)),
-            'int' => (string) intval(preg_replace('/[^0-9-]/', '', $string)),
-            'float' => (string) floatval(preg_replace('/[^0-9.-]/', '', $string)),
-            'absint' => (string) absint(preg_replace('/[^0-9]/', '', $string)),
-            'email' => sanitize_email($string),
-            'url' => sanitize_url(filter_var($string, FILTER_SANITIZE_URL)),
+            'alpha' => sanitize_text_field(preg_replace('/[^a-zA-Z]/i', '', $string_to_clean)),
+            'alphanumeric' => sanitize_text_field(preg_replace('/[^a-zA-Z0-9]/i', '', $string_to_clean)),
+            'int' => (string) intval(preg_replace('/[^0-9-]/', '', $string_to_clean)),
+            'float' => (string) floatval(preg_replace('/[^0-9.-]/', '', $string_to_clean)),
+            'absint' => (string) absint(preg_replace('/[^0-9]/', '', $string_to_clean)),
+            'email' => sanitize_email($string_to_clean),
+            'url' => sanitize_url(filter_var($string_to_clean, FILTER_SANITIZE_URL)),
             'query_param' => sanitize_key(
                 trim(
                     preg_replace(
                         '/_+/',
                         '_',
-                        preg_replace('/[^a-z0-9_-]/', '_', strtolower(wp_strip_all_tags($string))),
+                        preg_replace('/[^a-z0-9_-]/', '_', strtolower(wp_strip_all_tags($string_to_clean))),
                     ),
                     '_',
                 ),
@@ -381,28 +397,28 @@ trait Strings
                     preg_replace(
                         '/-+/',
                         '-',
-                        preg_replace('/[^a-z0-9_-]/', '-', strtolower(wp_strip_all_tags($string))),
+                        preg_replace('/[^a-z0-9_-]/', '-', strtolower(wp_strip_all_tags($string_to_clean))),
                     ),
                     '-',
                 ),
             ),
-            'html', 'textarea' => wp_kses_post($string),
-            'bool', 'string' => sanitize_text_field($string),
-            'date' => date_i18n('Y-m-d H:i:s', strtotime($string) ?: time()),
-            default => sanitize_text_field($string),
+            'html', 'textarea' => wp_kses_post($string_to_clean),
+            'bool', 'string' => sanitize_text_field($string_to_clean),
+            'date' => date_i18n('Y-m-d H:i:s', strtotime($string_to_clean) ?: time()),
+            default => sanitize_text_field($string_to_clean),
         };
     }
 
     /**
      * Process line returns in a string.
      */
-    private function process_returns(string $string, array $options): string
+    private function process_returns(string $string_to_clean, array $options): string
     {
         $return_chars = ["\t", "\r\n", "\n", "\r"];
         $replacement = ' ';
 
         if (isset($options['comma_delimited']) && $options['comma_delimited'] === true) {
-            $string = str_replace($return_chars, ', ', $string);
+            $string_to_clean = str_replace($return_chars, ', ', $string_to_clean);
         }
 
         if (isset($options['convert_returns'])) {
@@ -418,6 +434,6 @@ trait Strings
             }
         }
 
-        return str_replace($return_chars, $replacement, $string);
+        return str_replace($return_chars, $replacement, $string_to_clean);
     }
 }

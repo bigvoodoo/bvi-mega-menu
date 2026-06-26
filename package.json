@@ -20,6 +20,7 @@
     "lint:css": "wp-scripts lint-style 'assets/src/**/*.{css,scss}' --fix",
     "lint:js": "wp-scripts lint-js --no-error-on-unmatched-pattern 'assets/src/**/*.js' 'assets/src/**/*.jsx' --fix",
     "lint:php": "composer lint:fix .",
+    "lint:audit": "composer lint",
     "format": "npm run format:js && npm run format:php",
     "format:js": "prettier --write \"**/*.{js,jsx,mjs,cjs,ts,mts,cts,json,yml,yaml}\"",
     "format:php": "prettier --write \"**/*.php\"",
