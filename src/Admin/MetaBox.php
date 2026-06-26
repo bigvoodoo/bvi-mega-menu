@@ -57,7 +57,7 @@ class MetaBox
 
         // register the default WordPress actions for meta boxes
         add_action('add_meta_boxes', [$this, 'register_meta_box']);
-        add_action('save_post', [$this, 'save_meta_box'], 10, 2);
+        add_action('save_post', [$this, 'save_meta_box'], 10, 1);
     }
 
     /**
@@ -94,12 +94,11 @@ class MetaBox
      * Save the data user submitted for the meta box.
      *
      * @param int id of the post
-     * @param WP_Post the post object
      * @return bool if the rendering was successful or failed
      *
      * @since 0.1.0
      */
-    public function save_meta_box(int $post_id, \WP_Post $post): bool
+    public function save_meta_box(int $post_id): bool
     {
         // skip gutenberg save requests
         if (defined('REST_REQUEST') && REST_REQUEST) {
