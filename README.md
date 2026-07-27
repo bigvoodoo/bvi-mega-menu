@@ -312,12 +312,38 @@ All visual configuration is stored as CSS custom properties on `.bvi-mega-menu`.
 | `--bvi-mm-panel-width` | Per-item panel width |
 | `--bvi-mm-panel-max-width` | Mega panel max-width |
 
-### PHP Filter
+### PHP Filters
 
 ```php
 // Inject a custom hamburger icon (requires hamburgerStyle = "custom" on the block)
 add_filter( 'bvi_nav_hamburger_open_icon', function() {
     return '<svg>...</svg>';
+} );
+```
+
+```php
+// Add block trees for Related Links auto-detect to search.
+//
+// By default only the current post's content and the active template are searched,
+// and patterns, nested patterns, and referenced template parts are expanded inside
+// them. Use this when a theme renders a template part outside the template, so no
+// core/template-part block on the page points at it. Patterns inside whatever you
+// append are expanded too.
+add_filter( 'bvi_mega_menu_page_blocks', function( $blocks ) {
+    $part = get_block_template( get_stylesheet() . '//header', 'wp_template_part' );
+
+    if ( ! empty( $part->content ) ) {
+        $blocks = array_merge( $blocks, parse_blocks( $part->content ) );
+    }
+
+    return $blocks;
+} );
+```
+
+```php
+// Cap how deep pattern expansion recurses before stopping (default 10)
+add_filter( 'bvi_mega_menu_pattern_max_depth', function( $max_depth ) {
+    return 15;
 } );
 ```
 
@@ -338,6 +364,10 @@ add_filter( 'bvi_nav_hamburger_open_icon', function() {
 - Block menu: dropdown panels slide open/closed via CSS `clip-path` animation when instant dropdown is off; instant mode retains `display` toggling
 - AJAX menu: removed redundant `.fadeOut()` chained after `.slideUp()` in the hide handler
 - Block editor: split "Navigation Colors" into five grouped colour panels — Link Colors, Dropdown Colors, Submenu Colors, Hamburger Colors, Mobile Colors
+- Related Links auto-detect now finds mega menus inside synced patterns, unsynced patterns, nested patterns, and template parts; template parts that are not on the current page no longer contribute items, and the new `bvi_mega_menu_page_blocks` filter can add trees for themes that render a part outside the template
+- Menu links now carry `current-menu-item`, `current-menu-parent`, `current-menu-ancestor`, and `is-current` classes plus `aria-current="page"`, with new active-state colour settings for the main menu, dropdown, flyout, and mobile surfaces, and a "Highlight Parent Items" toggle
+- Submenu Colors now apply to desktop flyout panels, which previously fell through to the dropdown colours
+- Fixed nested `bvi/menu-item` blocks rendering an `<li>` directly inside an `<li>`, which browsers flattened so block-composed submenus lost their dropdown entirely; nested items are now wrapped in the same `.bvi-mega-panel` / `.bvi-mega-menu-sub-list` structure the classic-menu walker emits, so dropdown and submenu colours reach them
 
 ### 4.2.0
 

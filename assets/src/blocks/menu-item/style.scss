@@ -71,6 +71,15 @@
     }
 }
 
+// gated on the wrapper class so menus without active colours gain no declarations at all;
+// the fallbacks then restore exactly what the base rule above would have computed
+.bvi-mm-has-link-active .bvi-mega-menu-list > .bvi-menu-item.current-menu-item > .bvi-menu-item-link,
+.bvi-mm-has-link-active.bvi-mm-highlight-ancestors
+.bvi-mega-menu-list > .bvi-menu-item.current-menu-ancestor > .bvi-menu-item-link {
+    background-color: var(--bvi-mm-link-bg-active, transparent);
+    color: var(--bvi-mm-link-color-active, var(--bvi-mm-item-color, inherit));
+}
+
 .bvi-link-picker {
 
     &__preview {

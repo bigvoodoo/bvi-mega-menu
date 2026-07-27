@@ -63,6 +63,7 @@ class MegaMenu extends AbstractBlock
             $dropdown_trigger = 'hover';
         }
         $show_dropdown_arrow = !isset($attributes['showDropdownArrow']) || !empty($attributes['showDropdownArrow']);
+        $highlight_ancestors = !isset($attributes['highlightAncestors']) || !empty($attributes['highlightAncestors']);
         $dropdown_close_delay = isset($attributes['dropdownCloseDelay'])
             ? max(0, (int) $attributes['dropdownCloseDelay'])
             : 300;
@@ -92,6 +93,10 @@ class MegaMenu extends AbstractBlock
         if (!$show_dropdown_arrow) {
             $classes[] = 'hide-dropdown-arrow';
         }
+        if ($highlight_ancestors) {
+            $classes[] = 'bvi-mm-highlight-ancestors';
+        }
+        $classes = array_merge($classes, self::active_state_classes($attributes));
         if ($instant_dropdown) {
             $classes[] = 'is-instant-dropdown';
         }
@@ -381,6 +386,55 @@ class MegaMenu extends AbstractBlock
     }
 
     /**
+     * Wrapper classes marking which surfaces have colours configured.
+     *
+     * The flyout and active-state rules are scoped under these classes, so a menu
+     * saved before those settings did anything gains no new declarations and renders
+     * exactly as it did before. Submenu-active counts dropdown-active as configured
+     * too, because the flyout variables fall back to the dropdown ones.
+     *
+     * @since 5.0.0
+     *
+     * @param array $attributes Block attributes array.
+     * @return array<int, string>
+     */
+    private static function active_state_classes(array $attributes): array
+    {
+        $surfaces = [
+            'bvi-mm-has-submenu' => [
+                'submenuBackgroundColor',
+                'submenuBackgroundColorHover',
+                'submenuTextColor',
+                'submenuTextColorHover',
+                'submenuBackgroundColorActive',
+                'submenuTextColorActive',
+            ],
+            'bvi-mm-has-link-active' => ['linkTextColorActive', 'linkBackgroundColorActive'],
+            'bvi-mm-has-dropdown-active' => ['dropdownTextColorActive', 'dropdownBackgroundColorActive'],
+            'bvi-mm-has-submenu-active' => [
+                'submenuTextColorActive',
+                'submenuBackgroundColorActive',
+                'dropdownTextColorActive',
+                'dropdownBackgroundColorActive',
+            ],
+            'bvi-mm-has-mobile-active' => ['mobileMenuTextColorActive', 'mobileMenuLinkBackgroundColorActive'],
+        ];
+
+        $classes = [];
+
+        foreach ($surfaces as $class => $attrs) {
+            foreach ($attrs as $attr) {
+                if ((string) ( $attributes[$attr] ?? '' ) !== '') {
+                    $classes[] = $class;
+                    break;
+                }
+            }
+        }
+
+        return $classes;
+    }
+
+    /**
      * Assemble the CSS custom properties that drive the menu's styling.
      *
      * @since 5.0.0
@@ -393,14 +447,20 @@ class MegaMenu extends AbstractBlock
         $map = [
             'linkTextColorHover' => '--bvi-mm-link-color-hover',
             'linkBackgroundColorHover' => '--bvi-mm-link-bg-hover',
+            'linkTextColorActive' => '--bvi-mm-link-color-active',
+            'linkBackgroundColorActive' => '--bvi-mm-link-bg-active',
             'dropdownBackgroundColor' => '--bvi-mm-dropdown-bg',
             'dropdownBackgroundColorHover' => '--bvi-mm-dropdown-bg-hover',
             'dropdownTextColor' => '--bvi-mm-dropdown-color',
             'dropdownTextColorHover' => '--bvi-mm-dropdown-color-hover',
+            'dropdownTextColorActive' => '--bvi-mm-dropdown-color-active',
+            'dropdownBackgroundColorActive' => '--bvi-mm-dropdown-bg-active',
             'submenuBackgroundColor' => '--bvi-mm-submenu-bg',
             'submenuBackgroundColorHover' => '--bvi-mm-submenu-bg-hover',
             'submenuTextColor' => '--bvi-mm-submenu-color',
             'submenuTextColorHover' => '--bvi-mm-submenu-color-hover',
+            'submenuTextColorActive' => '--bvi-mm-submenu-color-active',
+            'submenuBackgroundColorActive' => '--bvi-mm-submenu-bg-active',
             'overlayBackgroundColor' => '--bvi-mm-overlay-bg',
             'hamburgerColor' => '--bvi-mm-hamburger-color',
             'hamburgerColorHover' => '--bvi-mm-hamburger-color-hover',
@@ -411,6 +471,8 @@ class MegaMenu extends AbstractBlock
             'mobileMenuLinkBackgroundColorHover' => '--bvi-mm-mobile-link-bg-hover',
             'mobileMenuTextColor' => '--bvi-mm-mobile-color',
             'mobileMenuTextColorHover' => '--bvi-mm-mobile-color-hover',
+            'mobileMenuTextColorActive' => '--bvi-mm-mobile-color-active',
+            'mobileMenuLinkBackgroundColorActive' => '--bvi-mm-mobile-link-bg-active',
             'hamburgerBackgroundColorOpen' => '--bvi-mm-hamburger-bg-open',
             'mobileFontSize' => '--bvi-mm-mobile-font-size',
             'mobileFontWeight' => '--bvi-mm-mobile-font-weight',

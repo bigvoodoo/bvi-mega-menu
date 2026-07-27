@@ -275,6 +275,13 @@ nav.bvi-mega-menu,
     }
 }
 
+// gated so a menu with no submenu colours keeps taking the dropdown surface rule above;
+// must stay ahead of the mobile override below, which ties on specificity and should win
+.bvi-mm-has-submenu .bvi-menu-item .bvi-menu-item.has-panel > .bvi-mega-panel {
+    background: var(--bvi-mm-submenu-bg, var(--bvi-mm-dropdown-bg, #fff));
+    color: var(--bvi-mm-submenu-color, var(--bvi-mm-dropdown-color, inherit));
+}
+
 .bvi-mega-menu.hide-dropdown-arrow .bvi-menu-item-toggle {
     display: none;
 }
@@ -356,4 +363,44 @@ nav.bvi-mega-menu,
         background-color: var(--bvi-mm-dropdown-bg-hover, var(--bvi-mm-link-bg-hover, transparent));
         color: var(--bvi-mm-dropdown-color-hover, inherit);
     }
+}
+
+// declares helper variables only, so it sets no real property and cannot alter rendering;
+// they hold what the flyout inherited before submenu colours existed
+.bvi-mega-menu .bvi-mega-panel .bvi-mega-panel .bvi-menu-item-link {
+    --bvi-mm-flyout-bg-hover: var(--bvi-mm-dropdown-bg-hover, var(--bvi-mm-link-bg-hover, transparent));
+    --bvi-mm-flyout-color: var(--bvi-mm-submenu-color, var(--bvi-mm-dropdown-color, inherit));
+    --bvi-mm-flyout-color-active: var(--bvi-mm-dropdown-color-active, var(--bvi-mm-flyout-color));
+}
+
+// a panel inside a panel is a flyout; its own variables win, falling back to the dropdown values
+.bvi-mm-has-submenu .bvi-mega-panel .bvi-mega-panel .bvi-menu-item-link {
+    color: var(--bvi-mm-flyout-color);
+
+    &:hover,
+    &:focus-visible {
+        background-color: var(--bvi-mm-submenu-bg-hover, var(--bvi-mm-flyout-bg-hover));
+        color: var(--bvi-mm-submenu-color-hover, var(--bvi-mm-dropdown-color-hover, inherit));
+    }
+}
+
+// every active rule is gated on a wrapper class emitted only when that surface has a
+// colour set, and falls back to the value the surface computes today, so a menu saved
+// before active colours existed is unaffected
+.bvi-mm-has-dropdown-active .bvi-mega-panel .bvi-menu-item.current-menu-item > .bvi-menu-item-link {
+    background-color: var(--bvi-mm-dropdown-bg-active, transparent);
+    color: var(--bvi-mm-dropdown-color-active, var(--bvi-mm-dropdown-color, inherit));
+}
+
+.bvi-mm-has-submenu-active
+.bvi-mega-panel .bvi-mega-panel .bvi-menu-item.current-menu-item > .bvi-menu-item-link {
+    background-color: var(--bvi-mm-submenu-bg-active, var(--bvi-mm-dropdown-bg-active, transparent));
+    color: var(--bvi-mm-submenu-color-active, var(--bvi-mm-flyout-color-active));
+}
+
+.bvi-mm-has-mobile-active.is-mobile.is-open .bvi-menu-item.current-menu-item > .bvi-menu-item-link,
+.bvi-mm-has-mobile-active.bvi-mm-highlight-ancestors.is-mobile.is-open
+.bvi-menu-item.current-menu-ancestor > .bvi-menu-item-link {
+    background: var(--bvi-mm-mobile-link-bg-active, var(--bvi-mm-mobile-link-bg, transparent));
+    color: var(--bvi-mm-mobile-color-active, var(--bvi-mm-mobile-color, inherit));
 }

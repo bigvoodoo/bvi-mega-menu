@@ -2,6 +2,8 @@
 
 namespace Bvi\Plugin\MegaMenu\Blocks;
 
+use Bvi\Plugin\MegaMenu\Utils\Traits\Urls;
+
 /**
  * Class MenuItem
  *
@@ -9,6 +11,8 @@ namespace Bvi\Plugin\MegaMenu\Blocks;
  */
 class MenuItem extends AbstractBlock
 {
+    use Urls;
+
     /**
      * Constructor.
      *
@@ -44,9 +48,10 @@ class MenuItem extends AbstractBlock
      *
      * @param array  $attributes Block attributes.
      * @param string $content    Rendered InnerBlocks content.
+     * @param object $block      Block instance, when supplied by the render callback.
      * @return string Rendered HTML.
      */
-    public function render(array $attributes, string $content): string
+    public function render(array $attributes, string $content, $block = null): string
     {
         $label = (string) ( $attributes['label'] ?? '' );
         $url = (string) ( $attributes['url'] ?? '' );
@@ -55,11 +60,29 @@ class MenuItem extends AbstractBlock
         $label_color = (string) ( $attributes['labelColor'] ?? '' );
         $panel_width = (string) ( $attributes['panelWidth'] ?? '' );
 
-        $has_panel = $this->content_has_panel($content);
+        $children = self::render_children($content, $block);
+        $has_panel = $this->content_has_panel($children);
 
         $classes = ['bvi-menu-item'];
         if ($has_panel) {
             $classes[] = 'has-panel';
+        }
+
+        $current_url = self::current_url();
+        $is_current = $current_url !== '' && self::matches($url, $current_url);
+
+        if ($is_current) {
+            $classes[] = 'current-menu-item';
+            $classes[] = 'is-current';
+        } elseif ($current_url !== '' && !empty($block->parsed_block['innerBlocks'])) {
+            $descendant_depth = self::find_current_descendant_depth($block->parsed_block['innerBlocks'], $current_url);
+
+            if ($descendant_depth === 1) {
+                $classes[] = 'current-menu-parent';
+                $classes[] = 'current-menu-ancestor';
+            } elseif ($descendant_depth !== null) {
+                $classes[] = 'current-menu-ancestor';
+            }
         }
 
         $styles = [];
@@ -89,6 +112,9 @@ class MenuItem extends AbstractBlock
         if ($rel !== '') {
             $link_attrs .= ' rel="' . esc_attr($rel) . '"';
         }
+        if ($is_current) {
+            $link_attrs .= ' aria-current="page"';
+        }
         if ($has_panel) {
             $link_attrs .= ' aria-haspopup="true" aria-expanded="false"';
         }
@@ -107,7 +133,131 @@ class MenuItem extends AbstractBlock
                 '" aria-expanded="false"><span aria-hidden="true"></span></button>'
             : '';
 
-        return sprintf('<li %s>%s%s%s</li>', $wrapper_attrs, $link, $toggle, $content);
+        return sprintf('<li %s>%s%s%s</li>', $wrapper_attrs, $link, $toggle, $children);
+    }
+
+    /**
+     * Render inner blocks, wrapping nested menu items in a panel.
+     *
+     * An `<li>` may not contain another `<li>` directly — browsers close the outer
+     * element and the submenu flattens to top level — so nested items are grouped
+     * into the same panel/sub-list structure Walker::start_lvl() emits. Items are
+     * re-rendered from the block tree because the boundaries between children
+     * cannot be recovered from the already-concatenated content string.
+     *
+     * @since 5.0.0
+     *
+     * @param string $content Rendered InnerBlocks content.
+     * @param object $block   Block instance, when supplied by the render callback.
+     * @return string
+     */
+    private static function render_children(string $content, $block = null): string
+    {
+        if (!( $block instanceof \WP_Block ) || count($block->inner_blocks) === 0) {
+            return $content;
+        }
+
+        $names = [];
+        foreach ($block->inner_blocks as $inner) {
+            $names[] = $inner->name;
+        }
+
+        // without nested items the rendered content is already valid markup
+        if (!in_array('bvi/menu-item', $names, true)) {
+            return $content;
+        }
+
+        $rendered = [];
+        foreach ($block->inner_blocks as $inner) {
+            $rendered[] = ['name' => $inner->name, 'html' => $inner->render()];
+        }
+
+        return self::group_children($rendered);
+    }
+
+    /**
+     * Group rendered children so runs of menu items sit inside one panel.
+     *
+     * @since 5.0.0
+     *
+     * @param array $children Ordered list of ['name' => block name, 'html' => rendered HTML].
+     * @return string
+     */
+    public static function group_children(array $children): string
+    {
+        $out = '';
+        $items = '';
+
+        foreach ($children as $child) {
+            $html = (string) ( $child['html'] ?? '' );
+
+            if (( $child['name'] ?? '' ) === 'bvi/menu-item') {
+                $items .= $html;
+                continue;
+            }
+
+            $out .= self::wrap_items($items) . $html;
+            $items = '';
+        }
+
+        return $out . self::wrap_items($items);
+    }
+
+    /**
+     * Wrap a run of menu items in the panel markup shared with the walker.
+     *
+     * @since 5.0.0
+     *
+     * @param string $items Concatenated `<li>` markup, possibly empty.
+     * @return string
+     */
+    private static function wrap_items(string $items): string
+    {
+        if ($items === '') {
+            return '';
+        }
+
+        return '<div class="bvi-mega-panel"><ul class="bvi-mega-menu-sub-list">' . $items . '</ul></div>';
+    }
+
+    /**
+     * Find the shallowest depth at which a descendant menu item is the current page.
+     *
+     * @since 5.0.0
+     *
+     * @param array  $inner_blocks Parsed inner blocks to scan.
+     * @param string $current_url  Request URL to match against.
+     * @param int    $depth        Depth of the blocks being scanned.
+     * @return int|null Depth of the shallowest match, or null when nothing matches.
+     */
+    public static function find_current_descendant_depth(array $inner_blocks, string $current_url, int $depth = 1): ?int
+    {
+        $found = null;
+
+        foreach ($inner_blocks as $block) {
+            $is_item = ( $block['blockName'] ?? '' ) === 'bvi/menu-item';
+
+            if ($is_item && self::matches((string) ( $block['attrs']['url'] ?? '' ), $current_url)) {
+                return $depth;
+            }
+
+            if (empty($block['innerBlocks'])) {
+                continue;
+            }
+
+            // only menu items advance the depth counter; panels and wrappers are transparent
+            $child_depth = self::find_current_descendant_depth(
+                $block['innerBlocks'],
+                $current_url,
+                $is_item ? $depth + 1 : $depth,
+            );
+
+            if ($child_depth !== null && ( $found === null || $child_depth < $found )) {
+                $found = $child_depth;
+            }
+        }
+
+        return $found;
     }
 
     /**

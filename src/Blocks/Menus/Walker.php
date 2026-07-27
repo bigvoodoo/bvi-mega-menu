@@ -2,6 +2,8 @@
 
 namespace Bvi\Plugin\MegaMenu\Blocks\Menus;
 
+use Bvi\Plugin\MegaMenu\Utils\Traits\Urls;
+
 /**
  * Custom walker for mega menu rendering.
  *
@@ -21,6 +23,8 @@ namespace Bvi\Plugin\MegaMenu\Blocks\Menus;
  */
 class Walker extends \Walker_Nav_Menu
 {
+    use Urls;
+
     /** @var array */
     public $tree_type = ['mega_menu'];
 
@@ -32,6 +36,9 @@ class Walker extends \Walker_Nav_Menu
 
     /** @var array<int|string, bool> Map of item IDs that have at least one child. */
     private $has_children_map = [];
+
+    /** @var array<int|string, array<int, string>> Map of item IDs to current-state classes. */
+    private $current_class_map = [];
 
     /**
      * Build a parent lookup before walking so start_el can flag items with children.
@@ -54,7 +61,60 @@ class Walker extends \Walker_Nav_Menu
             }
         }
 
+        $this->current_class_map = self::build_current_map((array) $elements);
+
         return parent::walk($elements, $max_depth, ...$args);
+    }
+
+    /**
+     * Map item IDs to their current/ancestor classes for the given request URL.
+     *
+     * @since 5.0.0
+     *
+     * @param array       $elements    Flat list of menu item objects.
+     * @param string|null $current_url Request URL to match, or null to detect it.
+     * @return array<int|string, array<int, string>>
+     */
+    public static function build_current_map(array $elements, ?string $current_url = null): array
+    {
+        $current_url = $current_url ?? self::current_url();
+        if ($current_url === '') {
+            return [];
+        }
+
+        $current = null;
+        $by_id = [];
+
+        foreach ($elements as $element) {
+            $by_id[$element->ID] = $element;
+
+            $post_id = (int) ( $element->post_id ?? 0 );
+            $url = $post_id > 0 ? (string) get_permalink($post_id) : (string) ( $element->url ?? '' );
+
+            if ($current === null && self::matches($url, $current_url)) {
+                $current = $element;
+            }
+        }
+
+        if ($current === null) {
+            return [];
+        }
+
+        $map = [$current->ID => ['current-menu-item', 'is-current']];
+
+        $parent_id = (int) ( $current->parent_id ?? 0 );
+        $is_immediate = true;
+
+        while ($parent_id && isset($by_id[$parent_id])) {
+            $map[$parent_id] = $is_immediate
+                ? ['current-menu-parent', 'current-menu-ancestor']
+                : ['current-menu-ancestor'];
+
+            $is_immediate = false;
+            $parent_id = (int) ( $by_id[$parent_id]->parent_id ?? 0 );
+        }
+
+        return $map;
     }
 
     /**
@@ -112,6 +172,7 @@ class Walker extends \Walker_Nav_Menu
         if ($has_children) {
             $classes[] = 'has-panel';
         }
+        $classes = array_merge($classes, $this->current_class_map[$item->ID] ?? []);
 
         $class_names = implode(' ', apply_filters('nav_menu_css_class', array_filter($classes), $item, $args));
         $class_names = $class_names ? ' class="' . esc_attr($class_names) . '"' : '';
@@ -121,9 +182,11 @@ class Walker extends \Walker_Nav_Menu
 
         $output .= $indent . '<li' . $id . $class_names . '>';
 
+        $is_current = in_array('current-menu-item', $this->current_class_map[$item->ID] ?? [], true);
+
         $output .= apply_filters(
             'walker_nav_menu_start_el',
-            $this->build_item_inner($item, $depth, $args, $has_children),
+            $this->build_item_inner($item, $depth, $args, $has_children, $is_current),
             $item,
             $depth,
             $args,
@@ -154,9 +217,10 @@ class Walker extends \Walker_Nav_Menu
      * @param int    $depth        Depth of menu item.
      * @param object $args         Walker arguments.
      * @param bool   $has_children Whether the item has child items.
+     * @param bool   $is_current   Whether the item addresses the current request.
      * @return string
      */
-    private function build_item_inner($item, int $depth, $args, bool $has_children): string
+    private function build_item_inner($item, int $depth, $args, bool $has_children, bool $is_current = false): string
     {
         // Shortcode item: render its output verbatim, no link wrapper.
         if (isset($item->type) && $item->type === 'shortcode') {
@@ -174,6 +238,9 @@ class Walker extends \Walker_Nav_Menu
         $attributes .= !empty($item->attr_title) ? ' title="' . esc_attr($item->attr_title) . '"' : '';
         $attributes .= !empty($item->target) ? ' target="' . esc_attr($item->target) . '"' : '';
         $attributes .= !empty($item->xfn) ? ' rel="' . esc_attr($item->xfn) . '"' : '';
+        if ($is_current) {
+            $attributes .= ' aria-current="page"';
+        }
         if ($has_children) {
             $attributes .= ' aria-haspopup="true" aria-expanded="false"';
         }

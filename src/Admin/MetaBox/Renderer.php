@@ -49,9 +49,9 @@ class Renderer
         echo '<table class="form-table" role="presentation"><tbody>';
 
         foreach ($config['fields'] as $field) {
-            $field_id = $field['label_for'] ?? ( $field['id'] ?? '' );
+            $field_id = $field['label_for'] ?? ($field['id'] ?? '');
             $field['prefix'] = $config['prefix'];
-            $field['value'] = $values[$field_id] ?? ( $field['default'] ?? '' );
+            $field['value'] = $values[$field_id] ?? ($field['default'] ?? '');
 
             $label = $field['title'] ?? '';
             $type = $field['type'] ?? 'text';
@@ -98,7 +98,7 @@ class Renderer
 
         // ensure all data is sanitized before rendering
         $field_vars = [
-            'id' => $this->convert_to_string($args['id'] ?? ( $args['label_for'] ?? null ), ['type' => 'string']),
+            'id' => $this->convert_to_string($args['id'] ?? ($args['label_for'] ?? null), ['type' => 'string']),
             'page_database_id' => $this->convert_to_string($args['prefix'] ?? '', ['type' => 'string']),
             'label' => $this->convert_to_string($args['title'] ?? '', ['type' => 'string']),
             'description' => $this->convert_to_string($args['description'] ?? '', ['type' => 'html']),
@@ -115,7 +115,7 @@ class Renderer
         ];
 
         // convert the array into variables
-        // phpcs:ignore WordPress.PHP.DontExtract.extract_extract -- intentional exposure of field vars to the field template
+        // phpcs:ignore WordPress.PHP.DontExtract.extract_extract - intentional exposure of field vars to template
         extract($field_vars);
 
         // if we are missing the bare minimum, skip
@@ -143,8 +143,8 @@ class Renderer
                 $templates = [];
 
                 foreach ($options as $index => $option) {
-                    $option_id = $option['label_for'] ?? ( $option['id'] ?? $index );
-                    $option_type = $option['type'] ?? ( $option['field_type'] ?? 'text' );
+                    $option_id = $option['label_for'] ?? ($option['id'] ?? $index);
+                    $option_type = $option['type'] ?? ($option['field_type'] ?? 'text');
                     $option_value = $value[$option_id] ?? null;
 
                     if ($option_type === 'composite') {
@@ -176,7 +176,7 @@ class Renderer
         }
 
         // for checkbox/radio, cast to int
-        if (( !is_array($value) && $type === 'checkbox' ) || $type === 'radio') {
+        if ((!is_array($value) && $type === 'checkbox') || $type === 'radio') {
             $value = intval($value);
         }
 
@@ -208,7 +208,7 @@ class Renderer
         $values = $this->get_meta_values($post->ID, $config);
 
         // extract configuration variables for use in template
-        // phpcs:ignore WordPress.PHP.DontExtract.extract_extract -- intentional exposure of config to the metabox template
+        // phpcs:ignore WordPress.PHP.DontExtract.extract_extract - intentional exposure of config to template
         extract($config);
 
         $template_path = BVI_PLUGIN_MEGAMENU_DIR_PATH . 'templates/admin/';
@@ -224,7 +224,7 @@ class Renderer
         }
 
         // check if template override is requested
-        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only template selection, no state change
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended - read-only, no state change
         $template_override_id = sanitize_file_name(wp_unslash($_GET['template'] ?? ''));
 
         if ($template_override_id) {
@@ -252,9 +252,9 @@ class Renderer
      */
     private function generate_multi_subfield($field, $value, $args)
     {
-        $field_type = $field['type'] ?? ( $field['field_type'] ?? 'text' );
-        $field_parent_id = $args['label_for'] ?? ( $args['id'] ?? null );
-        $field_id = $field['label_for'] ?? ( $field['id'] ?? null );
+        $field_type = $field['type'] ?? ($field['field_type'] ?? 'text');
+        $field_parent_id = $args['label_for'] ?? ($args['id'] ?? null);
+        $field_id = $field['label_for'] ?? ($field['id'] ?? null);
         $max_items = $field['max_items'] ?? null;
         $min_items = $field['min_items'] ?? null;
 
@@ -273,7 +273,7 @@ class Renderer
             'page_database_id' => $args['prefix'],
             'parent_id' => $field_parent_id,
             'id' => $field_id,
-            'title' => $field['title'] ?? ( $field['field_label'] ?? '' ),
+            'title' => $field['title'] ?? ($field['field_label'] ?? ''),
             'description' => $field['description'] ?? '',
             'type' => $field_type,
             'default' => $field['default'] ?? '',
@@ -290,16 +290,16 @@ class Renderer
 
     private function generate_multi_subfield_template($field, $args)
     {
-        $field_type = $field['type'] ?? ( $field['field_type'] ?? 'text' );
-        $field_parent_id = $args['label_for'] ?? ( $args['id'] ?? null );
-        $field_id = $field['label_for'] ?? ( $field['id'] ?? null );
+        $field_type = $field['type'] ?? ($field['field_type'] ?? 'text');
+        $field_parent_id = $args['label_for'] ?? ($args['id'] ?? null);
+        $field_id = $field['label_for'] ?? ($field['id'] ?? null);
 
         $field_vars = [
             'prefix' => $args['prefix'],
             'page_database_id' => $args['prefix'],
             'parent_id' => $field_parent_id,
             'id' => $field_id,
-            'title' => $field['title'] ?? ( $field['field_label'] ?? '' ),
+            'title' => $field['title'] ?? ($field['field_label'] ?? ''),
             'description' => $field['description'] ?? '',
             'type' => $field_type,
             'default' => $field['default'] ?? '',
@@ -325,7 +325,7 @@ class Renderer
 
         // loop through fields and find their set values
         foreach ($config['fields'] as $field) {
-            $field_id = $field['label_for'] ?? ( $field['id'] ?? '' );
+            $field_id = $field['label_for'] ?? ($field['id'] ?? '');
             $meta_key = $config['prefix'] . $field_id;
             $meta_value = get_post_meta($post_id, $meta_key, true);
 

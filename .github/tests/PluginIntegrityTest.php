@@ -124,6 +124,7 @@ class PluginIntegrityTest extends TestCase
             'Bvi\\Plugin\\MegaMenu\\Blocks\\Menus\\Helper',
             'Bvi\\Plugin\\MegaMenu\\Blocks\\Menus\\Renderer',
             'Bvi\\Plugin\\MegaMenu\\Blocks\\Menus\\Walker',
+            'Bvi\\Plugin\\MegaMenu\\Blocks\\Menus\\BlockScanner',
             'Bvi\\Plugin\\MegaMenu\\Service\\Ajax',
             'Bvi\\Plugin\\MegaMenu\\Service\\Shortcode\\MegaMenuShortcode',
             'Bvi\\Plugin\\MegaMenu\\Service\\Shortcode\\RelatedLinksShortcode',
@@ -132,6 +133,7 @@ class PluginIntegrityTest extends TestCase
             'Bvi\\Plugin\\MegaMenu\\Interfaces\\Feature',
             'Bvi\\Plugin\\MegaMenu\\Utils\\Traits\\Feature',
             'Bvi\\Plugin\\MegaMenu\\Utils\\Traits\\Security',
+            'Bvi\\Plugin\\MegaMenu\\Utils\\Traits\\Urls',
             'Bvi\\Plugin\\MegaMenu\\Utils\\Traits\\Singleton',
             'Bvi\\Plugin\\MegaMenu\\Utils\\Traits\\Strings',
         ];

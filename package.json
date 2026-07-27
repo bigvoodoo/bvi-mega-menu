@@ -1,14 +1,13 @@
 {
   "name": "bvi-mega-menu",
   "version": "5.0.0",
-  "private": true,
   "description": "BVI Mega Menu - WordPress plugin with block editor support.",
   "author": "Big Voodoo Interactive",
-  "license": "GPLv3",
+  "license": "proprietary",
   "main": "build/index.js",
   "engines": {
-    "node": ">=20",
-    "npm": ">=10"
+    "node": ">=22",
+    "npm": ">=11"
   },
   "scripts": {
     "start": "gulp",
@@ -20,14 +19,13 @@
     "lint:css": "wp-scripts lint-style 'assets/src/**/*.{css,scss}' --fix",
     "lint:js": "wp-scripts lint-js --no-error-on-unmatched-pattern 'assets/src/**/*.js' 'assets/src/**/*.jsx' --fix",
     "lint:php": "composer lint:fix .",
-    "lint:audit": "composer lint",
     "format": "npm run format:js && npm run format:php",
     "format:js": "prettier --write \"**/*.{js,jsx,mjs,cjs,ts,mts,cts,json,yml,yaml}\"",
     "format:php": "prettier --write \"**/*.php\"",
     "format:check": "prettier --check \"**/*.{js,jsx,mjs,cjs,ts,mts,cts,json,yml,yaml,php}\"",
     "packages-update": "wp-scripts packages-update",
     "cleanup": "npm run format && npm run lint",
-    "plugin-zip": "bash ~/code/code-helper/scripts/package-plugin.sh ~/code/bvi-mega-menu",
+    "plugin-zip": "bash ~/code/code-helper/scripts/package-plugin.sh .",
     "block:build": "gulp blockScripts && gulp blockStyles",
     "block:start": "gulp blockScripts && gulp blockStyles",
     "hygiene": "bash ~/code/code-helper/scripts/wordpress-hygiene.sh"
@@ -68,7 +66,7 @@
     "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
     "sass": "^1.83.1",
-    "sharp": "^0.33.5",
+    "sharp": "^0.35.3",
     "style-loader": "^4.0.0",
     "stylelint-order": "^7.0.0",
     "url-loader": "^4.1.1",
@@ -81,6 +79,8 @@
     "react-dom": "^18.3.1"
   },
   "overrides": {
+    "adm-zip": "^0.6.0",
+    "esbuild": "^0.28.1",
     "terser": "^5.36.0",
     "@babel/runtime": "^7.26.10",
     "webpack-dev-server": "^5.2.1",
@@ -93,5 +93,15 @@
     "js-yaml": "^4.1.2",
     "http-proxy-middleware": "^4.1.1",
     "minimatch": "^10.2.5"
+  },
+  "allowScripts": {
+    "@parcel/watcher@2.6.0": true,
+    "esbuild@0.28.1": true,
+    "puppeteer@2.1.1": true,
+    "sharp@0.33.5": true,
+    "unrs-resolver@1.12.2": true,
+    "core-js": false,
+    "core-js-pure": false,
+    "es5-ext": false
   }
 }

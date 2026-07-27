@@ -84,14 +84,20 @@ registerBlockType(metadata.name, {
       hamburgerSvgId,
       linkTextColorHover,
       linkBackgroundColorHover,
+      linkTextColorActive,
+      linkBackgroundColorActive,
       dropdownBackgroundColor,
       dropdownBackgroundColorHover,
       dropdownTextColor,
       dropdownTextColorHover,
+      dropdownTextColorActive,
+      dropdownBackgroundColorActive,
       submenuBackgroundColor,
       submenuBackgroundColorHover,
       submenuTextColor,
       submenuTextColorHover,
+      submenuTextColorActive,
+      submenuBackgroundColorActive,
       overlayBackgroundColor,
       hamburgerColor,
       hamburgerColorHover,
@@ -102,6 +108,9 @@ registerBlockType(metadata.name, {
       mobileMenuLinkBackgroundColorHover,
       mobileMenuTextColor,
       mobileMenuTextColorHover,
+      mobileMenuTextColorActive,
+      mobileMenuLinkBackgroundColorActive,
+      highlightAncestors,
       itemGap,
       dropdownItemGap,
       popupItemGap,
@@ -169,14 +178,20 @@ registerBlockType(metadata.name, {
       '--bvi-mm-breakpoint': `${mobileBreakpoint || 960}px`,
       '--bvi-mm-link-color-hover': linkTextColorHover || undefined,
       '--bvi-mm-link-bg-hover': linkBackgroundColorHover || undefined,
+      '--bvi-mm-link-color-active': linkTextColorActive || undefined,
+      '--bvi-mm-link-bg-active': linkBackgroundColorActive || undefined,
       '--bvi-mm-dropdown-bg': dropdownBackgroundColor || undefined,
       '--bvi-mm-dropdown-bg-hover': dropdownBackgroundColorHover || undefined,
       '--bvi-mm-dropdown-color': dropdownTextColor || undefined,
       '--bvi-mm-dropdown-color-hover': dropdownTextColorHover || undefined,
+      '--bvi-mm-dropdown-color-active': dropdownTextColorActive || undefined,
+      '--bvi-mm-dropdown-bg-active': dropdownBackgroundColorActive || undefined,
       '--bvi-mm-submenu-bg': submenuBackgroundColor || undefined,
       '--bvi-mm-submenu-bg-hover': submenuBackgroundColorHover || undefined,
       '--bvi-mm-submenu-color': submenuTextColor || undefined,
       '--bvi-mm-submenu-color-hover': submenuTextColorHover || undefined,
+      '--bvi-mm-submenu-color-active': submenuTextColorActive || undefined,
+      '--bvi-mm-submenu-bg-active': submenuBackgroundColorActive || undefined,
       '--bvi-mm-overlay-bg': overlayBackgroundColor || undefined,
       '--bvi-mm-hamburger-color': hamburgerColor || undefined,
       '--bvi-mm-hamburger-color-hover': hamburgerColorHover || undefined,
@@ -188,6 +203,8 @@ registerBlockType(metadata.name, {
       '--bvi-mm-mobile-link-bg-hover': mobileMenuLinkBackgroundColorHover || undefined,
       '--bvi-mm-mobile-color': mobileMenuTextColor || undefined,
       '--bvi-mm-mobile-color-hover': mobileMenuTextColorHover || undefined,
+      '--bvi-mm-mobile-color-active': mobileMenuTextColorActive || undefined,
+      '--bvi-mm-mobile-link-bg-active': mobileMenuLinkBackgroundColorActive || undefined,
       '--bvi-mm-item-gap': itemGap || undefined,
       '--bvi-mm-dropdown-item-gap': dropdownItemGap || undefined,
       '--bvi-mm-popup-item-gap': popupItemGap || undefined,
@@ -201,12 +218,24 @@ registerBlockType(metadata.name, {
       '--bvi-mm-text-decoration': attributes.style?.typography?.textDecoration || undefined,
     };
 
+    // mirrors MegaMenu::active_state_classes() so the flyout colours preview here too;
+    // the active-state gates are omitted because the editor has no current page
+    const hasSubmenuColors = [
+      submenuBackgroundColor,
+      submenuBackgroundColorHover,
+      submenuTextColor,
+      submenuTextColorHover,
+      submenuBackgroundColorActive,
+      submenuTextColorActive,
+    ].some(Boolean);
+
     const blockProps = useBlockProps({
       className:
         'bvi-mega-menu is-editor' +
         ` bvi-mega-menu-mobile-${mobileMode}` +
         ` bvi-mm-panel-align-${dropdownPanelAlignment}` +
-        ` bvi-mm-mobile-align-${mobileDropdownAlignment}`,
+        ` bvi-mm-mobile-align-${mobileDropdownAlignment}` +
+        (hasSubmenuColors ? ' bvi-mm-has-submenu' : ''),
       style: styleVars,
       'data-dropdown-span-parent': dropdownSpanParent ? 'true' : 'false',
       'data-dropdown-panel-alignment': dropdownPanelAlignment,
@@ -281,8 +310,26 @@ registerBlockType(metadata.name, {
                 attr: 'linkBackgroundColorHover',
                 label: __('Background (Hover)', 'bvi-mega-menu'),
               },
+              {
+                attr: 'linkTextColorActive',
+                label: __('Color (Active)', 'bvi-mega-menu'),
+              },
+              {
+                attr: 'linkBackgroundColorActive',
+                label: __('Background (Active)', 'bvi-mega-menu'),
+              },
             ])}
-          />
+          >
+            <ToggleControl
+              label={__('Highlight Parent Items', 'bvi-mega-menu')}
+              checked={highlightAncestors !== false}
+              onChange={(value) => setAttributes({ highlightAncestors: value })}
+              help={__(
+                'Apply the active colours to a top-level item when one of its' + ' child pages is the current page.',
+                'bvi-mega-menu'
+              )}
+            />
+          </PanelColorSettings>
           <PanelColorSettings
             title={__('Dropdown Colors', 'bvi-mega-menu')}
             initialOpen={false}
@@ -302,6 +349,14 @@ registerBlockType(metadata.name, {
               {
                 attr: 'dropdownTextColorHover',
                 label: __('Text (Hover)', 'bvi-mega-menu'),
+              },
+              {
+                attr: 'dropdownBackgroundColorActive',
+                label: __('Background (Active)', 'bvi-mega-menu'),
+              },
+              {
+                attr: 'dropdownTextColorActive',
+                label: __('Text (Active)', 'bvi-mega-menu'),
               },
             ])}
           />
@@ -324,6 +379,14 @@ registerBlockType(metadata.name, {
               {
                 attr: 'submenuTextColorHover',
                 label: __('Text (Hover)', 'bvi-mega-menu'),
+              },
+              {
+                attr: 'submenuBackgroundColorActive',
+                label: __('Background (Active)', 'bvi-mega-menu'),
+              },
+              {
+                attr: 'submenuTextColorActive',
+                label: __('Text (Active)', 'bvi-mega-menu'),
               },
             ])}
           />
@@ -387,6 +450,14 @@ registerBlockType(metadata.name, {
                 {
                   attr: 'mobileBorderColor',
                   label: __('Item Border', 'bvi-mega-menu'),
+                },
+                {
+                  attr: 'mobileMenuLinkBackgroundColorActive',
+                  label: __('Link Background (Active)', 'bvi-mega-menu'),
+                },
+                {
+                  attr: 'mobileMenuTextColorActive',
+                  label: __('Link Text (Active)', 'bvi-mega-menu'),
                 },
               ])}
             />

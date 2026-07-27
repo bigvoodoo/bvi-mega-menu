@@ -2,8 +2,10 @@
 
 namespace Bvi\Plugin\MegaMenu\Blocks;
 
+use Bvi\Plugin\MegaMenu\Blocks\Menus\BlockScanner;
 use Bvi\Plugin\MegaMenu\Blocks\Menus\Helper;
 use Bvi\Plugin\MegaMenu\Service\Shortcode\RelatedLinksShortcode;
+use Bvi\Plugin\MegaMenu\Utils\Traits\Urls;
 
 /**
  * Class RelatedLinks
@@ -12,6 +14,8 @@ use Bvi\Plugin\MegaMenu\Service\Shortcode\RelatedLinksShortcode;
  */
 class RelatedLinks extends AbstractBlock
 {
+    use Urls;
+
     /**
      * Constructor.
      *
@@ -285,7 +289,7 @@ class RelatedLinks extends AbstractBlock
      */
     private function items_from_mega_menu_blocks(): array
     {
-        $blocks = $this->collect_page_blocks();
+        $blocks = BlockScanner::collect_page_blocks();
         if (empty($blocks)) {
             return [];
         }
@@ -368,49 +372,6 @@ class RelatedLinks extends AbstractBlock
         $this->mark_current($items);
 
         return $items;
-    }
-
-    /**
-     * Gather parsed block trees from the current post and its template / template parts.
-     *
-     * @since 5.0.0
-     *
-     * @return array
-     */
-    private function collect_page_blocks(): array
-    {
-        $all = [];
-
-        global $post;
-        if (!empty($post) && !empty($post->post_content)) {
-            $all[] = parse_blocks($post->post_content);
-        }
-
-        // active block template (header/footer etc are usually template parts inside it)
-        if (function_exists('get_block_template')) {
-            $template = null;
-            if (function_exists('get_the_block_template_html') && !empty($GLOBALS['_wp_current_template_content'])) {
-                $all[] = parse_blocks($GLOBALS['_wp_current_template_content']);
-            }
-
-            $template_parts = function_exists('get_block_templates') ? get_block_templates([], 'wp_template_part') : [];
-
-            foreach ((array) $template_parts as $part) {
-                if (!empty($part->content)) {
-                    $all[] = parse_blocks($part->content);
-                }
-            }
-        }
-
-        // flatten one level so callers can recurse cleanly
-        $merged = [];
-        foreach ($all as $tree) {
-            foreach ((array) $tree as $block) {
-                $merged[] = $block;
-            }
-        }
-
-        return $merged;
     }
 
     /**
@@ -550,75 +511,17 @@ class RelatedLinks extends AbstractBlock
      */
     private function mark_current(array &$items): void
     {
-        $current_url = $this->current_url();
+        $current_url = self::current_url();
         if ($current_url === '') {
             return;
         }
 
-        $normalized_current = $this->normalize_url($current_url);
-
         foreach ($items as &$item) {
-            $item_url = $this->normalize_url((string) ( $item['url'] ?? '' ));
-            if ($item_url !== '' && $item_url === $normalized_current) {
+            if (self::matches((string) ( $item['url'] ?? '' ), $current_url)) {
                 $item['current'] = true;
             }
         }
         unset($item);
-    }
-
-    /**
-     * Best-effort current URL for comparison.
-     *
-     * @since 5.0.0
-     *
-     * @return string
-     */
-    private function current_url(): string
-    {
-        $queried = get_queried_object();
-        if ($queried instanceof \WP_Post) {
-            return (string) get_permalink($queried);
-        }
-        if ($queried instanceof \WP_Term) {
-            $link = get_term_link($queried);
-            return is_wp_error($link) ? '' : (string) $link;
-        }
-
-        if (function_exists('is_front_page') && is_front_page()) {
-            return (string) home_url('/');
-        }
-
-        global $post;
-        if (!empty($post)) {
-            return (string) get_permalink($post);
-        }
-
-        return '';
-    }
-
-    /**
-     * Strip scheme/host/trailing slashes so host-relative and absolute URLs compare equal.
-     *
-     * @since 5.0.0
-     *
-     * @param string $url URL to normalize.
-     * @return string
-     */
-    private function normalize_url(string $url): string
-    {
-        if ($url === '') {
-            return '';
-        }
-
-        $parsed = wp_parse_url($url);
-        if (!is_array($parsed)) {
-            return rtrim($url, '/');
-        }
-
-        $path = $parsed['path'] ?? '/';
-        $query = isset($parsed['query']) ? '?' . $parsed['query'] : '';
-
-        return rtrim($path, '/') . $query;
     }
 
     /**

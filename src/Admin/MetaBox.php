@@ -106,13 +106,13 @@ class MetaBox
         }
 
         // if our nonce field isn't present, this save isn't from our meta box: bail silently
-        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified via validate_nonce() immediately below
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing - nonce verified via validate_nonce() below
         if (empty($_POST[$this->config['nonce']])) {
             return false;
         }
 
         // validate incoming nonce (validate_nonce() wraps wp_verify_nonce())
-        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- this is the nonce verification
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing - this is the nonce verification
         if (!$this->validate_nonce($_POST, $this->config['nonce'], $this->config['nonce'] . '_action')) {
             return false;
         }
@@ -133,7 +133,8 @@ class MetaBox
         }
 
         // get submitted data for our prefix; each field is sanitized by the sanitizer below
-        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce verified above; per-field sanitization runs in the loop
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing - monce verified above
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized - each field santinized in loop
         $submitted_data = isset($_POST[$this->config['prefix']]) ? wp_unslash($_POST[$this->config['prefix']]) : [];
 
         if (empty($submitted_data)) {
@@ -151,7 +152,7 @@ class MetaBox
         try {
             // loop through each field and save as a serialized array
             foreach ($this->config['fields'] as $field) {
-                $field_id = $field['label_for'] ?? ( $field['id'] ?? '' );
+                $field_id = $field['label_for'] ?? ($field['id'] ?? '');
                 $meta_key = $this->config['prefix'] . $field_id;
                 $value = $submitted_data[$field_id] ?? null;
 

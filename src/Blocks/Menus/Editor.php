@@ -136,7 +136,7 @@ class Editor
 
         $current = (int) $_nav_menu_placeholder;
 
-        // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- core's documented nav-menu placeholder mechanism for unique new-item IDs
+        // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited - core's documented nav-menu placeholder
         $_nav_menu_placeholder = 0 > $current ? $current - 1 : -1;
 
         return $_nav_menu_placeholder;
@@ -208,7 +208,7 @@ class Editor
      */
     public function on_menu_item_save(int $menu_id, int $menu_item_db_id, array $menu_item_data): void
     {
-        if (( $menu_item_data['menu-item-status'] ?? '' ) === 'draft') {
+        if (($menu_item_data['menu-item-status'] ?? '') === 'draft') {
             return;
         }
 
@@ -216,13 +216,13 @@ class Editor
             'ID' => (int) $menu_item_data['menu-item-db-id'],
             'menu_id' => $menu_id,
             'post_id' => 0,
-            'parent_id' => (int) ( $menu_item_data['menu-item-parent-id'] ?? 0 ),
-            'position' => (int) ( $menu_item_data['menu-item-position'] ?? 0 ),
+            'parent_id' => (int) ($menu_item_data['menu-item-parent-id'] ?? 0),
+            'position' => (int) ($menu_item_data['menu-item-position'] ?? 0),
         ];
 
         $object = $menu_item_data['menu-item-object'] ?? '';
         if (in_array($object, ['page', 'post'], true)) {
-            $item['post_id'] = (int) ( $menu_item_data['menu-item-object-id'] ?? 0 );
+            $item['post_id'] = (int) ($menu_item_data['menu-item-object-id'] ?? 0);
         }
 
         // parse json-encoded title for special types (column, menu)

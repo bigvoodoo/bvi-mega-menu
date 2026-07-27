@@ -5,7 +5,8 @@
  *
  * Loads the Composer autoloader so tests can resolve plugin classes
  * via the Bvi\Plugin\MegaMenu\ namespace. WordPress is intentionally
- * not loaded — these tests verify static structural properties only.
+ * not loaded — the stubs under stubs/ supply only what the plugin's
+ * pure logic touches.
  *
  * Lives under .github/tests/ so the testing scaffold is excluded
  * from the deployed plugin payload.
@@ -25,9 +26,7 @@ if (!defined('BVI_PLUGIN_MEGAMENU_ROOT_DIR')) {
     define('BVI_PLUGIN_MEGAMENU_ROOT_DIR', dirname(__DIR__, 2));
 }
 
-// minimal WP class stubs so plugin classes that extend WP core can be loaded for structural tests
-if (!class_exists('Walker_Nav_Menu')) {
-    class Walker_Nav_Menu
-    {
-    }
-}
+require_once __DIR__ . '/stubs/wp-functions.php';
+require_once __DIR__ . '/stubs/WalkerNavMenu.php';
+require_once __DIR__ . '/stubs/WpBlockPatternsRegistry.php';
+require_once __DIR__ . '/stubs/UrlsConsumer.php';
