@@ -81,13 +81,15 @@
         <!--
             BVI Array/Cast/Operator style: compact formatting without extra spaces.
             WordPress enforces spaces inside single-line array brackets, a space
-            before type cast parentheses, and its own operator-spacing rules for
-            operators like !. BVI uses compact formatting matching PSR-12.
+            before type cast parentheses, spaces inside arbitrary grouping
+            parentheses such as ($a ?? $b), and its own operator-spacing rules
+            for operators like !. BVI uses compact formatting matching PSR-12.
             WordPress also enforces PHP tag placement and indentation in mixed
             PHP/HTML contexts using tabs; BVI uses 4-space indentation everywhere.
         -->
         <exclude name="WordPress.Arrays.ArrayDeclarationSpacing"/>
         <exclude name="NormalizedArrays.Arrays.ArrayBraceSpacing"/>
+        <exclude name="Generic.WhiteSpace.ArbitraryParenthesesSpacing"/>
         <exclude name="WordPress.WhiteSpace.OperatorSpacing"/>
         <exclude name="WordPress.WhiteSpace.CastStructureSpacing"/>
         <exclude name="Squiz.PHP.EmbeddedPhp"/>

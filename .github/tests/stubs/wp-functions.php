@@ -29,6 +29,7 @@ if (!function_exists('wp_parse_url')) {
      */
     function wp_parse_url($url, $component = -1)
     {
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url -- this stub is wp_parse_url()
         return parse_url($url, $component);
     }
 }
@@ -98,6 +99,7 @@ if (!function_exists('get_permalink')) {
      * @param int $post_id Post ID.
      * @return string
      */
+    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- stub mirrors core signature
     function get_permalink($post_id = 0)
     {
         return '';

@@ -136,7 +136,7 @@ class Editor
 
         $current = (int) $_nav_menu_placeholder;
 
-        // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited - core's documented nav-menu placeholder
+        // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- core's documented nav-menu placeholder
         $_nav_menu_placeholder = 0 > $current ? $current - 1 : -1;
 
         return $_nav_menu_placeholder;

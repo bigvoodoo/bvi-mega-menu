@@ -115,7 +115,7 @@ class Renderer
         ];
 
         // convert the array into variables
-        // phpcs:ignore WordPress.PHP.DontExtract.extract_extract - intentional exposure of field vars to template
+        // phpcs:ignore WordPress.PHP.DontExtract.extract_extract -- intentional exposure of field vars to template
         extract($field_vars);
 
         // if we are missing the bare minimum, skip
@@ -208,7 +208,7 @@ class Renderer
         $values = $this->get_meta_values($post->ID, $config);
 
         // extract configuration variables for use in template
-        // phpcs:ignore WordPress.PHP.DontExtract.extract_extract - intentional exposure of config to template
+        // phpcs:ignore WordPress.PHP.DontExtract.extract_extract -- intentional exposure of config to template
         extract($config);
 
         $template_path = BVI_PLUGIN_MEGAMENU_DIR_PATH . 'templates/admin/';
@@ -224,7 +224,7 @@ class Renderer
         }
 
         // check if template override is requested
-        // phpcs:ignore WordPress.Security.NonceVerification.Recommended - read-only, no state change
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only, no state change
         $template_override_id = sanitize_file_name(wp_unslash($_GET['template'] ?? ''));
 
         if ($template_override_id) {
