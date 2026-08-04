@@ -124,7 +124,7 @@ class BlockScanner
         }
 
         if ($name === 'core/template-part' && !empty($attrs['slug'])) {
-            $theme = (string) ( $attrs['theme'] ?? '' );
+            $theme = (string) ($attrs['theme'] ?? '');
             return 'part:' . $theme . '//' . (string) $attrs['slug'];
         }
 
@@ -159,7 +159,7 @@ class BlockScanner
             return $content === '' ? [] : parse_blocks($content);
         }
 
-        $content = self::template_part_content((string) $attrs['slug'], (string) ( $attrs['theme'] ?? '' ));
+        $content = self::template_part_content((string) $attrs['slug'], (string) ($attrs['theme'] ?? ''));
 
         return $content === '' ? [] : parse_blocks($content);
     }
@@ -185,7 +185,7 @@ class BlockScanner
 
         $pattern = $registry->get_registered($slug);
 
-        return (string) ( $pattern['content'] ?? '' );
+        return (string) ($pattern['content'] ?? '');
     }
 
     /**
@@ -206,7 +206,7 @@ class BlockScanner
         $stylesheet = $theme !== '' ? $theme : (string) get_stylesheet();
         $template = get_block_template($stylesheet . '//' . $slug, 'wp_template_part');
 
-        return empty($template) ? '' : (string) ( $template->content ?? '' );
+        return empty($template) ? '' : (string) ($template->content ?? '');
     }
 
     /**

@@ -75,9 +75,9 @@ class MegaMenuShortcode
 
         // Adapt classic menu items to the Walker's expected shape.
         foreach ($menu_items as $menu_item) {
-            $menu_item->parent_id = (int) ( $menu_item->menu_item_parent ?? 0 );
+            $menu_item->parent_id = (int) ($menu_item->menu_item_parent ?? 0);
             $menu_item->post_id = in_array($menu_item->object ?? '', ['page', 'post'], true)
-                ? (int) ( $menu_item->object_id ?? 0 )
+                ? (int) ($menu_item->object_id ?? 0)
                 : 0;
             if (!isset($menu_item->url) && !$menu_item->post_id) {
                 $menu_item->url = '';
@@ -93,7 +93,7 @@ class MegaMenuShortcode
         $args->instant_dropdown = !empty($options['dropdown_val']);
 
         $html = Renderer::render($id_name, $menu_items, 0, $args);
-        $mobile_override = (string) ( $options['mobile_override_val'] ?? '' );
+        $mobile_override = (string) ($options['mobile_override_val'] ?? '');
 
         if ($mobile_override !== '' && $mobile_override !== '1') {
             $override_menu =

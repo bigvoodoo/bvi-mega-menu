@@ -53,12 +53,12 @@ class MegaMenu extends AbstractBlock
      */
     public function render(array $attributes, string $content): string
     {
-        $menu_slug = (string) ( $attributes['menuSlug'] ?? '' );
-        $mobile_mode = (string) ( $attributes['mobileMode'] ?? 'none' );
-        $mobile_breakpoint = (int) ( $attributes['mobileBreakpoint'] ?? 960 );
-        $hamburger_style = (string) ( $attributes['hamburgerStyle'] ?? 'bars' );
-        $hamburger_svg_id = (int) ( $attributes['hamburgerSvgId'] ?? 0 );
-        $dropdown_trigger = (string) ( $attributes['dropdownTrigger'] ?? 'hover' );
+        $menu_slug = (string) ($attributes['menuSlug'] ?? '');
+        $mobile_mode = (string) ($attributes['mobileMode'] ?? 'none');
+        $mobile_breakpoint = (int) ($attributes['mobileBreakpoint'] ?? 960);
+        $hamburger_style = (string) ($attributes['hamburgerStyle'] ?? 'bars');
+        $hamburger_svg_id = (int) ($attributes['hamburgerSvgId'] ?? 0);
+        $dropdown_trigger = (string) ($attributes['dropdownTrigger'] ?? 'hover');
         if (!in_array($dropdown_trigger, ['hover', 'click'], true)) {
             $dropdown_trigger = 'hover';
         }
@@ -71,12 +71,12 @@ class MegaMenu extends AbstractBlock
 
         $dropdown_span_parent = !empty($attributes['dropdownSpanParent']);
 
-        $dropdown_panel_alignment = (string) ( $attributes['dropdownPanelAlignment'] ?? 'left' );
+        $dropdown_panel_alignment = (string) ($attributes['dropdownPanelAlignment'] ?? 'left');
         if (!in_array($dropdown_panel_alignment, ['left', 'center', 'right'], true)) {
             $dropdown_panel_alignment = 'left';
         }
 
-        $mobile_dropdown_alignment = (string) ( $attributes['mobileDropdownAlignment'] ?? 'viewport' );
+        $mobile_dropdown_alignment = (string) ($attributes['mobileDropdownAlignment'] ?? 'viewport');
         if (!in_array($mobile_dropdown_alignment, ['left', 'right', 'viewport'], true)) {
             $mobile_dropdown_alignment = 'viewport';
         }
@@ -175,9 +175,9 @@ class MegaMenu extends AbstractBlock
             }
 
             foreach ($menu_items as $menu_item) {
-                $menu_item->parent_id = (int) ( $menu_item->menu_item_parent ?? 0 );
+                $menu_item->parent_id = (int) ($menu_item->menu_item_parent ?? 0);
                 // wp_setup_nav_menu_item() resolves the label into ->title; the Walker reads ->post_title.
-                $menu_item->post_title = $menu_item->title ?? ( $menu_item->post_title ?? '' );
+                $menu_item->post_title = $menu_item->title ?? ($menu_item->post_title ?? '');
                 $is_post_object =
                     isset($menu_item->object_id) && in_array($menu_item->object ?? '', ['page', 'post'], true);
                 $menu_item->post_id = $is_post_object ? (int) $menu_item->object_id : 0;
@@ -257,12 +257,12 @@ class MegaMenu extends AbstractBlock
                 $item = (object) [
                     'ID' => $id,
                     'parent_id' => $parent_id,
-                    'post_id' => (int) ( $attrs['id'] ?? 0 ),
-                    'url' => (string) ( $attrs['url'] ?? '' ),
-                    'post_title' => (string) ( $attrs['label'] ?? '' ),
-                    'attr_title' => (string) ( $attrs['title'] ?? '' ),
+                    'post_id' => (int) ($attrs['id'] ?? 0),
+                    'url' => (string) ($attrs['url'] ?? ''),
+                    'post_title' => (string) ($attrs['label'] ?? ''),
+                    'attr_title' => (string) ($attrs['title'] ?? ''),
                     'target' => !empty($attrs['opensInNewTab']) ? '_blank' : '',
-                    'xfn' => (string) ( $attrs['rel'] ?? '' ),
+                    'xfn' => (string) ($attrs['rel'] ?? ''),
                     'classes' => [],
                     'type' => 'post_type',
                 ];
@@ -424,7 +424,7 @@ class MegaMenu extends AbstractBlock
 
         foreach ($surfaces as $class => $attrs) {
             foreach ($attrs as $attr) {
-                if ((string) ( $attributes[$attr] ?? '' ) !== '') {
+                if ((string) ($attributes[$attr] ?? '') !== '') {
                     $classes[] = $class;
                     break;
                 }
@@ -490,18 +490,18 @@ class MegaMenu extends AbstractBlock
             'popupItemGap' => '--bvi-mm-popup-item-gap',
         ];
 
-        $breakpoint = (int) ( $attributes['mobileBreakpoint'] ?? 960 );
+        $breakpoint = (int) ($attributes['mobileBreakpoint'] ?? 960);
         $parts = ['--bvi-mm-breakpoint: ' . $breakpoint . 'px'];
 
         foreach ($map as $attr => $var) {
-            $value = (string) ( $attributes[$attr] ?? '' );
+            $value = (string) ($attributes[$attr] ?? '');
             if ($value === '') {
                 continue;
             }
             $parts[] = $var . ': ' . $value;
         }
 
-        $text_decoration = (string) ( $attributes['style']['typography']['textDecoration'] ?? '' );
+        $text_decoration = (string) ($attributes['style']['typography']['textDecoration'] ?? '');
         if (in_array($text_decoration, ['none', 'underline', 'overline', 'line-through'], true)) {
             $parts[] = '--bvi-mm-text-decoration: ' . $text_decoration;
         }

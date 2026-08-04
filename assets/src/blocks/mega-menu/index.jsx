@@ -827,7 +827,7 @@ registerBlockType(metadata.name, {
                   }
                   min={320}
                   max={1440}
-                  step={10}
+                  step={1}
                 />
                 <RangeControl
                   label={__('Mobile Menu Depth', 'bvi-mega-menu')}

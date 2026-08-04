@@ -16,6 +16,8 @@
 $GLOBALS['bvi_test_blocks'] = [];
 $GLOBALS['bvi_test_patterns'] = [];
 $GLOBALS['bvi_test_filters'] = [];
+$GLOBALS['bvi_test_nav_menus'] = [];
+$GLOBALS['bvi_test_nav_menu_items'] = [];
 
 if (!function_exists('wp_parse_url')) {
     /**
@@ -87,6 +89,68 @@ if (!function_exists('apply_filters')) {
         }
 
         return $value;
+    }
+}
+
+if (!function_exists('wp_get_nav_menu_object')) {
+    /**
+     * Test stub returning a fixture menu object keyed by slug or numeric id.
+     *
+     * @since 5.0.0
+     *
+     * @param int|string $menu Menu slug, id, or term.
+     * @return object|false
+     */
+    function wp_get_nav_menu_object($menu)
+    {
+        return $GLOBALS['bvi_test_nav_menus'][(string) $menu] ?? false;
+    }
+}
+
+if (!function_exists('wp_get_nav_menu_items')) {
+    /**
+     * Test stub returning fixture menu items keyed by term id.
+     *
+     * @since 5.0.0
+     *
+     * @param int   $menu_id Menu term id.
+     * @param array $args    Unused.
+     * @return array
+     */
+    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- stub mirrors core signature
+    function wp_get_nav_menu_items($menu_id, $args = [])
+    {
+        return $GLOBALS['bvi_test_nav_menu_items'][(int) $menu_id] ?? [];
+    }
+}
+
+if (!function_exists('is_wp_error')) {
+    /**
+     * Test stub; no test fixture ever produces a WP_Error.
+     *
+     * @since 5.0.0
+     *
+     * @param mixed $thing Value to check.
+     * @return bool
+     */
+    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- stub mirrors core signature
+    function is_wp_error($thing)
+    {
+        return false;
+    }
+}
+
+if (!function_exists('get_queried_object')) {
+    /**
+     * Test stub; no test fixture sets a queried object.
+     *
+     * @since 5.0.0
+     *
+     * @return null
+     */
+    function get_queried_object()
+    {
+        return null;
     }
 }
 

@@ -53,12 +53,12 @@ class MenuItem extends AbstractBlock
      */
     public function render(array $attributes, string $content, $block = null): string
     {
-        $label = (string) ( $attributes['label'] ?? '' );
-        $url = (string) ( $attributes['url'] ?? '' );
+        $label = (string) ($attributes['label'] ?? '');
+        $url = (string) ($attributes['url'] ?? '');
         $target = !empty($attributes['openInNewTab']) ? '_blank' : '';
         $rel = $target === '_blank' ? 'noopener noreferrer' : '';
-        $label_color = (string) ( $attributes['labelColor'] ?? '' );
-        $panel_width = (string) ( $attributes['panelWidth'] ?? '' );
+        $label_color = (string) ($attributes['labelColor'] ?? '');
+        $panel_width = (string) ($attributes['panelWidth'] ?? '');
 
         $children = self::render_children($content, $block);
         $has_panel = $this->content_has_panel($children);
@@ -153,7 +153,7 @@ class MenuItem extends AbstractBlock
      */
     private static function render_children(string $content, $block = null): string
     {
-        if (!( $block instanceof \WP_Block ) || count($block->inner_blocks) === 0) {
+        if (!($block instanceof \WP_Block) || count($block->inner_blocks) === 0) {
             return $content;
         }
 
@@ -189,9 +189,9 @@ class MenuItem extends AbstractBlock
         $items = '';
 
         foreach ($children as $child) {
-            $html = (string) ( $child['html'] ?? '' );
+            $html = (string) ($child['html'] ?? '');
 
-            if (( $child['name'] ?? '' ) === 'bvi/menu-item') {
+            if (($child['name'] ?? '') === 'bvi/menu-item') {
                 $items .= $html;
                 continue;
             }
@@ -235,9 +235,9 @@ class MenuItem extends AbstractBlock
         $found = null;
 
         foreach ($inner_blocks as $block) {
-            $is_item = ( $block['blockName'] ?? '' ) === 'bvi/menu-item';
+            $is_item = ($block['blockName'] ?? '') === 'bvi/menu-item';
 
-            if ($is_item && self::matches((string) ( $block['attrs']['url'] ?? '' ), $current_url)) {
+            if ($is_item && self::matches((string) ($block['attrs']['url'] ?? ''), $current_url)) {
                 return $depth;
             }
 
@@ -252,7 +252,7 @@ class MenuItem extends AbstractBlock
                 $is_item ? $depth + 1 : $depth,
             );
 
-            if ($child_depth !== null && ( $found === null || $child_depth < $found )) {
+            if ($child_depth !== null && ($found === null || $child_depth < $found)) {
                 $found = $child_depth;
             }
         }
@@ -271,6 +271,6 @@ class MenuItem extends AbstractBlock
     private function content_has_panel(string $content): bool
     {
         return $content !== '' &&
-            ( strpos($content, 'bvi-mega-panel') !== false || strpos($content, 'bvi-menu-item') !== false );
+            (strpos($content, 'bvi-mega-panel') !== false || strpos($content, 'bvi-menu-item') !== false);
     }
 }

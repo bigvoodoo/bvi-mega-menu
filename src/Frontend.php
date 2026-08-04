@@ -114,11 +114,11 @@ class Frontend
 
             // if blocks can be registered, proceed as normal with asset loading
             if ($block_type) {
-                foreach ((array) ( $block_type->style_handles ?? [] ) as $handle) {
+                foreach ((array) ($block_type->style_handles ?? []) as $handle) {
                     wp_enqueue_style($handle);
                 }
 
-                foreach ((array) ( $block_type->view_script_handles ?? [] ) as $handle) {
+                foreach ((array) ($block_type->view_script_handles ?? []) as $handle) {
                     wp_enqueue_script($handle);
                 }
 
@@ -158,8 +158,8 @@ class Frontend
         wp_enqueue_script(
             $handle . '-view',
             $base_url . 'view.js',
-            (array) ( $asset['dependencies'] ?? [] ),
-            (string) ( $asset['version'] ?? BVI_PLUGIN_MEGAMENU_VERSION ),
+            (array) ($asset['dependencies'] ?? []),
+            (string) ($asset['version'] ?? BVI_PLUGIN_MEGAMENU_VERSION),
             true,
         );
     }
