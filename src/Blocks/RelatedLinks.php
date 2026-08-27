@@ -16,6 +16,9 @@ class RelatedLinks extends AbstractBlock
 {
     use Urls;
 
+    /** @var array<int, string> Blocks that are menu items in their own right and nest the blocks inside them. */
+    private const ITEM_BLOCKS = ['bvi/menu-item', 'core/navigation-link', 'core/navigation-submenu'];
+
     /**
      * Constructor.
      *
@@ -325,7 +328,7 @@ class RelatedLinks extends AbstractBlock
 
             $blocks = parse_blocks($nav_post->post_content);
             $items = [];
-            $this->walk_navigation_blocks($blocks, '0', $items);
+            self::walk_item_blocks($blocks, '0', $items);
 
             if (!empty($items)) {
                 $this->mark_current($items);
@@ -400,7 +403,7 @@ class RelatedLinks extends AbstractBlock
                     }
                 }
 
-                $this->walk_menu_items($block['innerBlocks'] ?? [], '0', $items);
+                self::walk_item_blocks($block['innerBlocks'] ?? [], '0', $items);
                 continue;
             }
 
@@ -411,7 +414,7 @@ class RelatedLinks extends AbstractBlock
     }
 
     /**
-     * Flatten `bvi/menu-item` children (and nested children) under the given parent.
+     * Flatten item blocks (and whatever nests inside them) under the given parent.
      *
      * @since 5.0.0
      *
@@ -420,77 +423,69 @@ class RelatedLinks extends AbstractBlock
      * @param array  $items     Accumulator, passed by reference.
      * @return void
      */
-    private function walk_menu_items(array $blocks, string $parent_id, array &$items): void
+    private static function walk_item_blocks(array $blocks, string $parent_id, array &$items): void
     {
         foreach ($blocks as $block) {
-            if (($block['blockName'] ?? '') !== 'bvi/menu-item') {
-                // panels and other wrappers are transparent, same as
-                // MenuItem::find_current_descendant_depth() treats them.
+            if (in_array((string) ($block['blockName'] ?? ''), self::ITEM_BLOCKS, true)) {
+                $attrs = (array) ($block['attrs'] ?? []);
+                $id = self::add_item(
+                    $items,
+                    $parent_id,
+                    (string) ($attrs['url'] ?? ''),
+                    (string) ($attrs['label'] ?? ''),
+                    (int) ($attrs['id'] ?? 0),
+                );
+
                 if (!empty($block['innerBlocks'])) {
-                    $this->walk_menu_items($block['innerBlocks'], $parent_id, $items);
+                    self::walk_item_blocks($block['innerBlocks'], $id, $items);
                 }
                 continue;
             }
 
-            $attrs = $block['attrs'] ?? [];
-            $id = $this->synthetic_id($attrs, (string) ($attrs['label'] ?? ''), count($items));
-
-            $items[] = [
-                'id' => $id,
-                'parent_id' => $parent_id,
-                'url' => (string) ($attrs['url'] ?? ''),
-                'title' => (string) ($attrs['label'] ?? ''),
-                'current' => false,
-                'classes' => [],
-            ];
+            // panels and other wrappers are transparent, same as MenuItem::find_current_descendant_depth()
+            // treats them; links written into their markup (the "Add as mega panel" paragraphs, lists,
+            // buttons) are children of the enclosing item.
+            foreach (BlockScanner::extract_links($block) as $link) {
+                self::add_item($items, $parent_id, $link['url'], $link['title']);
+            }
 
             if (!empty($block['innerBlocks'])) {
-                $this->walk_menu_items($block['innerBlocks'], $id, $items);
+                self::walk_item_blocks($block['innerBlocks'], $parent_id, $items);
             }
         }
     }
 
     /**
-     * Walk a core/navigation block tree, contributing link and submenu items.
+     * Append a block-sourced item to the flat list and return its id.
      *
      * @since 5.0.0
      *
-     * @param array  $blocks    Parsed block array to scan.
-     * @param string $parent_id Parent item id for nesting.
      * @param array  $items     Accumulator, passed by reference.
-     * @return void
+     * @param string $parent_id Parent item id.
+     * @param string $url       Item URL.
+     * @param string $title     Item title.
+     * @param int    $post_id   Linked post id, when the block records one.
+     * @return string
      */
-    private function walk_navigation_blocks(array $blocks, string $parent_id, array &$items): void
-    {
-        foreach ($blocks as $block) {
-            $name = $block['blockName'] ?? '';
+    private static function add_item(
+        array &$items,
+        string $parent_id,
+        string $url,
+        string $title,
+        int $post_id = 0,
+    ): string {
+        $id = self::synthetic_id(['id' => $post_id, 'url' => $url], $title, count($items));
 
-            if ($name === 'core/navigation-link' || $name === 'core/navigation-submenu') {
-                $attrs = $block['attrs'] ?? [];
-                $id = $this->synthetic_id($attrs, (string) ($attrs['label'] ?? ''), count($items));
+        $items[] = [
+            'id' => $id,
+            'parent_id' => $parent_id,
+            'url' => $url,
+            'title' => $title,
+            'current' => false,
+            'classes' => [],
+        ];
 
-                $items[] = [
-                    'id' => $id,
-                    'parent_id' => $parent_id,
-                    'url' => (string) ($attrs['url'] ?? ''),
-                    'title' => (string) ($attrs['label'] ?? ''),
-                    'current' => false,
-                    'classes' => [],
-                ];
-
-                if (!empty($block['innerBlocks'])) {
-                    $this->walk_navigation_blocks($block['innerBlocks'], $id, $items);
-                }
-
-                continue;
-            }
-
-            // core/navigation itself, or nested groups
-            // recurse without adding an item.
-            if (!empty($block['innerBlocks'])) {
-                $this->walk_navigation_blocks($block['innerBlocks'], $parent_id, $items);
-            }
-        }
+        return $id;
     }
 
     /**
@@ -503,7 +498,7 @@ class RelatedLinks extends AbstractBlock
      * @param int    $fallback_index Index used when no id/url/label is available.
      * @return string
      */
-    private function synthetic_id(array $attrs, string $label, int $fallback_index): string
+    private static function synthetic_id(array $attrs, string $label, int $fallback_index): string
     {
         if (!empty($attrs['id'])) {
             return 'item-' . (string) $attrs['id'];

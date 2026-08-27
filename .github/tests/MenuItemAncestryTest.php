@@ -3,6 +3,7 @@
 namespace Bvi\Plugin\MegaMenu\Tests;
 
 use Bvi\Plugin\MegaMenu\Blocks\MenuItem;
+use Bvi\Plugin\MegaMenu\Blocks\Menus\BlockScanner;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -59,6 +60,71 @@ class MenuItemAncestryTest extends TestCase
     }
 
     /**
+     * A link written into panel content counts as a direct child of the item.
+     *
+     * @since 5.0.0
+     *
+     * @return void
+     */
+    public function test_link_in_panel_content_reports_depth_one(): void
+    {
+        $panel = [
+            'blockName' => 'bvi/mega-panel',
+            'attrs' => [],
+            'innerBlocks' => [$this->paragraph('<a href="/services/design/">Design</a>')],
+        ];
+
+        $this->assertSame(1, MenuItem::find_current_descendant_depth([$panel], '/services/design'));
+    }
+
+    /**
+     * A panel link under a nested item is that item's child, so depth two from the top.
+     *
+     * @since 5.0.0
+     *
+     * @return void
+     */
+    public function test_link_in_nested_item_panel_reports_depth_two(): void
+    {
+        $panel = [
+            'blockName' => 'bvi/mega-panel',
+            'attrs' => [],
+            'innerBlocks' => [$this->paragraph('<a href="/services/design/branding/">Branding</a>')],
+        ];
+
+        $inner = [$this->item('/services/design', [$panel])];
+
+        $this->assertSame(2, MenuItem::find_current_descendant_depth($inner, '/services/design/branding'));
+    }
+
+    /**
+     * A navigation block in panel content that references a saved menu counts its links as direct children.
+     *
+     * @since 5.0.0
+     *
+     * @return void
+     */
+    public function test_saved_navigation_menu_in_panel_content_reports_depth_one(): void
+    {
+        $GLOBALS['bvi_test_blocks']['wp_block:77'] = [
+            [
+                'blockName' => 'core/navigation-link',
+                'attrs' => ['label' => 'FAQ', 'url' => '/resources/faq/'],
+                'innerBlocks' => [],
+            ],
+        ];
+        $panel = [
+            'blockName' => 'bvi/mega-panel',
+            'attrs' => [],
+            'innerBlocks' => [['blockName' => 'core/navigation', 'attrs' => ['ref' => 77], 'innerBlocks' => []]],
+        ];
+
+        $inner = BlockScanner::resolve([$panel]);
+
+        $this->assertSame(1, MenuItem::find_current_descendant_depth($inner, '/resources/faq'));
+    }
+
+    /**
      * No descendant match returns null.
      *
      * @since 5.0.0
@@ -84,6 +150,24 @@ class MenuItemAncestryTest extends TestCase
         $inner = [$this->item('/a', [$this->item('/target')]), $this->item('/target')];
 
         $this->assertSame(1, MenuItem::find_current_descendant_depth($inner, '/target'));
+    }
+
+    /**
+     * Build a core/paragraph parsed block around the given inline markup.
+     *
+     * @since 5.0.0
+     *
+     * @param string $inline Inline HTML for the paragraph body.
+     * @return array
+     */
+    private function paragraph(string $inline): array
+    {
+        return [
+            'blockName' => 'core/paragraph',
+            'attrs' => [],
+            'innerHTML' => "\n<p>" . $inline . "</p>\n",
+            'innerBlocks' => [],
+        ];
     }
 
     /**

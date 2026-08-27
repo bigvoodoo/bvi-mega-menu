@@ -347,6 +347,24 @@ add_filter( 'bvi_mega_menu_pattern_max_depth', function( $max_depth ) {
 } );
 ```
 
+```php
+// Adjust the links a block contributes when menu structure is read from a block tree.
+//
+// Links written into Mega Panel content (paragraphs, lists, buttons, core/navigation
+// blocks — inline or referencing a saved Navigation menu) are treated as children of the
+// menu item that owns the panel, for both the Related Links block and
+// current-menu-parent / current-menu-ancestor highlighting.
+// Fragments and tel:/mailto:/sms:/javascript: links are already skipped. Each entry is
+// [ 'url' => string, 'title' => string ] in document order.
+add_filter( 'bvi_mega_menu_block_links', function( $links, $block ) {
+    if ( 'core/button' === $block['blockName'] ) {
+        return []; // keep call-to-action buttons out of Related Links
+    }
+
+    return $links;
+}, 10, 2 );
+```
+
 ## Changelog
 
 ### 5.0.0
@@ -368,6 +386,7 @@ add_filter( 'bvi_mega_menu_pattern_max_depth', function( $max_depth ) {
 - Menu links now carry `current-menu-item`, `current-menu-parent`, `current-menu-ancestor`, and `is-current` classes plus `aria-current="page"`, with new active-state colour settings for the main menu, dropdown, flyout, and mobile surfaces, and a "Highlight Parent Items" toggle
 - Submenu Colors now apply to desktop flyout panels, which previously fell through to the dropdown colours
 - Fixed nested `bvi/menu-item` blocks rendering an `<li>` directly inside an `<li>`, which browsers flattened so block-composed submenus lost their dropdown entirely; nested items are now wrapped in the same `.bvi-mega-panel` / `.bvi-mega-menu-sub-list` structure the classic-menu walker emits, so dropdown and submenu colours reach them
+- Fixed Related Links only ever showing top-level items when the Mega Menu is composed from inner blocks: links written into Mega Panel content (the "Add as mega panel" paragraphs, lists, buttons, `core/navigation` blocks whether inline or referencing a saved Navigation menu) were invisible to the walker, so the current page was never found in the menu. Panel links are now children of the item that owns the panel, for Related Links and for `current-menu-parent` / `current-menu-ancestor` highlighting alike; the new `bvi_mega_menu_block_links` filter adjusts which links a block contributes
 
 ### 4.2.0
 

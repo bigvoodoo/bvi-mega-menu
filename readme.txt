@@ -93,6 +93,14 @@ Inject custom hamburger icon markup when the block's hamburger style is set to "
     return '<svg>...</svg>';
 } );`
 
+**bvi_mega_menu_block_links**
+
+Adjust the links a block contributes when menu structure is read from a block tree (Related Links auto-detect and current-menu-parent / current-menu-ancestor highlighting). Links inside Mega Panel content (including Navigation blocks that reference a saved menu) count as children of the item that owns the panel; fragments and tel:/mailto:/sms:/javascript: links are already skipped.
+
+`add_filter( 'bvi_mega_menu_block_links', function( $links, $block ) {
+    return 'core/button' === $block['blockName'] ? [] : $links;
+}, 10, 2 );`
+
 **walker_nav_menu_start_el** / **walker_nav_menu_end_el**
 
 Standard WordPress Walker filters, called for each menu item in the classic shortcode rendering path.
@@ -135,6 +143,8 @@ All colours are stored as CSS custom properties on `.bvi-mega-menu` (e.g. `--bvi
 * Block editor: split "Navigation Colors" into five grouped colour panels — Link Colors, Dropdown Colors, Submenu Colors, Hamburger Colors, Mobile Colors
 * Fixed: hamburgerBackgroundColorOpen was never written to --bvi-mm-hamburger-bg-open in the editor styleVars
 * Fixed: bare requestAnimationFrame in view.jsx changed to window.requestAnimationFrame
+* Fixed: Related Links only showed top-level items when the Mega Menu was composed from inner blocks; links inside Mega Panel content (including Navigation blocks referencing a saved menu) are now children of the owning item, for Related Links and current-menu-parent / current-menu-ancestor highlighting
+* Added `bvi_mega_menu_block_links` filter to adjust the links a block contributes to menu structure
 
 = 4.2.0 =
 

@@ -2,6 +2,7 @@
 
 namespace Bvi\Plugin\MegaMenu\Blocks;
 
+use Bvi\Plugin\MegaMenu\Blocks\Menus\BlockScanner;
 use Bvi\Plugin\MegaMenu\Utils\Traits\Urls;
 
 /**
@@ -75,7 +76,11 @@ class MenuItem extends AbstractBlock
             $classes[] = 'current-menu-item';
             $classes[] = 'is-current';
         } elseif ($current_url !== '' && !empty($block->parsed_block['innerBlocks'])) {
-            $descendant_depth = self::find_current_descendant_depth($block->parsed_block['innerBlocks'], $current_url);
+            // expand patterns first so links inside a synced panel count the same as inline ones
+            $descendant_depth = self::find_current_descendant_depth(
+                BlockScanner::resolve($block->parsed_block['innerBlocks']),
+                $current_url,
+            );
 
             if ($descendant_depth === 1) {
                 $classes[] = 'current-menu-parent';
@@ -241,6 +246,11 @@ class MenuItem extends AbstractBlock
                 return $depth;
             }
 
+            // links written into panel content are children of the enclosing item
+            if (!$is_item && self::has_current_link($block, $current_url)) {
+                return $depth;
+            }
+
             if (empty($block['innerBlocks'])) {
                 continue;
             }
@@ -258,6 +268,26 @@ class MenuItem extends AbstractBlock
         }
 
         return $found;
+    }
+
+    /**
+     * Whether any link a non-item block contributes addresses the current request.
+     *
+     * @since 5.0.0
+     *
+     * @param array  $block       Parsed block.
+     * @param string $current_url Request URL to match against.
+     * @return bool
+     */
+    private static function has_current_link(array $block, string $current_url): bool
+    {
+        foreach (BlockScanner::extract_links($block) as $link) {
+            if (self::matches((string) ($link['url'] ?? ''), $current_url)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

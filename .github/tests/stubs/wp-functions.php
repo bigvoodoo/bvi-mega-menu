@@ -36,6 +36,30 @@ if (!function_exists('wp_parse_url')) {
     }
 }
 
+if (!function_exists('wp_strip_all_tags')) {
+    /**
+     * Test stub mirroring wp_strip_all_tags().
+     *
+     * @since 5.0.0
+     *
+     * @param string $text          Text to strip.
+     * @param bool   $remove_breaks Whether to collapse line breaks and tabs to a single space.
+     * @return string
+     */
+    function wp_strip_all_tags($text, $remove_breaks = false)
+    {
+        $text = (string) preg_replace('@<(script|style)[^>]*?>.*?</\\1>@si', '', (string) $text);
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.strip_tags_strip_tags -- this stub is wp_strip_all_tags()
+        $text = strip_tags($text);
+
+        if ($remove_breaks) {
+            $text = (string) preg_replace('/[\r\n\t ]+/', ' ', $text);
+        }
+
+        return trim($text);
+    }
+}
+
 if (!function_exists('parse_blocks')) {
     /**
      * Test stub returning a pre-parsed tree keyed by a marker string.

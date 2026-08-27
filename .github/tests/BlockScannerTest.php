@@ -28,6 +28,97 @@ class BlockScannerTest extends TestCase
     }
 
     /**
+     * Anchors in a block's own markup are returned in document order with entities decoded and tags stripped.
+     *
+     * @since 5.0.0
+     *
+     * @return void
+     */
+    public function test_extract_links_reads_anchors_from_block_markup(): void
+    {
+        $block = $this->block('core/paragraph');
+        $block['innerHTML'] =
+            "\n<p><a href=\"/a/?x=1&amp;y=2\"><strong>Slip</strong> &amp;\n Fall</a> or " .
+            "<a class='wp-block-button__link' href='/b/'>Go</a></p>\n";
+
+        $this->assertSame(
+            [['url' => '/a/?x=1&y=2', 'title' => 'Slip & Fall'], ['url' => '/b/', 'title' => 'Go']],
+            BlockScanner::extract_links($block),
+        );
+    }
+
+    /**
+     * Dynamic navigation blocks carry their link in attributes rather than markup.
+     *
+     * @since 5.0.0
+     *
+     * @return void
+     */
+    public function test_extract_links_reads_navigation_link_attributes(): void
+    {
+        $block = $this->block('core/navigation-link', ['label' => 'About', 'url' => '/about/']);
+
+        $this->assertSame([['url' => '/about/', 'title' => 'About']], BlockScanner::extract_links($block));
+    }
+
+    /**
+     * Fragments and non-navigational schemes are not links to pages.
+     *
+     * @since 5.0.0
+     *
+     * @return void
+     */
+    public function test_extract_links_skips_fragments_and_non_navigational_schemes(): void
+    {
+        $block = $this->block('core/paragraph');
+        $block['innerHTML'] =
+            '<p><a href="#top">Top</a><a href="tel:555">Call</a><a href="MAILTO:a@b.c">Mail</a>' .
+            '<a href="javascript:void(0)">JS</a><a href="sms:555">Text</a><a href="">Blank</a>' .
+            '<a href="https://example.com/keep/">Keep</a></p>';
+
+        $this->assertSame(
+            [['url' => 'https://example.com/keep/', 'title' => 'Keep']],
+            BlockScanner::extract_links($block),
+        );
+    }
+
+    /**
+     * Container wrappers without anchors of their own contribute nothing.
+     *
+     * @since 5.0.0
+     *
+     * @return void
+     */
+    public function test_extract_links_ignores_blocks_without_anchors(): void
+    {
+        $block = $this->block('core/column');
+        $block['innerHTML'] = "\n<div class=\"wp-block-column\">\n\n</div>\n";
+
+        $this->assertSame([], BlockScanner::extract_links($block));
+        $this->assertSame([], BlockScanner::extract_links($this->block('core/spacer')));
+    }
+
+    /**
+     * The extracted list passes through the bvi_mega_menu_block_links filter.
+     *
+     * @since 5.0.0
+     *
+     * @return void
+     */
+    public function test_extract_links_is_filterable(): void
+    {
+        $GLOBALS['bvi_test_filters']['bvi_mega_menu_block_links'][] = function (array $links) {
+            $links[] = ['url' => '/added/', 'title' => 'Added'];
+            return $links;
+        };
+
+        $this->assertSame(
+            [['url' => '/added/', 'title' => 'Added']],
+            BlockScanner::extract_links($this->block('core/spacer')),
+        );
+    }
+
+    /**
      * The active template's blocks are searched.
      *
      * @since 5.0.0
@@ -100,6 +191,22 @@ class BlockScannerTest extends TestCase
         $resolved = BlockScanner::resolve([$this->block('core/block', ['ref' => 42])]);
 
         $this->assertContains('bvi/mega-menu', $this->flatten_names($resolved));
+    }
+
+    /**
+     * A navigation block that references a saved menu is expanded into that menu's blocks.
+     *
+     * @since 5.0.0
+     *
+     * @return void
+     */
+    public function test_resolve_expands_navigation_blocks_referencing_a_saved_menu(): void
+    {
+        $GLOBALS['bvi_test_blocks']['wp_block:77'] = [$this->block('core/navigation-link', ['url' => '/faq/'])];
+
+        $resolved = BlockScanner::resolve([$this->block('core/navigation', ['ref' => 77])]);
+
+        $this->assertContains('core/navigation-link', $this->flatten_names($resolved));
     }
 
     /**

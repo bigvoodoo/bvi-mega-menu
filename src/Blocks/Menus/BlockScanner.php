@@ -16,6 +16,12 @@ class BlockScanner
     /** @var int Fallback maximum expansion depth. */
     private const DEFAULT_MAX_DEPTH = 10;
 
+    /** @var array<int, string> Dynamic navigation blocks that keep their link in attributes, not markup. */
+    private const ATTRIBUTE_LINK_BLOCKS = ['core/navigation-link', 'core/navigation-submenu'];
+
+    /** @var array<int, string> URL schemes that never address a page and are skipped as menu structure. */
+    private const NON_NAVIGABLE_SCHEMES = ['javascript', 'mailto', 'sms', 'tel'];
+
     /**
      * Gather the parsed block trees for the current page, patterns already expanded.
      *
@@ -61,7 +67,7 @@ class BlockScanner
     }
 
     /**
-     * Expand pattern-family blocks in place, recursing into what is expanded.
+     * Expand pattern-family and saved-navigation blocks in place, recursing into what is expanded.
      *
      * @since 5.0.0
      *
@@ -103,12 +109,98 @@ class BlockScanner
     }
 
     /**
-     * Build the cycle-guard key identifying a pattern block's content source.
+     * Pull the links one block contributes, from its attributes or its own markup (inner blocks excluded).
      *
      * @since 5.0.0
      *
      * @param array $block Parsed block.
-     * @return string Empty string when the block is not a pattern-family block.
+     * @return array<int, array{url: string, title: string}>
+     */
+    public static function extract_links(array $block): array
+    {
+        $name = (string) ($block['blockName'] ?? '');
+
+        if (in_array($name, self::ATTRIBUTE_LINK_BLOCKS, true)) {
+            $attrs = (array) ($block['attrs'] ?? []);
+            $links = [['url' => (string) ($attrs['url'] ?? ''), 'title' => (string) ($attrs['label'] ?? '')]];
+        } else {
+            $links = self::links_from_markup((string) ($block['innerHTML'] ?? ''));
+        }
+
+        $links = array_values(array_filter($links, fn(array $link): bool => self::is_navigable($link['url'])));
+
+        /**
+         * Filters the links a block contributes when menu structure is read from a block tree.
+         *
+         * @since 5.0.0
+         *
+         * @param array $links List of ['url' => string, 'title' => string] pairs, in document order.
+         * @param array $block Parsed block the links were read from.
+         */
+        return (array) apply_filters('bvi_mega_menu_block_links', $links, $block);
+    }
+
+    /**
+     * Parse anchor tags out of a block's static markup.
+     *
+     * @since 5.0.0
+     *
+     * @param string $html Block innerHTML.
+     * @return array<int, array{url: string, title: string}>
+     */
+    private static function links_from_markup(string $html): array
+    {
+        if ($html === '' || stripos($html, '<a') === false) {
+            return [];
+        }
+
+        $pattern = '/<a\s[^>]*?href\s*=\s*(["\'])(.*?)\1[^>]*>(.*?)<\/a>/is';
+        if (!preg_match_all($pattern, $html, $matches, PREG_SET_ORDER)) {
+            return [];
+        }
+
+        $links = [];
+        foreach ($matches as $match) {
+            $title = html_entity_decode(wp_strip_all_tags($match[3]), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+            $links[] = [
+                'url' => trim(html_entity_decode($match[2], ENT_QUOTES | ENT_HTML5, 'UTF-8')),
+                'title' => trim((string) preg_replace('/\s+/u', ' ', $title)),
+            ];
+        }
+
+        return $links;
+    }
+
+    /**
+     * Whether a URL can address a page, ruling out fragments and non-navigational schemes.
+     *
+     * @since 5.0.0
+     *
+     * @param string $url URL to test.
+     * @return bool
+     */
+    private static function is_navigable(string $url): bool
+    {
+        if ($url === '' || $url[0] === '#') {
+            return false;
+        }
+
+        // parse_url() reads `tel:555` as host:port, so match the scheme directly
+        if (!preg_match('/^([a-z][a-z0-9+.-]*):/i', $url, $match)) {
+            return true;
+        }
+
+        return !in_array(strtolower($match[1]), self::NON_NAVIGABLE_SCHEMES, true);
+    }
+
+    /**
+     * Build the cycle-guard key identifying the stored content a block references.
+     *
+     * @since 5.0.0
+     *
+     * @param array $block Parsed block.
+     * @return string Empty string when the block does not reference stored content.
      */
     private static function source_key(array $block): string
     {
@@ -117,6 +209,11 @@ class BlockScanner
 
         if ($name === 'core/block' && !empty($attrs['ref'])) {
             return 'block:' . (int) $attrs['ref'];
+        }
+
+        // the editor stores a Navigation block's links in a wp_navigation post, not inline
+        if ($name === 'core/navigation' && !empty($attrs['ref'])) {
+            return 'navigation:' . (int) $attrs['ref'];
         }
 
         if ($name === 'core/pattern' && !empty($attrs['slug'])) {
@@ -132,7 +229,7 @@ class BlockScanner
     }
 
     /**
-     * Parse the content behind a pattern-family block.
+     * Parse the stored content a block references: a synced pattern, saved navigation menu, pattern, or part.
      *
      * @since 5.0.0
      *
@@ -144,7 +241,7 @@ class BlockScanner
     {
         $attrs = $block['attrs'] ?? [];
 
-        if (strpos($key, 'block:') === 0) {
+        if (strpos($key, 'block:') === 0 || strpos($key, 'navigation:') === 0) {
             $ref_post = get_post((int) $attrs['ref']);
             if (empty($ref_post) || empty($ref_post->post_content)) {
                 return [];
