@@ -182,9 +182,9 @@ class RelatedLinksTest extends TestCase
             'innerBlocks' => [],
         ];
 
-        $blocks = BlockScanner::resolve(
-            [$this->mega_menu([$this->menu_item('Resources', '/resources/', [$this->mega_panel([$navigation])])])],
-        );
+        $blocks = BlockScanner::resolve([
+            $this->mega_menu([$this->menu_item('Resources', '/resources/', [$this->mega_panel([$navigation])])]),
+        ]);
 
         $items = $this->walk($blocks);
 

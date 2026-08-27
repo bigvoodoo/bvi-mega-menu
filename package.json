@@ -1,20 +1,19 @@
 {
-  "name": "bvi-mega-menu",
-  "version": "5.0.0",
-  "description": "BVI Mega Menu - WordPress plugin with block editor support.",
-  "author": "Big Voodoo Interactive",
-  "license": "proprietary",
+  "name": "bviplugin",
+  "version": "2.1.0",
+  "private": true,
+  "description": "WordPress plugin build for BVI",
+  "license": "GPLv3",
   "main": "build/index.js",
   "engines": {
-    "node": ">=22",
-    "npm": ">=11"
+    "node": ">=22.12",
+    "npm": ">=10"
   },
   "scripts": {
     "start": "gulp",
     "stop": "gulp stop",
     "build": "gulp build --prod",
     "build:clean": "gulp build --prod && npm prune --omit=dev",
-    "build:inline": "gulp buildInline --prod",
     "lint": "npm run lint:css && npm run lint:js && npm run lint:php",
     "lint:css": "wp-scripts lint-style 'assets/src/**/*.{css,scss}' --fix",
     "lint:js": "wp-scripts lint-js --no-error-on-unmatched-pattern 'assets/src/**/*.js' 'assets/src/**/*.jsx' --fix",
@@ -28,7 +27,7 @@
     "plugin-zip": "bash ~/code/code-helper/scripts/package-plugin.sh .",
     "block:build": "gulp blockScripts && gulp blockStyles",
     "block:start": "gulp blockScripts && gulp blockStyles",
-    "hygiene": "bash ~/code/code-helper/scripts/wordpress-hygiene.sh"
+    "hygiene": "bash ~/code/code-helper/scripts/wordpress-plugin-hygiene.sh"
   },
   "devDependencies": {
     "@prettier/plugin-php": "^0.24.0",
@@ -39,7 +38,6 @@
     "@wordpress/stylelint-config": "^23.8.0",
     "autoprefixer": "^10.4.20",
     "clean-webpack-plugin": "^4.0.0",
-    "critical": "^7.2.1",
     "css-loader": "^7.1.2",
     "del": "^8.0.1",
     "esbuild": "^0.28.1",
@@ -92,12 +90,12 @@
     "@opentelemetry/core": "^2.8.0",
     "js-yaml": "^4.1.2",
     "http-proxy-middleware": "^4.1.1",
-    "minimatch": "^10.2.5"
+    "minimatch": "^10.2.5",
+    "puppeteer-core": "^25.9.0"
   },
   "allowScripts": {
     "@parcel/watcher@2.6.0": true,
-    "esbuild@0.28.1": true,
-    "puppeteer@2.1.1": true,
+    "esbuild@0.28.2": true,
     "sharp@0.33.5": true,
     "unrs-resolver@1.12.2": true,
     "core-js": false,
