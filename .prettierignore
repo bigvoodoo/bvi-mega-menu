@@ -1,0 +1,10 @@
+vendor
+node_modules
+assets/dist/*
+*.min.js
+*.scss
+*.sass
+*.css
+templates/**/*.php
+views/**/*.php
+.github/**/*.yml

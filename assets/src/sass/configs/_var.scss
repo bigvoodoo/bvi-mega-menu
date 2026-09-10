@@ -1,0 +1,24 @@
+$breakpoints: (
+    smallmobile: 360px,
+    mobile: 480px,
+    tablet: 768px,
+    desktop: 960px,
+    largedesktop: 1440px
+) !default;
+
+$class-prefix: "bvi-mega-menu" !default;
+
+:root {
+    --#{$class-prefix}-color-white: #fff;
+    --#{$class-prefix}-color-black: #000;
+    --#{$class-prefix}-color-warning: #bb681a;
+    --#{$class-prefix}-color-warning-hover: #e8e6c5;
+    --#{$class-prefix}-color-error: #b44444;
+    --#{$class-prefix}-color-error-hover: #e8c5c5;
+    --#{$class-prefix}-color-success: #38864b;
+    --#{$class-prefix}-color-success-hover: #cbe8c5;
+    --#{$class-prefix}-color-white-transparent20: rgba(255, 255, 255, 0.2);
+    --#{$class-prefix}-color-white-transparent40: rgba(255, 255, 255, 0.4);
+    --#{$class-prefix}-color-white-transparent60: rgba(255, 255, 255, 0.6);
+    --#{$class-prefix}-color-white-transparent80: rgba(255, 255, 255, 0.8);
+}

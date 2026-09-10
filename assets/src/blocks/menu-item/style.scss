@@ -1,0 +1,176 @@
+.bvi-menu-item {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+
+    .bvi-menu-item-label-row {
+        align-items: center;
+        display: flex;
+        gap: 0.25rem;
+    }
+
+    .bvi-menu-item-link {
+        align-items: center;
+        background: transparent;
+        border: 0;
+        color: var(--bvi-mm-item-color, inherit);
+        cursor: pointer;
+        display: inline-flex;
+        font: inherit;
+        padding: 0.5rem 0.75rem;
+        text-decoration: var(--bvi-mm-text-decoration, none);
+
+        &:hover,
+        &:focus-visible {
+            background-color: var(--bvi-mm-link-bg-hover, transparent);
+            color: var(--bvi-mm-link-color-hover, inherit);
+        }
+    }
+
+    .bvi-menu-item-toggle[hidden] {
+        display: none;
+    }
+
+    .bvi-menu-item-toggle {
+        align-items: center;
+        background: transparent;
+        border: 0;
+        cursor: pointer;
+        display: inline-flex;
+        justify-content: center;
+        padding: 0.25rem;
+
+        span {
+            border-bottom: 2px solid currentcolor;
+            border-right: 2px solid currentcolor;
+            height: 0.5rem;
+            transform: rotate(45deg);
+            transition: transform 0.2s ease;
+            width: 0.5rem;
+        }
+
+        &[aria-expanded="true"] span {
+            transform: rotate(-135deg);
+        }
+    }
+
+    .bvi-menu-item-children {
+        display: contents;
+    }
+
+    &.is-editor {
+        padding: 0.5rem 0;
+    }
+
+    &.is-editor .bvi-menu-item-children {
+        border-left: 2px dashed var(--wp-admin-theme-color, #3858e9);
+        display: block;
+        margin-top: 0.25rem;
+        padding-left: 0.75rem;
+    }
+}
+
+// gated on the wrapper class so menus without active colours gain no declarations at all;
+// the fallbacks then restore exactly what the base rule above would have computed
+.bvi-mm-has-link-active .bvi-mega-menu-list > .bvi-menu-item.current-menu-item > .bvi-menu-item-link,
+.bvi-mm-has-link-active.bvi-mm-highlight-ancestors
+.bvi-mega-menu-list > .bvi-menu-item.current-menu-ancestor > .bvi-menu-item-link {
+    background-color: var(--bvi-mm-link-bg-active, transparent);
+    color: var(--bvi-mm-link-color-active, var(--bvi-mm-item-color, inherit));
+}
+
+.bvi-link-picker {
+
+    &__preview {
+        align-items: flex-start;
+        border: 1px solid #949494;
+        border-radius: 2px;
+        display: flex;
+        gap: 4px;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        padding: 8px;
+    }
+
+    &__preview-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+    }
+
+    &__preview-title {
+        font-size: 13px;
+        font-weight: 500;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &__preview-url {
+        color: #757575;
+        font-size: 11px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &__preview-actions {
+        display: flex;
+        flex-shrink: 0;
+    }
+
+    &__results {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 2px;
+        list-style: none;
+        margin: -8px 0 12px;
+        max-height: 240px;
+        overflow-y: auto;
+        padding: 0;
+
+        li + li {
+            border-top: 1px solid #f0f0f0;
+        }
+    }
+
+    &__result {
+        align-items: center;
+        background: none;
+        border: 0;
+        cursor: pointer;
+        display: flex;
+        gap: 8px;
+        justify-content: space-between;
+        padding: 8px 12px;
+        text-align: left;
+        width: 100%;
+
+        &:hover,
+        &:focus-visible {
+            background: #f0f0f0;
+            outline: none;
+        }
+    }
+
+    &__result-title {
+        font-size: 13px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &__badge {
+        background: #e8f0fe;
+        border-radius: 2px;
+        color: #1a56db;
+        flex-shrink: 0;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.4px;
+        padding: 2px 5px;
+        text-transform: uppercase;
+    }
+}

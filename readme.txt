@@ -1,165 +1,150 @@
 === BVI Mega Menu ===
-Contributors: bigvoodoo, firejdl, geekmenina
-Tags: menu, mega menu, admin, shortcode
-Requires at least: 5.0.0
-Tested up to: 5.8
+Contributors: geekmenina
+Tags: menu, mega menu, navigation, block editor, fse
+Requires at least: 6.9
+Tested up to: 7.0
+Requires PHP: 8.2
 Stable tag: trunk
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+License: GPLv3
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Enhancements to the wp-admin Menu interface that allow for faster, more robust, and easier to edit menus. Also includes related links based on the menu configuration.
+Enhanced WordPress navigation menu with mega menu dropdowns, related links, block editor support, and a customizable admin menu interface.
 
 == Description ==
 
-This is a plugin for WordPress 3.5+ that enhances the Menu experience in several ways:
+BVI Mega Menu enhances the WordPress navigation system with two rendering paths: a modern block editor path for FSE and Gutenberg themes, and a classic shortcode path for traditional themes.
 
-* adds enhancements to the wp-admin Menu interface (see below)
-* saves menus to its own table to speed up generation of menus on the front-end
-* adds two shortcodes to displays menus from the admin interface - `[mega_menu]` & `[related_links]` (see the Installation section)
+= Block Editor Blocks =
 
-License: [GPLv2 or later](http://www.gnu.org/licenses/gpl-2.0.html)
+* **Mega Menu** (`bvi/mega-menu`) — Full mega-menu with hover/click triggers, dropdown panel alignment, mobile modes (dropdown, popup), configurable breakpoint, hamburger icon styles, slide animations, and grouped colour controls per section.
+* **Menu Item** (`bvi/menu-item`) — Individual menu item for composing menus inside the block editor, supporting nested sub-items and Mega Panel dropdowns.
+* **Related Links** (`bvi/related-links`) — Contextual link list sourced from a classic menu or navigation block. Auto-marks the current page.
+* **Responsive Content** (`bvi/responsive-content`) — Visibility wrapper with per-breakpoint show/hide toggles (mobile, tablet, desktop).
 
-= Menu Interface Enhancements =
+= Admin Menu Interface Enhancements =
 
-* Adds the ability to add a Shortcode and/or custom HTML to any menu! Now you can display forms, widgets, anything you want inside of a menu.
-* Adds the ability to add a "Column/Section" to any menu, which allows for logical division of menu items and both simpler and stronger styling.
-  * Columns/Sections can have an optional header with an optional link.
-* Adds the ability to add an existing menu to a menu. Menu items that repeat in several different places can be created as a menu and added multiple times.
-  * Menus can have an optional header with an optional link.
-* Adds a button to the menu item options to add descendents of page in the WP page hierarchy.
+* Add shortcodes and custom HTML to any menu item
+* Add columns/sections for logical division of menu items with optional headers and links
+* Embed an existing menu within another for reusable structures
+* Add page descendants as submenu items in one click
+* Per-page related links metabox for custom link overrides
+
+= Admin Settings =
+
+Under BVI Mega Menu > Settings:
+
+* **Include Default CSS** — Load the plugin's default stylesheet on the frontend
+* **Mobile Menu Override** — Render an alternate classic menu or navigation block on mobile
+* **Instant Dropdown** — Open/close dropdowns without animation; when off, panels use a slide animation
+* **Default Related Links Menu** — Fallback menu for the Related Links block
 
 = Requirements =
 
-* WordPress 5+
-* PHP 7+
-
-= TODO =
-
-* i18n/L10n
-* Add custom links option that you can set per page or post; also the option to override the existing related links or append to it
-* Add custom menu option that you can set per page or post
-* Add accessibility options to the menu - aria labels, etc.
-* Active class needs to be added to the child pages for highlighting
-* mobile-toggle link needs to be a button for lighthouse
-
-= Inspirations & Thanks =
-
-* [Gecka Submenu](https://github.com/Gecka-Apps/Wordpress_Gecka_Submenu)
-* [Add Descendents as Submenu Items](http://wordpress.org/plugins/add-descendants-as-submenu-items)
-* [Custom Post Type's Archive in WP Nav Menu](http://wordpress.org/plugins/add-custom-post-types-archive-to-nav-menus)
-* [/wp-admin/includes/nav-menu.php:`wp_nav_menu_item_link_meta_box()`](http://core.trac.wordpress.org/browser/tags/3.3.1/wp-admin/includes/nav-menu.php#L573)
-* [Big Voodoo Interactive](http://www.bigvoodoo.com) for letting me write and open-source this plugin :)
+* WordPress 6.8+
+* PHP 8.2+
 
 == Installation ==
 
-1. Install the plugin in WordPress & activate it.
-2. [register](http://codex.wordpress.org/Function_Reference/register_nav_menu) a menu location in your theme.
-3. Setup the menu hierarchy under Appearance -> Menu.
-4. Assign the menu from step 3 to the menu location in step 2.
-5. Use one of the shortcodes to display a menu.
+1. Install and activate the plugin in WordPress.
+2. [Register](https://developer.wordpress.org/reference/functions/register_nav_menu/) a menu location in your theme.
+3. Set up the menu hierarchy under Appearance > Menus.
+4. Assign the menu to a registered location.
+5. Use blocks (FSE/Gutenberg) or shortcodes (classic themes) to display menus.
+
+= Block Editor =
+
+Add the **Mega Menu** or **Related Links** block in the block editor. For FSE themes, place the Mega Menu block inside a Header template part.
 
 = Shortcodes =
 
 **[mega_menu]**
 
-Given a `theme_location` attribute, this shortcode displays a ul-style Mega Menu for the menu assigned to that location, which can be easily styled with CSS in your theme.
+Renders a mega menu for a classic WordPress menu.
+
 Options:
 
-* `theme_location`: The location in the theme to be used - must be registered with [`register_nav_menu()`](http://codex.wordpress.org/Function_Reference/register_nav_menu) in order to be selectable by the user. **required**
-* `before`: Output text before the `<a>` of the link
-* `after`: Output text after the `</a>` of the link
-* `link_before`: Output text before the link text
-* `link_after`: Output text after the link text
-* `ajax`: if "true", loads the Mega part of the menu via AJAX.
+* `menu`: Classic menu slug or numeric ID. **Required.**
+* `mobile_toggle`: Label for the mobile toggle button (e.g. `"Menu"`).
+* `aria_button`: Set to `"true"` to add accessible toggle buttons to top-level items.
+* `before` / `after`: HTML before/after each link's `<a>` tag.
+* `link_before` / `link_after`: HTML inside the `<a>` tag, before/after the link text.
 
-Example: `[mega_menu theme_location="mega" before="<div class='surround'>" after="</div>" link_before="<span>" link_after="</span>"]`
+Example: `[mega_menu menu="main-menu" mobile_toggle="Menu" aria_button="true"]`
 
 **[related_links]**
 
-Given a `theme_location` attribute, the shortcode displays a Related Links Menu for the menu assigned to that location, which shows either children, siblings, or top-level pages (chosen in that order).
+Renders a related links list from a classic menu or navigation block.
+
 Options:
 
-* `theme_location`: The location in the theme to be used - must be registered with [`register_nav_menu()`](http://codex.wordpress.org/Function_Reference/register_nav_menu) in order to be selectable by the user. **required**
-* `before`: Output text before the `<a>` of the link
-* `after`: Output text after the `</a>` of the link
-* `link_before`: Output text before the link text
-* `link_after`: Output text after the link text
+* `menu`: Classic menu slug, numeric ID, or `wp_navigation:{id}`. **Required.**
+* `before` / `after`: HTML before/after each link's `<a>` tag.
+* `link_before` / `link_after`: HTML inside the `<a>` tag, before/after the link text.
 
-Example: `[related_links theme_location="mega"]`
+Example: `[related_links menu="footer-links"]`
 
 = Filters =
 
-**walker_nav_menu_start_el**
+**bvi_nav_hamburger_open_icon**
 
-Allows modification of the `$output`, called when the Walker has created an `<li>` and started populating it.
+Inject custom hamburger icon markup when the block's hamburger style is set to "Custom".
 
-Arguments:
+`add_filter( 'bvi_nav_hamburger_open_icon', function() {
+    return '<svg>...</svg>';
+} );`
 
-* `$output`: the output for the menu so far.
-* `$item`: the current menu item.
-* `$depth`: the current depth.
-* `$args`: the arguments passed to `Walker_Nav_Mega_Menu`.
+**bvi_mega_menu_block_links**
 
-Example:
+Adjust the links a block contributes when menu structure is read from a block tree (Related Links auto-detect and current-menu-parent / current-menu-ancestor highlighting). Links inside Mega Panel content (including Navigation blocks that reference a saved menu) count as children of the item that owns the panel; fragments and tel:/mailto:/sms:/javascript: links are already skipped.
 
-`function override_nav_menu_start_el($output, $item, $depth, $args) {
-	if($args->menu_type == 'mega' && $depth == 0 && $args->ajax !== "true") {
-		// add header
-		$output .= '<h2>' . get_the_title($item->post_id) . '</h2>';
-	}
-	return $output;
-}
-add_filter('walker_nav_menu_start_el', 'override_nav_menu_start_el', 99, 4);`
+`add_filter( 'bvi_mega_menu_block_links', function( $links, $block ) {
+    return 'core/button' === $block['blockName'] ? [] : $links;
+}, 10, 2 );`
 
-**walker_nav_menu_end_el**
+**walker_nav_menu_start_el** / **walker_nav_menu_end_el**
 
-Allows modification of the `$output`, called before the Walker adds `</li>` and after any children are added to the `$output`.
-
-Arguments:
-
-* `$output`: the output for the menu so far.
-* `$item`: the current menu item.
-* `$depth`: the current depth.
-* `$args`: the arguments passed to `Walker_Nav_Mega_Menu`.
-
-Example:
-
-`function override_nav_menu_end_el($output, $item, $depth, $args) {
-	if($args->menu_type == 'mega' && $depth == 0 && $args->ajax !== "true") {
-		// add footer
-		$output .= '<div class="menu_footer">footer for ' . get_the_title($item->post_id) . '</div>';
-	}
-	return $output;
-}
-add_filter('walker_nav_menu_end_el', 'override_nav_menu_end_el', 99, 4);`
+Standard WordPress Walker filters, called for each menu item in the classic shortcode rendering path.
 
 = Styling =
 
-You can enable the default CSS in the WordPress Admin under Settings > BVI Mega Menu. If you want to customize this look, you can instead use this as a guide in your own stylesheet and have the default turned off.
+Enable the default CSS under Settings > BVI Mega Menu, or target the plugin's CSS classes directly in your own stylesheet.
 
-`.bvi-mega-menu-container, .bvi-mega-menu-custom-mobile-menu{background:#CCC;display:table;margin:0;padding:0;position:relative;width:100%}
-.bvi-mega-menu-custom-mobile-menu{display:none}
-.bvi-mega-menu-container ul, .bvi-mega-menu-container ul li{margin:0;padding:0;list-style:none}
-.bvi-mega-menu-container > .menu-item-depth-0, .bvi-mega-menu-custom-mobile-menu > li{display:table-cell;text-align:center;vertical-align:middle}
-.bvi-mega-menu-container > .menu-item-depth-0 > a, .bvi-mega-menu-custom-mobile-menu > li > a{color:#000;display:block;font-size:14px;font-family:Arial;padding:15px 12px;-webkit-transition:background .2s ease-in;-moz-transition:background .2s ease-in;-o-transition:background .2s ease-in;transition:background .2s ease-in}
-.bvi-mega-menu-container > .menu-item-depth-0:hover > a, .bvi-mega-menu-container > .menu-item-depth-0.active > a, .bvi-mega-menu-custom-mobile-menu > li:hover > a{background:#999;color:#1a1a1a;text-decoration:none}
-.bvi-mega-menu-container > .menu-item-depth-0 > .mega-menu{background:#999;display:none;position:absolute;top:47px;left:0;right:0;padding:15px 0;text-align:left;width:100%;z-index:999}
-.bvi-mega-menu-container .active .menu-item-page:hover > .sub-menu{display:block !important}
-.bvi-mega-menu-container .menu-item-column{float:left;padding:0 3% 25px 1%;width:50%}
-.bvi-mega-menu-container .menu-item-column .sub-menu li{font-family:Arial;font-size:12px;padding:6px 0}
-.bvi-mega-menu-container .menu-item-column .sub-menu li a{display:block;color:#000;padding:0 5px;position:relative}
-.bvi-mega-menu-container .menu-item-column .sub-menu li a:hover, .bvi-mega-menu-container .menu-item-column .sub-menu li.active a{background-color:#999;text-decoration:none}
-.bvi-mega-menu-container .menu-item-column .sub-menu li a:hover:after, .bvi-mega-menu-container .menu-item-column .sub-menu li.active a:after{display:block}
-.bvi-mega-menu-container .menu-item-column .sub-menu .sub-menu li{text-transform:none;padding-left:22px}
+Key classes for the block menu:
 
-@media handheld, screen and (max-width:767px){
-	.mobile-toggle{color:#fff;display:block !important;padding:10px 15px;text-align:right}
-	.bvi-mega-menu-container, .bvi-mega-menu-custom-mobile-menu{display:none}
-	.bvi-mega-menu-container > .menu-item-depth-0, .bvi-mega-menu-custom-mobile-menu > li{border-bottom:2px solid #333;display:block;text-align:left;width:100%}
-	.bvi-mega-menu-container > .menu-item-depth-0 > .mega-menu{display:none !important}
-}`
+* `.bvi-mega-menu` — Block wrapper `<nav>`
+* `.bvi-menu-item` — Each menu item `<li>`
+* `.bvi-menu-item.has-panel` — Items with a dropdown panel
+* `.bvi-menu-item.is-open` — Item whose panel is currently visible
+* `.bvi-mega-panel` — Dropdown panel container
+* `.bvi-mega-menu-hamburger` — Mobile hamburger button
+* `.bvi-mega-menu.is-mobile` — Mobile breakpoint is active
+* `.bvi-mega-menu.is-instant-dropdown` — Instant dropdown mode is on
+* `.bvi-related-links` — Related Links block wrapper
+* `.bvi-hide-mobile` / `.bvi-hide-tablet` / `.bvi-hide-desktop` — Responsive Content visibility classes
+
+All colours are stored as CSS custom properties on `.bvi-mega-menu` (e.g. `--bvi-mm-dropdown-bg`, `--bvi-mm-hamburger-bg-open`) and can be overridden in a child theme stylesheet.
 
 == Changelog ==
+
+= 5.0.0 =
+
+* Tests against WordPress 7.0
+* Full plugin rewrite with modern PHP architecture (PSR-4, namespaces, traits)
+* Added block editor support with four custom blocks: Mega Menu, Menu Item, Related Links, Responsive Content
+* Block and admin feature auto-discovery via `Utils\Discovery`
+* Replaced wp-scripts build with Gulp + esbuild pipeline
+* Block frontend JS moved to vanilla JS `view.jsx` (no jQuery dependency for blocks)
+* Added per-page related links metabox
+* Added support for wp_navigation block menus in settings
+* CI/CD with PHPUnit, PHPCS, ESLint, and Stylelint across PHP 8.2–8.4
+* Updated requirements to WordPress 6.8+ and PHP 8.2+
+* Block menu: dropdown panels slide open/closed via CSS clip-path animation when instant dropdown is off
+* AJAX menu: removed redundant fadeOut chained after slideUp in the hide handler
+* Block editor: split "Navigation Colors" into five grouped colour panels — Link Colors, Dropdown Colors, Submenu Colors, Hamburger Colors, Mobile Colors
+* Fixed: hamburgerBackgroundColorOpen was never written to --bvi-mm-hamburger-bg-open in the editor styleVars
+* Fixed: bare requestAnimationFrame in view.jsx changed to window.requestAnimationFrame
+* Fixed: Related Links only showed top-level items when the Mega Menu was composed from inner blocks; links inside Mega Panel content (including Navigation blocks referencing a saved menu) are now children of the owning item, for Related Links and current-menu-parent / current-menu-ancestor highlighting
+* Added `bvi_mega_menu_block_links` filter to adjust the links a block contributes to menu structure
 
 = 4.2.0 =
 
@@ -221,37 +206,15 @@ You can enable the default CSS in the WordPress Admin under Settings > BVI Mega 
 = 3.0.0 =
 
 * Overhaul all around to make it compatible with WordPress 4.5.3
-** Removed functionality to "clean up" mega menu in the database because it's no longer needed
-** Added logic to apply a unique class to the related links container instead of the same class as the mega menu container (helpful for styling)
-** Added logic to use default JS for the mega menu's hover functionality when AJAX is set to false or disabled
-** Fixed the default CSS to provide styling for the mobile toggle when it's being used
-** Added random int appended to the ID of related links and mega menu so it doesn't make HTML validators angry in case you use a mega menu or related links shortcode twice or more on the same page
-** Fixed issue where multiple parent menu items were appearing as active when a menu item under multiple parents was active; now it chooses the first parent available
-* Added custom links option that you can set per page or post; also the option to override the existing related links or append to it
-* Added custom mobile menu option to override mobile menu setup by mega menu
-* Added custom menu option that you can set per page or post
-
-= 0.4.1 =
-
-* Always include custom pages in related links menus
-
-	Custom pages all have a post_id of 0, which will break our check for duplicate pages. Therefore, we should include all custom pages.
-
-= 0.4.0 =
-
-* fixed several bugs
-* added simple timeout for moving the mouse into/out of the target
-
-= 0.3.0 =
-
-* added options to use some basic default JS & CSS
-* added ability to load Mega part of the menu via AJAX
-* fixed some bugs
+* Added logic to apply a unique class to the related links container
+* Added logic to use default JS for the mega menu's hover functionality when AJAX is set to false
+* Fixed the default CSS to provide styling for the mobile toggle
+* Added custom mobile menu override option
 
 = 0.2.0 =
 
-* complete rewrite from the ground up
+* Complete rewrite from the ground up
 
 = 0.1.0 =
 
-* initial release
+* Initial release

@@ -1,7 +1,0 @@
-.postbox .howto select, .accordion-container .howto select {
-	width: 180px;
-	float: right;
-}
-.howto {
-	overflow: auto;
-}

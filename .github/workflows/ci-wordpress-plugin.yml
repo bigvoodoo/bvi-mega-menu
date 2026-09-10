@@ -1,0 +1,103 @@
+name: WordPress Plugin Checks
+
+on:
+  push:
+    branches: ['*']
+  pull_request:
+    branches: ['*']
+
+jobs:
+  agnostic:
+    name: Agnostic Checks
+    uses: ./.github/workflows/ci-wordpress.yml
+
+  # ─── Plugin-Specific File Checks ───────────────────────────────────
+  plugin-files:
+    name: Plugin Files
+    runs-on: ubuntu-latest
+    needs: agnostic
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify required plugin files exist
+        run: |
+          echo "=== Required Plugin Files ==="
+          MISSING=0
+
+          # find main plugin file (php file with Plugin Name header in root)
+          MAIN_FILE=$(grep -rl 'Plugin Name:' *.php 2>/dev/null | head -1)
+          if [ -n "$MAIN_FILE" ]; then
+            echo "  [PASS] Main plugin file: $MAIN_FILE"
+          else
+            echo "  [FAIL] No main plugin file with 'Plugin Name:' header found in root."
+            MISSING=1
+          fi
+
+          REQUIRED_FILES=("composer.json" "src/Main.php")
+          for f in "${REQUIRED_FILES[@]}"; do
+            if [ -f "$f" ]; then
+              echo "  [PASS] $f"
+            else
+              echo "  [FAIL] $f is missing!"
+              MISSING=1
+            fi
+          done
+
+          # check recommended structure
+          echo ""
+          echo "=== Plugin Structure ==="
+          DIRS=("src" "assets/src" "templates")
+          for d in "${DIRS[@]}"; do
+            if [ -d "$d" ]; then
+              COUNT=$(find "$d" -type f | wc -l)
+              echo "  [PASS] $d/ ($COUNT files)"
+            else
+              echo "  [WARN] $d/ directory not found"
+            fi
+          done
+
+          if [ $MISSING -eq 1 ]; then
+            echo ""
+            echo "ERROR: Required files are missing!"
+            exit 1
+          fi
+
+      - name: Validate plugin file header
+        run: |
+          echo "=== Plugin File Header ==="
+          MAIN_FILE=$(grep -rl 'Plugin Name:' *.php 2>/dev/null | head -1)
+          if [ -z "$MAIN_FILE" ]; then
+            echo "  [FAIL] No main plugin file found."
+            exit 1
+          fi
+
+          HEADERS=("Plugin Name" "Version" "Requires at least" "Tested up to" "Requires PHP" "Author" "License" "Text Domain")
+          for header in "${HEADERS[@]}"; do
+            VALUE=$(grep -i "^[[:space:]]*\*[[:space:]]*${header}:" "$MAIN_FILE" | head -1)
+            if [ -n "$VALUE" ]; then
+              echo "  [PASS] $VALUE"
+            else
+              echo "  [WARN] Missing header: $header"
+            fi
+          done
+
+          # verify bvi standards
+          echo ""
+          echo "=== BVI Header Standards ==="
+          if grep -q 'Author:.*Big Voodoo Interactive' "$MAIN_FILE"; then
+            echo "  [PASS] Author is Big Voodoo Interactive"
+          else
+            echo "  [WARN] Author should be 'Big Voodoo Interactive'"
+          fi
+
+          if grep -q 'License:.*GPLv3' "$MAIN_FILE"; then
+            echo "  [PASS] License is GPLv3"
+          else
+            echo "  [WARN] License should be GPLv3"
+          fi
+
+          if grep -q '@package' "$MAIN_FILE"; then
+            echo "  [PASS] @package tag present"
+          else
+            echo "  [WARN] Missing @package tag"
+          fi

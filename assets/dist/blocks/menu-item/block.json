@@ -1,0 +1,55 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "bvi/menu-item",
+  "version": "5.0.0",
+  "title": "Menu Item",
+  "category": "widgets",
+  "icon": "admin-links",
+  "description": "A single menu item. Use inside a Mega Menu block.",
+  "keywords": ["menu", "item", "link", "dropdown"],
+  "parent": ["bvi/mega-menu", "bvi/menu-item"],
+  "supports": {
+    "html": false,
+    "className": true,
+    "anchor": true,
+    "reusable": false
+  },
+  "textdomain": "bvi-mega-menu",
+  "attributes": {
+    "label": {
+      "type": "string",
+      "default": ""
+    },
+    "url": {
+      "type": "string",
+      "default": ""
+    },
+    "kind": {
+      "type": "string",
+      "default": ""
+    },
+    "id": {
+      "type": "number",
+      "default": 0
+    },
+    "type": {
+      "type": "string",
+      "default": ""
+    },
+    "openInNewTab": {
+      "type": "boolean",
+      "default": false
+    },
+    "labelColor": {
+      "type": "string",
+      "default": ""
+    },
+    "panelWidth": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "editorScript": "file:./index.js",
+  "style": "file:./style-index.css"
+}

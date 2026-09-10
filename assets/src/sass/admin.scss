@@ -1,0 +1,62 @@
+.interface-complementary-area {
+
+    /* stylelint-disable selector-class-pattern */
+    .components-panel__body,
+    .components-panel__body-contents {
+        box-sizing: border-box;
+        overflow-x: hidden;
+    }
+
+    .components-base-control,
+    .components-unit-control-wrapper {
+        box-sizing: border-box;
+        max-width: 100%;
+    }
+}
+
+.menu-item-actions input {
+    float: right !important;
+    margin-left: 10px !important;
+}
+
+textarea#shortcode-menu-item,
+.menu-item-shortcode textarea {
+    height: 100px;
+    width: 100%;
+}
+
+.menu-item-shortcode {
+
+    p.description.description-thin {
+        height: auto;
+        width: 97%;
+    }
+
+    .field-link-target,
+    .field-css-classes,
+    .field-xfn,
+    .link-to-original,
+    .field-description {
+        display: none !important;
+    }
+}
+
+.postbox .howto select,
+.accordion-container .howto select {
+    float: right;
+    width: 180px;
+}
+
+.howto {
+    overflow: auto;
+}
+
+.collapse-expand {
+    color: #999;
+    font-size: 18px;
+    left: 420px;
+    line-height: 36px;
+    position: absolute;
+    text-decoration: none;
+    top: 0;
+}

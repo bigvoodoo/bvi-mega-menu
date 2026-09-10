@@ -1,0 +1,20 @@
+@use "sass:map";
+@use "sass:math";
+@use "sass:meta";
+@use "var" as *;
+
+@mixin bp($point) {
+
+    @if map.has-key($breakpoints, $point) {
+
+        @media (min-width: map.get($breakpoints, $point)) {
+            @content;
+        }
+    } @else if math.unit($point) == "px" {
+
+        @media (min-width: $point) {
+            @content;
+        }
+    }
+}
+

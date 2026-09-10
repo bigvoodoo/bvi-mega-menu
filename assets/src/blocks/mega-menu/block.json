@@ -1,0 +1,137 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "bvi/mega-menu",
+  "version": "5.0.0",
+  "title": "Mega Menu",
+  "category": "widgets",
+  "icon": "menu",
+  "description": "Block-composed navigation menu with dropdown panels.",
+  "keywords": ["menu", "navigation", "mega", "nav"],
+  "supports": {
+    "html": false,
+    "align": ["wide", "full"],
+    "className": true,
+    "anchor": true,
+    "color": {
+      "text": true,
+      "background": true,
+      "link": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true,
+      "__experimentalFontFamily": true,
+      "__experimentalFontWeight": true,
+      "__experimentalFontStyle": true,
+      "__experimentalTextTransform": true,
+      "__experimentalTextDecoration": true,
+      "__experimentalLetterSpacing": true
+    },
+    "spacing": {
+      "margin": true,
+      "padding": true,
+      "blockGap": true
+    }
+  },
+  "textdomain": "bvi-mega-menu",
+  "attributes": {
+    "menuSlug": {
+      "type": "string",
+      "default": ""
+    },
+    "mobileMode": {
+      "type": "string",
+      "default": "none",
+      "enum": ["none", "dropdown", "popup"]
+    },
+    "mobileBreakpoint": {
+      "type": "number",
+      "default": 960
+    },
+    "dropdownTrigger": {
+      "type": "string",
+      "default": "hover",
+      "enum": ["hover", "click"]
+    },
+    "showDropdownArrow": {
+      "type": "boolean",
+      "default": true
+    },
+    "dropdownCloseDelay": {
+      "type": "number",
+      "default": 300
+    },
+    "linkTextColorHover": { "type": "string", "default": "" },
+    "linkBackgroundColorHover": { "type": "string", "default": "" },
+    "linkTextColorActive": { "type": "string", "default": "" },
+    "linkBackgroundColorActive": { "type": "string", "default": "" },
+    "dropdownTextColorActive": { "type": "string", "default": "" },
+    "dropdownBackgroundColorActive": { "type": "string", "default": "" },
+    "submenuTextColorActive": { "type": "string", "default": "" },
+    "submenuBackgroundColorActive": { "type": "string", "default": "" },
+    "mobileMenuTextColorActive": { "type": "string", "default": "" },
+    "mobileMenuLinkBackgroundColorActive": { "type": "string", "default": "" },
+    "highlightAncestors": { "type": "boolean", "default": true },
+    "hamburgerStyle": {
+      "type": "string",
+      "default": "bars",
+      "enum": ["bars", "svg", "custom"]
+    },
+    "hamburgerSvgId": { "type": "number", "default": 0 },
+    "hamburgerColor": { "type": "string", "default": "" },
+    "hamburgerColorHover": { "type": "string", "default": "" },
+    "hamburgerBackgroundColor": { "type": "string", "default": "" },
+    "hamburgerBackgroundColorHover": { "type": "string", "default": "" },
+    "dropdownBackgroundColor": { "type": "string", "default": "" },
+    "dropdownBackgroundColorHover": { "type": "string", "default": "" },
+    "dropdownTextColor": { "type": "string", "default": "" },
+    "dropdownTextColorHover": { "type": "string", "default": "" },
+    "submenuBackgroundColor": { "type": "string", "default": "" },
+    "submenuBackgroundColorHover": { "type": "string", "default": "" },
+    "submenuTextColor": { "type": "string", "default": "" },
+    "submenuTextColorHover": { "type": "string", "default": "" },
+    "overlayBackgroundColor": { "type": "string", "default": "" },
+    "mobileMenuBackgroundColor": { "type": "string", "default": "" },
+    "mobileMenuLinkBackgroundColor": { "type": "string", "default": "" },
+    "mobileMenuLinkBackgroundColorHover": {
+      "type": "string",
+      "default": ""
+    },
+    "mobileMenuTextColor": { "type": "string", "default": "" },
+    "mobileMenuTextColorHover": { "type": "string", "default": "" },
+    "itemGap": { "type": "string", "default": "" },
+    "dropdownItemGap": { "type": "string", "default": "" },
+    "popupItemGap": { "type": "string", "default": "" },
+    "hamburgerBackgroundColorOpen": { "type": "string", "default": "" },
+    "mobileFontSize": { "type": "string", "default": "" },
+    "mobileFontWeight": { "type": "string", "default": "" },
+    "mobileFontStyle": { "type": "string", "default": "" },
+    "mobileTextTransform": { "type": "string", "default": "" },
+    "mobileTextDecoration": { "type": "string", "default": "" },
+    "mobileLetterSpacing": { "type": "string", "default": "" },
+    "mobileTextAlign": { "type": "string", "default": "" },
+    "mobileBorderWidth": { "type": "string", "default": "" },
+    "mobileBorderStyle": { "type": "string", "default": "" },
+    "mobileBorderColor": { "type": "string", "default": "" },
+    "dropdownSpanParent": { "type": "boolean", "default": false },
+    "dropdownPanelAlignment": {
+      "type": "string",
+      "default": "left",
+      "enum": ["left", "center", "right"]
+    },
+    "mobileDropdownAlignment": {
+      "type": "string",
+      "default": "viewport",
+      "enum": ["left", "right", "viewport"]
+    },
+    "mobileLevels": {
+      "type": "number",
+      "default": 1
+    },
+    "mobileNavPadding": { "type": "string", "default": "" }
+  },
+  "editorScript": "file:./index.js",
+  "viewScript": "file:./view.js",
+  "style": "file:./style-index.css"
+}
