@@ -8,12 +8,12 @@
  * Description:       Enhanced WordPress navigation menu with related links, columns, shortcodes, and block editor support.
  * Version:           5.0.0
  * Requires at least: 6.9
- * Tested up to:      7.0
+ * Tested up to:      7.1
  * Requires PHP:      8.2
  * License:           GPLv3
  * License URI:       https://www.gnu.org/licenses/gpl-3.0.html
  * GitHub Update URI: https://github.com/bigvoodoo/bvi-mega-menu
- * Primary Branch:    main
+ * Primary Branch:    master
  * Text Domain:       bvi-mega-menu
  */
 
