@@ -10,10 +10,12 @@ on:
         required: false
         type: string
 
-# All run steps execute from the plugin directory
+permissions:
+  contents: write
+
 defaults:
   run:
-    working-directory: bvi-mega-menu
+    working-directory: '.'
 
 jobs:
   build:
@@ -39,49 +41,144 @@ jobs:
           node-version: '24'
 
       - name: Install npm dependencies
-        run: npm install --no-audit --no-fund --ignore-scripts 2>/dev/null || npm install --ignore-scripts
+        run: npm ci --no-audit --no-fund
 
       - name: Build assets
-        run: npm run build || true
-        continue-on-error: true
+        run: npm run build
 
       - name: Determine version
         id: version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
-          if [ -n "${{ inputs.version }}" ]; then
-            echo "tag=${{ inputs.version }}" >> $GITHUB_OUTPUT
+          if [ -n "$INPUT_VERSION" ]; then
+            TAG="$INPUT_VERSION"
+          elif [ -n "$RELEASE_TAG" ]; then
+            TAG="$RELEASE_TAG"
           else
-            echo "tag=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+            # manual dispatch without input: fall back to the plugin header version
+            TAG=$(grep -m1 -oP 'Version:\s*\K[0-9][0-9.]*' bvi-mega-menu.php)
           fi
+          if ! [[ "$TAG" =~ ^v?[0-9][0-9A-Za-z.-]*$ ]]; then
+            echo "::error::Invalid version tag: $TAG"
+            exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
       - name: Create plugin ZIP
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
         run: |
           PLUGIN_SLUG="bvi-mega-menu"
           BUILD_DIR="/tmp/${PLUGIN_SLUG}"
 
           mkdir -p "${BUILD_DIR}"
 
-          # Copy plugin files (exclude dev/build files)
-          rsync -av --exclude-from=- . "${BUILD_DIR}/" <<'EOF'
+          # copy plugin files - unanchored patterns match at any depth (covers vendor packages),
+          # leading / anchors to the project root. keep in sync with rules/release-zip.md
+          rsync -a --exclude-from=- . "${BUILD_DIR}/" <<'EOF'
+          # version control, ci, and ai tooling - unanchored so vendor packages are covered too
           .git
           .github
-          .phpunit.cache
-          node_modules
-          tests
-          phpunit.xml
+          .gitlab
+          .circleci
+          .claude
           .gitignore
+          .gitattributes
+          .gitmodules
           .editorconfig
-          .phpcs.xml
-          gulpfile.mjs
-          package.json
-          package-lock.json
-          composer.lock
+          # tests and test/analysis config - unanchored so vendor packages are covered too
+          tests
+          Tests
+          .phpunit.cache
+          .phpunit.result.cache
+          phpunit.xml
+          phpunit.xml.dist
+          phpstan.neon
+          phpstan.neon.dist
+          psalm.xml
+          psalm.xml.dist
+          infection.json
+          infection.json.dist
+          .php-cs-fixer.php
+          .php-cs-fixer.dist.php
+          .php_cs
+          .php_cs.dist
+          .travis.yml
+          .scrutinizer.yml
+          .styleci.yml
+          appveyor.yml
+          Makefile
+          # junk - unanchored
+          node_modules
+          .DS_Store
+          Thumbs.db
           *.md
-          !readme.txt
+          *.zip
+          *.log
+          # composer package dev dirs - package root only, a project's own build/ or docs/ may be legitimate
+          /vendor/bin
+          /vendor/*/*/docs
+          /vendor/*/*/doc
+          /vendor/*/*/examples
+          /vendor/*/*/example
+          /vendor/*/*/build
+          /vendor/*/*/benchmarks
+          # project-root dev config - anchored so nested files with the same name are untouched
+          /assets/src
+          /.distignore
+          /vitest.config.mjs
+          /vitest.config.mts
+          /playwright.config.mjs
+          *.test.js
+          /.env
+          /.env.*
+          /phpcs.xml
+          /phpcs.xml.dist
+          /.phpcs.xml
+          /.phpcs.xml.dist
+          /eslint.config.js
+          /eslint.config.mjs
+          /.eslintrc
+          /.eslintrc.*
+          /.prettierrc
+          /.prettierrc.*
+          /.prettierignore
+          /.stylelintrc
+          /.stylelintrc.*
+          /gulpfile.js
+          /gulpfile.mjs
+          /webpack.config.js
+          /tsconfig.json
+          /package.json
+          /package-lock.json
+          /composer.json
+          /composer.lock
+          /Docker
+          /docker-compose.yml
+          /docker-compose.*.yml
           EOF
 
+          # fail if anything dev-only slipped through (vendor packages included)
+          LEAKS=$(cd "${BUILD_DIR}" && find . \( -name '.git*' -o -name '.claude' -o -name 'node_modules' \
+              -o -iname 'tests' -o -name '.env' -o -name '.env.*' -o -name 'phpunit.xml*' -o -name 'phpstan.neon*' \
+              -o -name '*.md' -o -name '*.zip' \) -print | sed 's#^\./##')
+          if [ -f composer.lock ]; then
+            while IFS= read -r pkg; do
+              if [ -n "${pkg}" ] && [ -d "${BUILD_DIR}/vendor/${pkg}" ]; then
+                LEAKS="${LEAKS}${LEAKS:+$'\n'}vendor/${pkg} (dev dependency)"
+              fi
+            done < <(jq -r '.["packages-dev"][]?.name' composer.lock)
+          fi
+          if [ -n "${LEAKS}" ]; then
+            echo "::error::Dev-only files found in release tree:"
+            echo "${LEAKS}"
+            exit 1
+          fi
+
           cd /tmp
-          zip -r "${GITHUB_WORKSPACE}/${PLUGIN_SLUG}-${{ steps.version.outputs.tag }}.zip" "${PLUGIN_SLUG}/"
+          zip -r "${GITHUB_WORKSPACE}/${PLUGIN_SLUG}-${TAG}.zip" "${PLUGIN_SLUG}/"
 
       - name: Upload ZIP artifact
         uses: actions/upload-artifact@v4
