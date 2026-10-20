@@ -6,9 +6,9 @@
  * Author:            Big Voodoo Interactive
  * Author URI:        https://www,bigvoodoo.com
  * Description:       Enhanced WordPress navigation menu with related links, columns, shortcodes, and block editor support.
- * Version:           5.0.0
+ * Version:           5.0.1
  * Requires at least: 6.9
- * Tested up to:      7.1
+ * Tested up to:      7.1.3
  * Requires PHP:      8.2
  * License:           GPLv3
  * License URI:       https://www.gnu.org/licenses/gpl-3.0.html

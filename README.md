@@ -158,7 +158,7 @@ composer lint
 composer test
 ```
 
-Tests run across PHP 8.2–8.4 in CI.
+Tests run across PHP 8.2–8.5 in CI.
 
 ### Formatting
 
@@ -366,6 +366,10 @@ add_filter( 'bvi_mega_menu_block_links', function( $links, $block ) {
 ```
 
 ## Changelog
+
+### 5.0.1
+
+- Tests against WordPress 7.1.3 and PHP 8.5
 
 ### 5.0.0
 
