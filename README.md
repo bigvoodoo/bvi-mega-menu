@@ -370,6 +370,7 @@ add_filter( 'bvi_mega_menu_block_links', function( $links, $block ) {
 ### 5.0.1
 
 - Tests against WordPress 7.1.3 and PHP 8.5
+- Asset version now comes from the plugin header instead of the active theme, so plugin updates bust the CSS/JS cache
 
 ### 5.0.0
 

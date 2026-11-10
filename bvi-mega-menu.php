@@ -95,7 +95,7 @@ if (!defined('BVI_PLUGIN_MEGAMENU_BASENAME')) {
 }
 
 if (!defined('BVI_PLUGIN_MEGAMENU_VERSION')) {
-    define('BVI_PLUGIN_MEGAMENU_VERSION', wp_get_theme()->get('Version') ?? '');
+    define('BVI_PLUGIN_MEGAMENU_VERSION', get_file_data(__FILE__, ['Version' => 'Version'])['Version']);
 }
 
 if (!defined('BVI_PLUGIN_MEGAMENU_DB_VERSION')) {
