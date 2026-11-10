@@ -129,6 +129,7 @@ All colours are stored as CSS custom properties on `.bvi-mega-menu` (e.g. `--bvi
 = 5.0.1 =
 
 * Tests against WordPress 7.1.3 and PHP 8.5
+* Asset version now comes from the plugin header instead of the active theme, so plugin updates bust the CSS/JS cache
 
 = 5.0.0 =
 
